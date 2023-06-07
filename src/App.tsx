@@ -1,8 +1,10 @@
 import { useState } from "react";
 
-import reactLogo from "./assets/react.svg";
-
 import viteLogo from "/vite.svg";
+
+import reactLogo from "./assets/react.svg";
+import HelloWorld from "./components/HelloWord";
+
 import "./App.css";
 
 function App() {
@@ -24,6 +26,7 @@ function App() {
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
+        <HelloWorld />
       </div>
       <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
     </>
