@@ -1,21 +1,6 @@
 import { create } from "zustand";
 
-export type TagItem = {
-  code: string;
-  label: string;
-  path: string;
-  closable: boolean;
-};
-
-export interface TagState {
-  tags: TagItem[];
-  activeTagId: TagItem["path"];
-  setActiveTagId: (tag: string) => void;
-  addTag: (tagItem: TagItem) => void;
-  removeTag: (targetId: string) => void;
-  removeOtherTag: () => void;
-  removeAllTag: () => void;
-}
+import { TagItem, TagState } from "@/interfaces/layouts/tagsView.interface";
 
 const useHeaderTag = create<TagState>((set, get) => ({
   tags: [],

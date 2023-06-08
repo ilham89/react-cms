@@ -5,11 +5,13 @@ import type { RouteProps } from "react-router";
 import { useLocation } from "react-router";
 import { useNavigate } from "react-router-dom";
 
+import useUser from "@/stores/user";
+
 const PrivateRoute: React.FC<RouteProps> = ({ element }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [logged] = useUser((state) => [state.logged]);
 
-  const logged = false;
   return logged ? (
     (element as React.ReactElement)
   ) : (

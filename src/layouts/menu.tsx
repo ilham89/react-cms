@@ -4,18 +4,7 @@ import { Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 
 import { CustomIcon } from "./customIcon";
-
-interface MenuItem {
-  code: string;
-  label: string;
-  icon?: string;
-  path: string;
-  children?: MenuItem[];
-}
-
-export type MenuChild = Omit<MenuItem, "children">;
-
-export type MenuList = MenuItem[];
+import { MenuList } from "@/interfaces/layouts/menu.interface";
 
 interface MenuProps {
   menuList: MenuList;

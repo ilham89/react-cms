@@ -1,19 +1,34 @@
 import * as React from "react";
 
-import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Layout, theme as antTheme } from "antd";
-const { Header } = Layout;
+import {
+  LogoutOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import { Dropdown, Layout, theme as antTheme } from "antd";
+import { useNavigate } from "react-router-dom";
 
 import AntdSvg from "@/assets/icons/antd.svg";
 import ReactSvg from "@/assets/icons/react.svg";
+import useUser from "@/stores/user";
 
 interface HeaderProps {
   collapsed: boolean;
   toggle: () => void;
 }
 
+const { Header } = Layout;
+
 const HeaderComponent: React.FC<HeaderProps> = ({ collapsed, toggle }) => {
   const token = antTheme.useToken();
+  const navigate = useNavigate();
+
+  const [logged] = useUser((state) => [state.logged]);
+
+  const toLogin = () => {
+    navigate("/login");
+  };
 
   return (
     <Header
@@ -32,7 +47,46 @@ const HeaderComponent: React.FC<HeaderProps> = ({ collapsed, toggle }) => {
             {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           </span>
         </div>
-        <div className="actions">halo</div>
+        <div className="actions">
+          {logged ? (
+            <Dropdown
+              menu={{
+                items: [
+                  {
+                    key: "1",
+                    icon: <UserOutlined />,
+                    label: (
+                      <span role="none" onClick={() => navigate("/dashboard")}>
+                        Account
+                      </span>
+                    ),
+                  },
+                  {
+                    key: "2",
+                    icon: <LogoutOutlined />,
+                    label: (
+                      <span role="none" onClick={toLogin}>
+                        Logout
+                      </span>
+                    ),
+                  },
+                ],
+              }}
+            >
+              <span className="user-action">
+                <img
+                  src="https://res.cloudinary.com/ds73yosji/image/upload/v1678074667/gemilang/354072278ea3016361f1453d9659c212_bei0uy.jpg"
+                  className="user-avator"
+                  alt="avator"
+                />
+              </span>
+            </Dropdown>
+          ) : (
+            <span role="none" style={{ cursor: "pointer" }} onClick={toLogin}>
+              Login
+            </span>
+          )}
+        </div>
       </div>
     </Header>
   );

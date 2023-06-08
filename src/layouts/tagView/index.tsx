@@ -4,7 +4,7 @@ import { Tabs } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import TagsViewAction from "./tagViewAction";
-import { MenuChild, MenuList } from "../menu";
+import { MenuChild, MenuList } from "@/interfaces/layouts/menu.interface";
 import useHeaderTag from "@/stores/headerTag";
 
 const TagsView: React.FC = () => {
@@ -69,7 +69,6 @@ const TagsView: React.FC = () => {
     [location.pathname, tags],
   );
 
-  // onClick tag
   const onChange = (key: string) => {
     const tag = tags.find((tag) => tag.path === key);
 

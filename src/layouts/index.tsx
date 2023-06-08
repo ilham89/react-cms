@@ -1,46 +1,41 @@
 import * as React from "react";
 
-import { Layout, theme } from "antd";
+import { Drawer, Layout, theme } from "antd";
 import { Outlet, useLocation } from "react-router-dom";
 
 import HeaderComponent from "./header";
-import MenuComponent, { MenuList } from "./menu";
+import MenuComponent from "./menu";
 import TagsView from "./tagView";
+import useUser from "@/stores/user";
+import { getFirstPathCode } from "@/utils/getFirstPathCode";
+import { getGlobalState } from "@/utils/getGlobal";
 
 import "./index.scss";
 
 const { Sider, Content } = Layout;
+const WIDTH = 992;
 
 const Dashboard: React.FC = () => {
   const token = theme.useToken();
-
   const location = useLocation();
+
   const [openKey, setOpenkey] = React.useState<string>();
   const [selectedKey, setSelectedKey] = React.useState<string>(location.pathname);
-  const [menuList, setMenuList] = React.useState<MenuList>([]);
-  const [collapsed, setCollapsed] = React.useState(false);
-  const isMobile = false;
 
-  function getStrTimesIndex(str: string, cha: string, num: number) {
-    let x = str.indexOf(cha);
+  const [menuList, device, collapsed, setUserItem] = useUser((state) => [
+    state.menuList,
+    state.device,
+    state.collapsed,
+    state.setUserItem,
+  ]);
 
-    for (let i = 0; i < num; i++) {
-      x = str.indexOf(cha, x + 1);
-    }
+  const isMobile = device === "MOBILE";
 
-    return x;
-  }
-
-  function getFirstPathCode(path: string) {
-    const index0 = getStrTimesIndex(path, "/", 0);
-    const index1 = getStrTimesIndex(path, "/", 1);
-
-    const activeKey = path.slice(index0 + 1, index1 > 0 ? index1 : path.length);
-
-    return activeKey;
-  }
-
-  const toggle = () => setCollapsed(!collapsed);
+  const toggle = () => {
+    setUserItem({
+      collapsed: !collapsed,
+    });
+  };
 
   React.useEffect(() => {
     const code = getFirstPathCode(location.pathname);
@@ -50,64 +45,62 @@ const Dashboard: React.FC = () => {
   }, [location.pathname]);
 
   React.useEffect(() => {
-    setMenuList([
-      {
-        code: "dashboard",
-        label: "Dashboard",
-        icon: "dashboard",
-        path: "/dashboard",
-      },
-      {
-        code: "documentation",
-        label: "Documentation",
-        icon: "documentation",
-        path: "/documentation",
-      },
-      {
-        code: "permission",
-        label: "Permission",
-        icon: "permission",
-        path: "/permission",
-        children: [
-          {
-            code: "routePermission",
-            label: "Route Permission",
-            path: "/permission/route",
-          },
-          {
-            code: "notFound",
-            label: "404",
-            path: "/permission/404",
-          },
-        ],
-      },
-    ]);
+    window.onresize = () => {
+      const { device } = getGlobalState();
+      const rect = document.body.getBoundingClientRect();
+      const needCollapse = rect.width < WIDTH;
+
+      setUserItem({
+        device,
+        collapsed: needCollapse,
+      });
+    };
   }, []);
 
   return (
     <Layout className="layout-page">
       <HeaderComponent collapsed={collapsed} toggle={toggle} />
       <Layout>
-        <Sider
-          className="layout-page-sider"
-          trigger={null}
-          collapsible
-          style={{ backgroundColor: token.token.colorBgContainer }}
-          collapsedWidth={isMobile ? 0 : 80}
-          collapsed={collapsed}
-          breakpoint="md"
-        >
-          <MenuComponent
-            menuList={menuList}
-            openKey={openKey}
-            onChangeOpenKey={(k) => setOpenkey(k)}
-            selectedKey={selectedKey}
-            onChangeSelectedKey={(k) => setSelectedKey(k)}
-          />
-        </Sider>
+        {!isMobile ? (
+          <Sider
+            className="layout-page-sider"
+            trigger={null}
+            collapsible
+            style={{ backgroundColor: token.token.colorBgContainer }}
+            collapsedWidth={isMobile ? 0 : 80}
+            collapsed={collapsed}
+            breakpoint="md"
+          >
+            <MenuComponent
+              menuList={menuList}
+              openKey={openKey}
+              onChangeOpenKey={(k) => setOpenkey(k)}
+              selectedKey={selectedKey}
+              onChangeSelectedKey={(k) => setSelectedKey(k)}
+            />
+          </Sider>
+        ) : (
+          <Drawer
+            width="200"
+            placement="left"
+            bodyStyle={{ padding: 0, height: "100%" }}
+            closable={false}
+            onClose={toggle}
+            open={!collapsed}
+          >
+            <MenuComponent
+              menuList={menuList}
+              openKey={openKey}
+              onChangeOpenKey={(k) => setOpenkey(k)}
+              selectedKey={selectedKey}
+              onChangeSelectedKey={(k) => setSelectedKey(k)}
+            />
+          </Drawer>
+        )}
+
         <Content className="layout-page-content">
           <TagsView />
-          <React.Suspense fallback={<div>Loading...</div>}>
+          <React.Suspense fallback={null}>
             <Outlet />
           </React.Suspense>
         </Content>
