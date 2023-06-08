@@ -22,14 +22,7 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
-  plugins: [
-    "react",
-    "@typescript-eslint",
-    "import",
-    "jsx-a11y",
-    "react-hooks",
-    "prettier",
-  ],
+  plugins: ["react", "@typescript-eslint", "import", "jsx-a11y", "react-hooks", "prettier"],
   rules: {
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
@@ -43,8 +36,8 @@ module.exports = {
     ],
 
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
-
+    "react-hooks/exhaustive-deps": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
     "prettier/prettier": [
       "warn",
       {
