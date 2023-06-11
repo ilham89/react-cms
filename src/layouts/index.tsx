@@ -3,6 +3,7 @@ import * as React from "react";
 import { Drawer, Layout, theme } from "antd";
 import { Outlet, useLocation } from "react-router-dom";
 
+// import Breadcrumb from "./breadcrumb";
 import HeaderComponent from "./header";
 import MenuComponent from "./menu";
 import TagsView from "./tagView";
@@ -99,7 +100,11 @@ const Dashboard: React.FC = () => {
         )}
 
         <Content className="layout-page-content">
-          <TagsView />
+          <div>
+            <TagsView />
+            {/* <Breadcrumb /> */}
+          </div>
+
           <React.Suspense fallback={null}>
             <Outlet />
           </React.Suspense>
