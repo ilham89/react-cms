@@ -22,32 +22,34 @@ const Login: React.FC = () => {
 
   return (
     <div className="login-page">
-      <Form
-        name="normal_login"
-        className="login-form"
-        initialValues={{ remember: true }}
-        onFinish={onFinish}
-      >
-        <h2>REACT ANTD ADMIN</h2>
+      <div className="login-page-wrapper">
+        <Form
+          name="normal_login"
+          className="login-form"
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
+        >
+          <h2>REACT ANTD ADMIN</h2>
 
-        <Form.Item name="email" rules={[{ required: true, type: "email" }]}>
-          <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Email" />
-        </Form.Item>
-        <Form.Item name="password" rules={[{ required: true }]}>
-          <Input
-            prefix={<LockOutlined className="site-form-item-icon" />}
-            type="password"
-            placeholder="Password"
-          />
-        </Form.Item>
+          <Form.Item name="email" rules={[{ required: true, type: "email" }]}>
+            <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Email" />
+          </Form.Item>
+          <Form.Item name="password" rules={[{ required: true }]}>
+            <Input
+              prefix={<LockOutlined className="site-form-item-icon" />}
+              type="password"
+              placeholder="Password"
+            />
+          </Form.Item>
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit" className="login-form-button">
-            Log in
-          </Button>
-          Or <Link to="/register">register now!</Link>
-        </Form.Item>
-      </Form>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" className="login-form-button">
+              Log in
+            </Button>
+            Or <Link to="/register">register now!</Link>
+          </Form.Item>
+        </Form>
+      </div>
     </div>
   );
 };

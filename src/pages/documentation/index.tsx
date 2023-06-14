@@ -2,7 +2,7 @@ import { Button } from "antd";
 
 const Documentation = () => {
   return (
-    <div>
+    <div className="box-wrapper">
       <Button type="primary">Doc</Button>
     </div>
   );

@@ -20,6 +20,18 @@ const useUser = create<UserState>((set) => ({
       path: "/documentation",
     },
     {
+      code: "products",
+      label: "Products",
+      icon: "documentation",
+      path: "/products",
+    },
+    {
+      code: "brands",
+      label: "Brands",
+      icon: "documentation",
+      path: "/brands",
+    },
+    {
       code: "permission",
       label: "Permission",
       icon: "permission",

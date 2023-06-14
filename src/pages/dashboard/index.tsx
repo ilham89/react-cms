@@ -1,6 +1,6 @@
 const Dashboard = () => {
   return (
-    <div>
+    <div className="box-wrapper">
       <h2>Welcome Admin!</h2>
     </div>
   );

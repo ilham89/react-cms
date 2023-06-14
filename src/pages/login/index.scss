@@ -4,13 +4,22 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-
     h2 {
       text-align: center;
+      padding: 8px 0px;
+      font-weight: 600;
+    }
+
+    &-wrapper {
+      background-color: white;
+      padding: 48px;
+      border: 1px solid #e3e0e0;
+      border-radius: 10px;
     }
   }
 
   &-form-button {
     width: 100%;
+    margin-bottom: 8px;
   }
 }

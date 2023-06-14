@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import TagsViewAction from "./tagViewAction";
 import { MenuChild, MenuList } from "@/interfaces/layouts/menu.interface";
 import useHeaderTag from "@/stores/headerTag";
+import useUser from "@/stores/user";
 
 const TagsView: React.FC = () => {
   const navigate = useNavigate();
@@ -19,38 +20,7 @@ const TagsView: React.FC = () => {
     state.setActiveTagId,
   ]);
 
-  const menuList = [
-    {
-      code: "dashboard",
-      label: "Dashboard",
-      icon: "dashboard",
-      path: "/dashboard",
-    },
-    {
-      code: "documentation",
-      label: "Documentation",
-      icon: "documentation",
-      path: "/documentation",
-    },
-    {
-      code: "permission",
-      label: "Permission",
-      icon: "permission",
-      path: "/permission",
-      children: [
-        {
-          code: "routePermission",
-          label: "Route Permission",
-          path: "/permission/route",
-        },
-        {
-          code: "notFound",
-          label: "404",
-          path: "/permission/404",
-        },
-      ],
-    },
-  ];
+  const [menuList] = useUser((state) => [state.menuList]);
 
   const setCurrentTag = React.useCallback(
     (id?: string) => {
@@ -113,7 +83,7 @@ const TagsView: React.FC = () => {
         });
       }
     }
-  }, [location.pathname, JSON.stringify(menuList)]);
+  }, [location.pathname, menuList]);
 
   return (
     <div id="pageTabs" style={{ padding: "6px 4px" }}>

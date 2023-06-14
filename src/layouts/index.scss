@@ -50,8 +50,8 @@
     > :nth-child(2) {
       flex: auto;
       overflow: auto;
-      padding: 6px;
       box-sizing: border-box;
+      margin: 16px;
       .innerText {
         padding: 24px;
         border-radius: 2px;
