@@ -1,8 +1,8 @@
 import { Button, Form, Input, Space, Typography } from "antd";
 import { useNavigate } from "react-router-dom";
 
-import useUser from "@/stores/user";
 import SolpacLogo from "@/assets/logo/solpac.png";
+import useUser from "@/stores/user";
 
 import "./index.scss";
 
