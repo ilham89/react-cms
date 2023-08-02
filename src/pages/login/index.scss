@@ -4,22 +4,38 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    h2 {
-      text-align: center;
-      padding: 8px 0px;
-      font-weight: 600;
+
+    &-background {
+      height: 80vh;
+      width: 80vw;
+      background-position: center;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-image: url("../../assets/image/bg-login.png");
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     &-wrapper {
       background-color: white;
-      padding: 48px;
+      padding: 16px;
       border: 1px solid #e3e0e0;
-      border-radius: 10px;
+      border-radius: 8px;
+      width: 300px;
+      box-shadow: 0px 20px 25px -5px #0000001a;
     }
   }
 
-  &-form-button {
-    width: 100%;
-    margin-bottom: 8px;
+  &-form {
+    &.ant-form-item
+      .ant-form-item-label
+      > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+      content: none;
+    }
+    &-button {
+      margin-top: 8px;
+      margin-bottom: unset;
+    }
   }
 }

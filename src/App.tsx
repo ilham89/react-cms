@@ -12,7 +12,13 @@ const queryClient = new QueryClient();
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <ConfigProvider>
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: "#1F456E",
+          },
+        }}
+      >
         <BrowserRouter>
           <React.Suspense
             fallback={<Spin spinning className="app-loading-wrapper" tip="Loading..." />}
