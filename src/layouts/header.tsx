@@ -9,8 +9,8 @@ import {
 import { Dropdown, Layout, theme as antTheme } from "antd";
 import { useNavigate } from "react-router-dom";
 
-import AntdSvg from "@/assets/icons/antd.svg";
-import ReactSvg from "@/assets/icons/react.svg";
+import LogoOnly from "@/assets/logo/logo-only.png";
+import SolpacLogo from "@/assets/logo/solpac.png";
 import useUser from "@/stores/user";
 
 interface HeaderProps {
@@ -36,8 +36,7 @@ const HeaderComponent: React.FC<HeaderProps> = ({ collapsed, toggle }) => {
       style={{ backgroundColor: token.token.colorBgContainer }}
     >
       <div className="logo" style={{ width: collapsed ? 80 : 200 }}>
-        <img src={ReactSvg} alt="" style={{ marginRight: collapsed ? "2px" : "20px" }} />
-        <img src={AntdSvg} alt="" />
+        <img src={collapsed ? LogoOnly : SolpacLogo} alt="logo" width={100} height={40} />
       </div>
       <div className="layout-page-header-main">
         <div onClick={toggle} role="none">

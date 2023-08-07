@@ -16,3 +16,16 @@ export const getFirstPathCode = (path: string) => {
 
   return activeKey;
 };
+
+export function getPathExceptLast(path: string) {
+  const parts = path.split("/");
+  const result = [];
+
+  if (parts.length > 1) {
+    parts.pop();
+  }
+
+  result.push(parts.join("/"));
+
+  return result;
+}
