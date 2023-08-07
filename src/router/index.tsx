@@ -10,7 +10,6 @@ const Home = React.lazy(() => import("@/pages/dashboard"));
 const NotFoundPage = React.lazy(() => import("@/pages/404"));
 const RoutePermission = React.lazy(() => import("@/pages/permission/route"));
 const Login = React.lazy(() => import("@/pages/login"));
-const Products = React.lazy(() => import("@/pages/products"));
 const FaqCategories = React.lazy(() => import("@/pages/web-management/faq/categories/list"));
 const FormFaqCategories = React.lazy(
   () => import("@/pages/web-management/faq/categories/create-update"),
@@ -27,6 +26,9 @@ const PrivacyPolicy = React.lazy(
   () => import("@/pages/web-management/terms-policy/privacy-policy"),
 );
 const ReturnPolicy = React.lazy(() => import("@/pages/web-management/terms-policy/return-policy"));
+
+const ProductCategories = React.lazy(() => import("@/pages/product-management/categories/list"));
+const Products = React.lazy(() => import("@/pages/product-management/products/list"));
 
 const routeList: RouteObject[] = [
   {
@@ -95,8 +97,19 @@ const routeList: RouteObject[] = [
         ],
       },
       {
-        path: "products",
-        element: <WrapperRouteComponent element={<Products />} titleId="Products" auth />,
+        path: "product-management/",
+        children: [
+          {
+            path: "categories",
+            element: (
+              <WrapperRouteComponent element={<ProductCategories />} titleId="Categories" auth />
+            ),
+          },
+          {
+            path: "products",
+            element: <WrapperRouteComponent element={<Products />} titleId="Products" auth />,
+          },
+        ],
       },
       {
         path: "permission/route",

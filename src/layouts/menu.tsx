@@ -39,6 +39,11 @@ const items: MenuItem[] = [
     getItem("Contact Us", "/web-management/contact-us"),
   ]),
 
+  getItem("Product Management", "/product-management", <DesktopOutlined />, [
+    getItem("Categories", "/product-management/categories"),
+    getItem("Product List", "/product-management/products"),
+  ]),
+
   getItem("Permission", "/permission", <DesktopOutlined />, [
     getItem("Route Permission", "/permission/route"),
     getItem("404", "/permission/404"),

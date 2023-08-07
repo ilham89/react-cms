@@ -18,7 +18,7 @@ const Dashboard: React.FC = () => {
   const token = theme.useToken();
   const location = useLocation();
 
-  const [openKey, setOpenkey] = React.useState<string[]>([]);
+  const [openKey, setOpenkey] = React.useState<string[]>(getPathExceptLast(location.pathname));
   const [selectedKey, setSelectedKey] = React.useState<string>(location.pathname);
 
   const [device, collapsed, setUserItem] = useUser((state) => [
