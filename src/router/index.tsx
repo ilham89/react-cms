@@ -45,6 +45,7 @@ const FormProductCategories = React.lazy(
 );
 
 const Products = React.lazy(() => import("@/pages/product-management/products/list"));
+const FormProduct = React.lazy(() => import("@/pages/product-management/products/create-update"));
 
 const routeList: RouteObject[] = [
   {
@@ -162,6 +163,10 @@ const routeList: RouteObject[] = [
           {
             path: "products",
             element: <WrapperRouteComponent element={<Products />} titleId="Products" auth />,
+          },
+          {
+            path: "products/add",
+            element: <WrapperRouteComponent element={<FormProduct />} titleId="Add Product" auth />,
           },
         ],
       },
