@@ -40,6 +40,10 @@ const PrivacyPolicy = React.lazy(
 const ReturnPolicy = React.lazy(() => import("@/pages/web-management/terms-policy/return-policy"));
 
 const ProductCategories = React.lazy(() => import("@/pages/product-management/categories/list"));
+const FormProductCategories = React.lazy(
+  () => import("@/pages/product-management/categories/create-update"),
+);
+
 const Products = React.lazy(() => import("@/pages/product-management/products/list"));
 
 const routeList: RouteObject[] = [
@@ -143,6 +147,16 @@ const routeList: RouteObject[] = [
             path: "categories",
             element: (
               <WrapperRouteComponent element={<ProductCategories />} titleId="Categories" auth />
+            ),
+          },
+          {
+            path: "categories/add",
+            element: (
+              <WrapperRouteComponent
+                element={<FormProductCategories />}
+                titleId="Add Category"
+                auth
+              />
             ),
           },
           {
