@@ -16,6 +16,18 @@ const App = () => {
         theme={{
           token: {
             colorPrimary: "#1F456E",
+            colorText: "#252525",
+            colorError: "#DA4453",
+            colorSuccess: "#44DA80",
+          },
+          components: {
+            Button: {},
+            Table: {},
+            Tag: {
+              borderRadiusSM: 40,
+              colorErrorBg: "#FAD7DD",
+              colorSuccessBg: "#E7FFF5",
+            },
           },
         }}
       >
