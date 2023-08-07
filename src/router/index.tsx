@@ -10,6 +10,18 @@ const Home = React.lazy(() => import("@/pages/dashboard"));
 const NotFoundPage = React.lazy(() => import("@/pages/404"));
 const RoutePermission = React.lazy(() => import("@/pages/permission/route"));
 const Login = React.lazy(() => import("@/pages/login"));
+
+const HeroSection = React.lazy(() => import("@/pages/web-management/homepage/hero-section/list"));
+const FormHeroSection = React.lazy(
+  () => import("@/pages/web-management/homepage/hero-section/create-update"),
+);
+const Partner = React.lazy(() => import("@/pages/web-management/homepage/partner/list"));
+const FormPartner = React.lazy(
+  () => import("@/pages/web-management/homepage/partner/create-update"),
+);
+const About = React.lazy(() => import("@/pages/web-management/homepage/about"));
+const Cta = React.lazy(() => import("@/pages/web-management/homepage/cta"));
+
 const FaqCategories = React.lazy(() => import("@/pages/web-management/faq/categories/list"));
 const FormFaqCategories = React.lazy(
   () => import("@/pages/web-management/faq/categories/create-update"),
@@ -50,6 +62,34 @@ const routeList: RouteObject[] = [
       {
         path: "web-management/",
         children: [
+          {
+            path: "homepage/hero-section",
+            element: (
+              <WrapperRouteComponent element={<HeroSection />} titleId="Hero Section" auth />
+            ),
+          },
+          {
+            path: "homepage/hero-section/add",
+            element: (
+              <WrapperRouteComponent element={<FormHeroSection />} titleId="Add Banner" auth />
+            ),
+          },
+          {
+            path: "homepage/partner",
+            element: <WrapperRouteComponent element={<Partner />} titleId="Partner" auth />,
+          },
+          {
+            path: "homepage/partner/add",
+            element: <WrapperRouteComponent element={<FormPartner />} titleId="Add Partner" auth />,
+          },
+          {
+            path: "homepage/about",
+            element: <WrapperRouteComponent element={<About />} titleId="About" auth />,
+          },
+          {
+            path: "homepage/cta",
+            element: <WrapperRouteComponent element={<Cta />} titleId="CTA" auth />,
+          },
           {
             path: "faq/categories",
             element: (

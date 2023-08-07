@@ -27,6 +27,12 @@ function getItem(
 const items: MenuItem[] = [
   getItem("Dashboard", "/dashboard", <PieChartOutlined />),
   getItem("Web Management", "/web-management", <DesktopOutlined />, [
+    getItem("Homepage", "/homepage", null, [
+      getItem("Hero Section", "/web-management/homepage/hero-section"),
+      getItem("Partner", "/web-management/homepage/partner"),
+      getItem("About", "/web-management/homepage/about"),
+      getItem("CTA", "/web-management/homepage/cta"),
+    ]),
     getItem("FAQ", "/faq", null, [
       getItem("Categories", "/web-management/faq/categories"),
       getItem("FAQ List", "/web-management/faq"),

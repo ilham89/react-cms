@@ -96,7 +96,7 @@ const CreateUpdate = () => {
               className="required-form"
               rules={[{ required: true, message: <RequiredMessage /> }]}
             >
-              <Space size="small">
+              <Space>
                 <Switch />
                 <div>Featured is On</div>
               </Space>

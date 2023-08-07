@@ -8,7 +8,7 @@ interface RequiredMessageProps {
 
 const RequiredMessage = ({ label }: RequiredMessageProps) => {
   return (
-    <Space className="required-message" size="small">
+    <Space className="required-message">
       <ExclamationCircleFilled />
       {label || "This field is mandatory"}
     </Space>
