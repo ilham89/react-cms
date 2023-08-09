@@ -1,31 +1,14 @@
 import { Button, Form, Input, Space, Typography } from "antd";
-import { useNavigate } from "react-router-dom";
 
+import { useLogin } from "./login.action";
 import SolpacLogo from "@/assets/logo/solpac.png";
-import useUser from "@/stores/user";
 
 import "./index.scss";
 
 const { Text } = Typography;
 
-type Values = {
-  email: string;
-  password: string;
-};
-
 const Login = () => {
-  const navigate = useNavigate();
-
-  const [setUserItem] = useUser((state) => [state.setUserItem]);
-
-  const onFinish = (values: Values) => {
-    navigate("/");
-    setUserItem({
-      logged: true,
-    });
-    console.log(values);
-  };
-
+  const { onFinish } = useLogin();
   return (
     <div className="login-page">
       <div className="login-page-background">

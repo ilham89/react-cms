@@ -1,4 +1,5 @@
 import Axios, { InternalAxiosRequestConfig } from "axios";
+import Cookies from "js-cookie";
 
 import useNotification from "@/hooks/useNotification";
 
@@ -8,6 +9,12 @@ export const axiosInstance = Axios.create({
 
 axiosInstance.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
   config.headers["Content-Type"] = "application/json";
+  const token = Cookies.get("user_ct");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
   return config;
 });
 
