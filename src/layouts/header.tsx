@@ -79,9 +79,7 @@ const HeaderComponent: React.FC<HeaderProps> = ({ collapsed, toggle }) => {
               </span>
             </Dropdown>
           ) : (
-            <span role="none" style={{ cursor: "pointer" }} onClick={toLogin}>
-              Login
-            </span>
+            <LogoutOutlined onClick={toLogin} />
           )}
         </div>
       </div>
