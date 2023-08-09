@@ -1,72 +1,96 @@
-import * as React from "react";
+import React from "react";
 
+import { DesktopOutlined, PieChartOutlined } from "@ant-design/icons";
+import type { MenuProps } from "antd";
 import { Menu } from "antd";
+import type { SelectInfo } from "rc-menu/lib/interface";
 import { useNavigate } from "react-router-dom";
 
-import { CustomIcon } from "./customIcon";
-import { MenuList } from "@/interfaces/layouts/menu.interface";
+type MenuItem = Required<MenuProps>["items"][number];
 
-interface MenuProps {
-  menuList: MenuList;
-  openKey?: string;
-  onChangeOpenKey: (key?: string) => void;
+function getItem(
+  label: React.ReactNode,
+  key: React.Key,
+  icon?: React.ReactNode,
+  children?: MenuItem[],
+  type?: "group",
+): MenuItem {
+  return {
+    key,
+    icon,
+    children,
+    label,
+    type,
+  } as MenuItem;
+}
+
+const items: MenuItem[] = [
+  getItem("Dashboard", "/dashboard", <PieChartOutlined />),
+  getItem("Web Management", "/web-management", <DesktopOutlined />, [
+    getItem("Homepage", "/homepage", null, [
+      getItem("Hero Section", "/web-management/homepage/hero-section"),
+      getItem("Partner", "/web-management/homepage/partner"),
+      getItem("About", "/web-management/homepage/about"),
+      getItem("CTA", "/web-management/homepage/cta"),
+    ]),
+    getItem("FAQ", "/faq", null, [
+      getItem("Categories", "/web-management/faq/categories"),
+      getItem("FAQ List", "/web-management/faq"),
+    ]),
+    getItem("Terms & Policy", "/terms-policy", null, [
+      getItem("Terms and Condition", "/web-management/terms-policy/terms-condition"),
+      getItem("Privacy Policy", "/web-management/terms-policy/privacy-policy"),
+      getItem("Return policy", "/web-management/terms-policy/return-policy"),
+    ]),
+    getItem("Contact Us", "/web-management/contact-us"),
+  ]),
+
+  getItem("Product Management", "/product-management", <DesktopOutlined />, [
+    getItem("Categories", "/product-management/categories"),
+    getItem("Product List", "/product-management/products"),
+  ]),
+
+  getItem("Permission", "/permission", <DesktopOutlined />, [
+    getItem("Route Permission", "/permission/route"),
+    getItem("404", "/permission/404"),
+  ]),
+];
+
+interface MenuNestedProps {
+  openKey: string[];
+  onChangeOpenKey: (key: string[]) => void;
   selectedKey: string;
   onChangeSelectedKey: (key: string) => void;
 }
 
-const MenuComponent: React.FC<MenuProps> = ({
-  menuList,
+const MenuComponent = ({
   openKey,
   onChangeOpenKey,
   selectedKey,
   onChangeSelectedKey,
-}) => {
+}: MenuNestedProps) => {
   const navigate = useNavigate();
 
-  const getTitle = (menu: MenuList[0]) => {
-    return (
-      <span style={{ display: "flex", alignItems: "center" }}>
-        <CustomIcon type={menu.icon!} />
-        <span>{menu.label}</span>
-      </span>
-    );
-  };
+  const onClickSelect = (k: SelectInfo) => {
+    onChangeSelectedKey(k.key);
 
-  const onMenuClick = (path: string) => {
-    onChangeSelectedKey(path);
-    navigate(path);
-  };
-
-  const onOpenChange = (keys: string[]) => {
-    const key = keys.pop();
-
-    onChangeOpenKey(key);
+    navigate(k.key);
+    const data = k.keyPath;
+    data.shift();
+    data.slice();
+    data.reverse();
+    onChangeOpenKey(data);
   };
 
   return (
     <Menu
-      mode="inline"
       selectedKeys={[selectedKey]}
-      openKeys={openKey ? [openKey] : []}
-      onOpenChange={onOpenChange}
-      onSelect={(k) => onMenuClick(k.key)}
+      defaultOpenKeys={openKey}
       className="layout-page-sider-menu text-2"
-      items={menuList.map((menu) => {
-        return menu.children
-          ? {
-              key: menu.code,
-              label: getTitle(menu),
-              children: menu.children.map((child) => ({
-                key: child.path,
-                label: child.label,
-              })),
-            }
-          : {
-              key: menu.path,
-              label: getTitle(menu),
-            };
-      })}
-    ></Menu>
+      mode="inline"
+      items={items}
+      onSelect={(k) => onClickSelect(k)}
+    />
   );
 };
 

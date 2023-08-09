@@ -3,12 +3,10 @@ import * as React from "react";
 import { Drawer, Layout, theme } from "antd";
 import { Outlet, useLocation } from "react-router-dom";
 
-// import Breadcrumb from "./breadcrumb";
 import HeaderComponent from "./header";
 import MenuComponent from "./menu";
-import TagsView from "./tagView";
 import useUser from "@/stores/user";
-import { getFirstPathCode } from "@/utils/getFirstPathCode";
+import { getPathExceptLast } from "@/utils/getFirstPathCode";
 import { getGlobalState } from "@/utils/getGlobal";
 
 import "./index.scss";
@@ -20,11 +18,10 @@ const Dashboard: React.FC = () => {
   const token = theme.useToken();
   const location = useLocation();
 
-  const [openKey, setOpenkey] = React.useState<string>();
+  const [openKey, setOpenkey] = React.useState<string[]>(getPathExceptLast(location.pathname));
   const [selectedKey, setSelectedKey] = React.useState<string>(location.pathname);
 
-  const [menuList, device, collapsed, setUserItem] = useUser((state) => [
-    state.menuList,
+  const [device, collapsed, setUserItem] = useUser((state) => [
     state.device,
     state.collapsed,
     state.setUserItem,
@@ -39,7 +36,7 @@ const Dashboard: React.FC = () => {
   };
 
   React.useEffect(() => {
-    const code = getFirstPathCode(location.pathname);
+    const code = getPathExceptLast(location.pathname);
 
     setOpenkey(code);
     setSelectedKey(location.pathname);
@@ -73,7 +70,6 @@ const Dashboard: React.FC = () => {
             breakpoint="md"
           >
             <MenuComponent
-              menuList={menuList}
               openKey={openKey}
               onChangeOpenKey={(k) => setOpenkey(k)}
               selectedKey={selectedKey}
@@ -90,7 +86,6 @@ const Dashboard: React.FC = () => {
             open={!collapsed}
           >
             <MenuComponent
-              menuList={menuList}
               openKey={openKey}
               onChangeOpenKey={(k) => setOpenkey(k)}
               selectedKey={selectedKey}
@@ -100,11 +95,6 @@ const Dashboard: React.FC = () => {
         )}
 
         <Content className="layout-page-content">
-          <div>
-            <TagsView />
-            {/* <Breadcrumb /> */}
-          </div>
-
           <React.Suspense fallback={null}>
             <Outlet />
           </React.Suspense>
