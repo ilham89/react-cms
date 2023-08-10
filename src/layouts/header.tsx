@@ -7,6 +7,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Dropdown, Layout, theme as antTheme } from "antd";
+import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
 import LogoOnly from "@/assets/logo/logo-only.png";
@@ -24,10 +25,12 @@ const HeaderComponent: React.FC<HeaderProps> = ({ collapsed, toggle }) => {
   const token = antTheme.useToken();
   const navigate = useNavigate();
 
-  const [logged] = useUser((state) => [state.logged]);
+  const [logged, setUserItem] = useUser((state) => [state.logged, state.setUserItem]);
 
   const toLogin = () => {
     navigate("/login");
+    setUserItem({ logged: false });
+    Cookies.remove("user_ct");
   };
 
   return (
@@ -35,7 +38,7 @@ const HeaderComponent: React.FC<HeaderProps> = ({ collapsed, toggle }) => {
       className="layout-page-header bg-2"
       style={{ backgroundColor: token.token.colorBgContainer }}
     >
-      <div className="logo" style={{ width: collapsed ? 80 : 200 }}>
+      <div className="logo" style={{ width: collapsed ? 80 : 250 }}>
         <img src={collapsed ? LogoOnly : SolpacLogo} alt="logo" width={100} height={40} />
       </div>
       <div className="layout-page-header-main">

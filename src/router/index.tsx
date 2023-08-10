@@ -108,6 +108,16 @@ const routeList: RouteObject[] = [
             ),
           },
           {
+            path: "faq/categories/:id",
+            element: (
+              <WrapperRouteComponent
+                element={<FormFaqCategories />}
+                titleId="Update Category"
+                auth
+              />
+            ),
+          },
+          {
             path: "faq",
             element: <WrapperRouteComponent element={<Faq />} titleId="Faq" auth />,
           },

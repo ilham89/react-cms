@@ -8,7 +8,7 @@ import "./index.scss";
 const { Text } = Typography;
 
 const Login = () => {
-  const { onFinish } = useLogin();
+  const { isLoading, onFinish } = useLogin();
   return (
     <div className="login-page">
       <div className="login-page-background">
@@ -30,7 +30,7 @@ const Login = () => {
                 Enter your email address and password to access admin panel.
               </Text>
             </Space>
-            <Form name="normal_login" onFinish={onFinish} layout="vertical">
+            <Form onFinish={onFinish} layout="vertical">
               <Form.Item
                 className="login-form"
                 name="email"
@@ -48,7 +48,7 @@ const Login = () => {
                 <Input.Password size="large" type="password" placeholder="Password" />
               </Form.Item>
               <Form.Item className="login-form-button">
-                <Button type="primary" block htmlType="submit" size="large">
+                <Button type="primary" block htmlType="submit" size="large" loading={isLoading}>
                   Log in
                 </Button>
               </Form.Item>

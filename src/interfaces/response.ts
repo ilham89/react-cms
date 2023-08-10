@@ -1,17 +1,9 @@
-interface MetaData {
-  limit: number;
-  page: number;
-  total: number;
-  totalPage?: number;
-}
+export type BaseResponseType = {
+  // success: boolean;
+  message: string;
+  // code: number;
+};
 
-export interface Responses<T = any> {
-  success: boolean;
+export type DataResponseType<T> = BaseResponseType & {
   data: T;
-  metadata: MetaData;
-}
-
-export interface Response<T = any> {
-  success: boolean;
-  data: T;
-}
+};

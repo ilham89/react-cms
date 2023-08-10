@@ -1,12 +1,15 @@
 import { RightOutlined } from "@ant-design/icons";
 import { Breadcrumb, Button, Divider, Form, Input, Row, Space } from "antd";
 
+import { useCreateUpdateFaqCategory } from "./create-update.action";
 import RequiredMessage from "@/components/RequiredMessage";
 import { fullLayout } from "@/constans/form";
 
 const { TextArea } = Input;
 
 const CreateUpdate = () => {
+  const { form, onFinish, isLoading } = useCreateUpdateFaqCategory();
+
   return (
     <div>
       <Space
@@ -53,7 +56,7 @@ const CreateUpdate = () => {
           </div>
         </Space>
         <div>
-          <Form>
+          <Form onFinish={onFinish} form={form}>
             <Form.Item
               {...fullLayout}
               label="Category Name"
@@ -61,23 +64,23 @@ const CreateUpdate = () => {
               className="required-form"
               rules={[{ required: true, message: <RequiredMessage /> }]}
             >
-              <Input placeholder="Basic usage" />
+              <Input placeholder="Category name" />
             </Form.Item>
             <Divider />
             <Form.Item
               {...fullLayout}
               label="Short Description"
-              name="description"
+              name="short_description"
               className="required-form"
               rules={[{ required: true, message: <RequiredMessage /> }]}
             >
-              <TextArea rows={4} placeholder="maxLength is 6" maxLength={150} showCount />
+              <TextArea rows={4} placeholder="Short description" maxLength={150} showCount />
             </Form.Item>
             <Divider />
             <Row justify="end">
               <Space size="middle">
                 <Button size="large">Cancel</Button>
-                <Button type="primary" size="large" htmlType="submit">
+                <Button type="primary" size="large" htmlType="submit" loading={isLoading}>
                   Save
                 </Button>
               </Space>

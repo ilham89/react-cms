@@ -6,4 +6,14 @@ import svgr from "vite-plugin-svgr";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), tsconfigPaths(), svgr()],
+  server: {
+    proxy: {
+      "/dev": {
+        target: "http://api-dev.solpac.id",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/dev/, ""),
+      },
+    },
+  },
 });
