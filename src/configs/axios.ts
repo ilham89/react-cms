@@ -2,9 +2,10 @@ import Axios, { InternalAxiosRequestConfig } from "axios";
 import Cookies from "js-cookie";
 
 import useNotification from "@/hooks/useNotification";
+import useUser from "@/stores/user";
 
 export const axiosInstance = Axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL,
+  baseURL: import.meta.env.MODE === "development" ? "/dev" : import.meta.env.VITE_BASE_URL,
 });
 
 axiosInstance.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
@@ -24,13 +25,14 @@ axiosInstance.interceptors.response.use(
   },
   (error) => {
     const { addError } = useNotification();
+    const [setUserItem] = useUser((state) => [state.setUserItem]);
 
     if (error.response?.status === 401) {
-      if (typeof window === "undefined") {
-        console.error("Unauthorized request");
-      } else {
-        window.location.href = "/login";
-      }
+      Cookies.remove("user_ct");
+      addError(error?.response?.data?.error);
+      setUserItem({
+        logged: false,
+      });
     }
 
     if (
@@ -39,22 +41,22 @@ axiosInstance.interceptors.response.use(
       error?.response?.config?.method !== "delete"
     ) {
       if (error.response?.status === 403) {
-        addError(error?.response?.data?.message);
+        addError(error?.response?.data?.error);
       }
       if (error.response?.status === 502) {
-        addError(error?.response?.data?.message);
+        addError(error?.response?.data?.error);
       }
       if (error.response?.status === 500) {
-        addError(error?.response?.data?.message);
+        addError(error?.response?.data?.error);
       }
       if (error.response?.status === 404) {
-        addError(error?.response?.data?.message);
+        addError(error?.response?.data?.error);
       }
       if (error.response?.status === 400) {
-        addError(error?.response?.data?.message);
+        addError(error?.response?.data?.error);
       }
       if (error.response?.status === 422) {
-        addError(error?.response?.data?.message);
+        addError(error?.response?.data?.error);
       }
     }
     return Promise.reject(error);

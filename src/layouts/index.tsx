@@ -68,6 +68,7 @@ const Dashboard: React.FC = () => {
             collapsedWidth={isMobile ? 0 : 80}
             collapsed={collapsed}
             breakpoint="md"
+            width={250}
           >
             <MenuComponent
               openKey={openKey}
@@ -78,7 +79,7 @@ const Dashboard: React.FC = () => {
           </Sider>
         ) : (
           <Drawer
-            width="200"
+            width={250}
             placement="left"
             bodyStyle={{ padding: 0, height: "100%" }}
             closable={false}

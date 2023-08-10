@@ -3,13 +3,23 @@ import * as React from "react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ConfigProvider, Spin } from "antd";
+import Cookies from "js-cookie";
 import { BrowserRouter } from "react-router-dom";
 
 import RenderRouter from "./router";
+import useUser from "./stores/user";
 
 const queryClient = new QueryClient();
 
 const App = () => {
+  const [setUserItem] = useUser((state) => [state.setUserItem]);
+
+  React.useEffect(() => {
+    setUserItem({
+      logged: !!Cookies.get("user_ct"),
+    });
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ConfigProvider

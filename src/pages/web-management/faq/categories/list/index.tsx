@@ -3,18 +3,11 @@ import { Button, Dropdown, MenuProps, Space, Table, Tabs, TabsProps, Tag } from 
 import { ColumnsType } from "antd/es/table";
 import { useLocation, useNavigate } from "react-router-dom";
 
-interface DataType {
-  key: string;
-  name: string;
-  description: string;
-  total: number;
-  status: string;
-}
-
-enum Status {
-  Active = "active",
-  Inactive = "inactive",
-}
+import { useGetFaqCategoriesService } from "@/services/faq-category/faq-category.hooks";
+import {
+  FaqCategoryResponseType,
+  FaqCategoryStatusEnum,
+} from "@/services/faq-category/faq-category.types";
 
 const items: MenuProps["items"] = [
   {
@@ -38,39 +31,22 @@ const items: MenuProps["items"] = [
 const FaqCategories = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { data, isLoading } = useGetFaqCategoriesService();
 
-  const dataSource = [
-    {
-      key: "1",
-      name: "Mikeeeee",
-      description:
-        "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis, tenetur ab laboriosam eveniet veniam voluptatum sed dicta atque cupiditate doloremque blanditiis natus neque, ad inventore placeat officiis! Ad, ipsam doloremque!",
-      total: 20,
-      status: "active",
-    },
-    {
-      key: "2",
-      name: "John",
-      description:
-        "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis, tenetur ab laboriosam eveniet veniam voluptatum sed dicta atque cupiditate doloremque blanditiis natus neque, ad inventore placeat officiis! Ad, ipsam doloremque!",
-      total: 20,
-      status: "inactive",
-    },
-  ];
-
-  const columns: ColumnsType<DataType> = [
+  const columns: ColumnsType<FaqCategoryResponseType> = [
     {
       title: "Category Name",
       dataIndex: "name",
       key: "name",
+      width: 250,
       sorter: (a, b) => a.name.length - b.name.length,
     },
 
     {
       title: "Short Description",
-      dataIndex: "description",
-      key: "description",
-      render: (text) => <div>{text.slice(0, 40) + "..."}</div>,
+      dataIndex: "short_description",
+      key: "short_description",
+      render: (text) => <div>{text.length > 40 ? text.slice(0, 40) + "..." : text}</div>,
     },
     {
       title: "Total FAQ Registered",
@@ -82,23 +58,27 @@ const FaqCategories = () => {
       dataIndex: "status",
       key: "status",
       render: (value) => (
-        <Tag bordered={false} color={value === Status.Active ? "success" : "error"}>
+        <Tag bordered={false} color={value === FaqCategoryStatusEnum.Active ? "success" : "error"}>
           {value}
         </Tag>
       ),
     },
     {
       title: "Action",
-      dataIndex: "key",
-      key: "key",
-      render: () => (
+      dataIndex: "id",
+      key: "id",
+      render: (value) => (
         <Space>
           <Dropdown menu={{ items }} placement="bottom" arrow>
             <Button className="btn-action" type="primary">
               Action
             </Button>
           </Dropdown>
-          <Button type="primary" className="btn-update">
+          <Button
+            type="primary"
+            className="btn-update"
+            onClick={() => navigate(`/web-management/faq/categories/${value}`)}
+          >
             Edit
           </Button>
           <Button type="primary" danger>
@@ -168,7 +148,14 @@ const FaqCategories = () => {
         >
           Category List
         </div>
-        <Table dataSource={dataSource} columns={columns} />;
+        <Table
+          dataSource={data?.data}
+          loading={isLoading}
+          columns={columns}
+          scroll={{ x: 800 }}
+          pagination={false}
+          rowKey={(record) => record.id}
+        />
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-import Cookies from "js-cookie";
 import { create } from "zustand";
 
 import { UserState } from "@/interfaces/users/user.interface";
@@ -51,7 +50,7 @@ const useUser = create<UserState>((set) => ({
       ],
     },
   ],
-  logged: !!Cookies.get("user_ct"),
+  logged: false,
   setUserItem: (key) => set(key),
 }));
 
