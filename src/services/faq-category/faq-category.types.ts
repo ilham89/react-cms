@@ -3,7 +3,7 @@ export enum FaqCategoryStatusEnum {
   Inactive = "Inactive",
 }
 
-export type FaqCategoryResponseType = {
+export type GetFaqCategoryResponseType = {
   id: number;
   name: string;
   short_description: string;
@@ -13,13 +13,13 @@ export type FaqCategoryResponseType = {
   updatedAt: string;
 };
 
-export type FaqCategoryBodyType = {
+export type PostFaqCategoryBodyType = {
   name?: string;
   short_description?: string;
   status: FaqCategoryStatusEnum;
 };
 
-export type FaqCategoryParamsType = {
-  data: FaqCategoryBodyType;
+export type GetFaqCategoryParamsType = {
+  data: PostFaqCategoryBodyType;
   id: string;
 };

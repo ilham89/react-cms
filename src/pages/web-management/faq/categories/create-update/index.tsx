@@ -8,7 +8,7 @@ import { fullLayout } from "@/constans/form";
 const { TextArea } = Input;
 
 const CreateUpdate = () => {
-  const { form, onFinish, isLoading } = useCreateUpdateFaqCategory();
+  const { form, onFinish, isLoading, onBack } = useCreateUpdateFaqCategory();
 
   return (
     <div>
@@ -79,7 +79,9 @@ const CreateUpdate = () => {
             <Divider />
             <Row justify="end">
               <Space size="middle">
-                <Button size="large">Cancel</Button>
+                <Button size="large" onClick={onBack}>
+                  Cancel
+                </Button>
                 <Button type="primary" size="large" htmlType="submit" loading={isLoading}>
                   Save
                 </Button>

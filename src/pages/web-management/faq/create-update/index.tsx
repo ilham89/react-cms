@@ -1,12 +1,45 @@
+import { useState } from "react";
+
 import { RightOutlined } from "@ant-design/icons";
 import { Breadcrumb, Button, Divider, Form, Input, Row, Select, Space, Switch } from "antd";
+import { useNavigate } from "react-router-dom";
 
+import { FormValues } from "./create-update.types";
 import RequiredMessage from "@/components/RequiredMessage";
 import { fullLayout } from "@/constans/form";
+import useNotification from "@/hooks/useNotification";
+import { usePostFaqService } from "@/services/faq/faq.hooks";
+import { FeaturedFaqEnum } from "@/services/faq/faq.types";
+import { useGetFaqCategoriesService } from "@/services/faq-category/faq-category.hooks";
+import { queryClient } from "@/utils/queryClient";
 
 const { TextArea } = Input;
 
 const CreateUpdate = () => {
+  const [form] = Form.useForm<FormValues>();
+  const navigate = useNavigate();
+
+  const { data, isLoading: isLoadingCategories } = useGetFaqCategoriesService();
+  const { mutate: createFaq } = usePostFaqService();
+  const { addSuccess, addError } = useNotification();
+
+  const [featured, setFeatured] = useState(false);
+
+  const onFinish = (values: FormValues) => {
+    const createPayload = {
+      ...values,
+      featured: featured ? FeaturedFaqEnum.Yes : FeaturedFaqEnum.No,
+    };
+    createFaq(createPayload, {
+      onSuccess: () => {
+        addSuccess("You`re changes are saved successfully");
+        queryClient.invalidateQueries(["faqs"]);
+        navigate("/web-management/faq");
+      },
+      onError: () => addError(),
+    });
+  };
+
   return (
     <div>
       <Space
@@ -53,11 +86,11 @@ const CreateUpdate = () => {
           </div>
         </Space>
         <div>
-          <Form>
+          <Form onFinish={onFinish} form={form}>
             <Form.Item
               {...fullLayout}
               label="Question Name"
-              name="name"
+              name="question"
               className="required-form"
               rules={[{ required: true, message: <RequiredMessage /> }]}
             >
@@ -67,8 +100,9 @@ const CreateUpdate = () => {
             <Form.Item
               {...fullLayout}
               label="Question Category"
-              name="category"
+              name="faq_category_id"
               className="required-form"
+              rules={[{ required: true, message: <RequiredMessage /> }]}
             >
               <Select
                 style={{
@@ -76,16 +110,11 @@ const CreateUpdate = () => {
                 }}
                 showSearch
                 placeholder="--Please select category--"
-                options={[
-                  {
-                    value: "wibu",
-                    label: "Wibu",
-                  },
-                  {
-                    value: "wota",
-                    label: "Wota",
-                  },
-                ]}
+                options={data?.data.map((item) => ({
+                  label: item.name,
+                  value: item.id,
+                }))}
+                loading={isLoadingCategories}
               />
             </Form.Item>
             <Divider />
@@ -94,11 +123,11 @@ const CreateUpdate = () => {
               label="Featured Question"
               name="featured"
               className="required-form"
-              rules={[{ required: true, message: <RequiredMessage /> }]}
+              valuePropName="checked"
             >
               <Space>
-                <Switch />
-                <div>Featured is On</div>
+                <Switch onChange={(checked) => setFeatured(checked)} />
+                <div>Featured is {featured ? "On" : "Off"}</div>
               </Space>
             </Form.Item>
             <Divider />
@@ -108,13 +137,16 @@ const CreateUpdate = () => {
               label="Question Answer"
               name="answer"
               className="required-form"
+              rules={[{ required: true, message: <RequiredMessage /> }]}
             >
               <TextArea rows={4} placeholder="Question Answer" maxLength={150} showCount />
             </Form.Item>
             <Divider />
             <Row justify="end">
               <Space size="middle">
-                <Button size="large">Cancel</Button>
+                <Button size="large" onClick={() => navigate("/web-management/faq")}>
+                  Cancel
+                </Button>
                 <Button type="primary" size="large" htmlType="submit">
                   Save
                 </Button>

@@ -1,12 +1,12 @@
 import { AxiosResponse } from "axios";
 
-import { FaqCategoryBodyType, FaqCategoryResponseType } from "./faq-category.types";
+import { PostFaqCategoryBodyType, GetFaqCategoryResponseType } from "./faq-category.types";
 import { axiosInstance } from "@/configs/axios";
 import { DataResponseType } from "@/interfaces/response";
 
 export const faqCategoryServices = {
   getFaqCategories: async () => {
-    const response: AxiosResponse<DataResponseType<FaqCategoryResponseType[]>> =
+    const response: AxiosResponse<DataResponseType<GetFaqCategoryResponseType[]>> =
       await axiosInstance({
         url: "/faq-categories",
         method: "get",
@@ -14,13 +14,14 @@ export const faqCategoryServices = {
     return response.data;
   },
   getFaqCategory: async (id: string) => {
-    const response: AxiosResponse<DataResponseType<FaqCategoryResponseType>> = await axiosInstance({
-      url: `/faq-categories/${id}`,
-      method: "get",
-    });
+    const response: AxiosResponse<DataResponseType<GetFaqCategoryResponseType>> =
+      await axiosInstance({
+        url: `/faq-categories/${id}`,
+        method: "get",
+      });
     return response.data;
   },
-  postFaqCategory: async (data: FaqCategoryBodyType) => {
+  postFaqCategory: async (data: PostFaqCategoryBodyType) => {
     const response = await axiosInstance({
       url: "/faq-categories",
       method: "post",
@@ -28,7 +29,7 @@ export const faqCategoryServices = {
     });
     return response.data;
   },
-  putFaqCategory: async (id: string, data: FaqCategoryBodyType) => {
+  putFaqCategory: async (id: string, data: PostFaqCategoryBodyType) => {
     const response = await axiosInstance({
       url: `/faq-categories/${id}`,
       method: "put",
