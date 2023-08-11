@@ -2,9 +2,9 @@ import { UseQueryOptions, useMutation, useQuery } from "@tanstack/react-query";
 
 import { faqCategoryServices } from "./faq-category.api";
 import {
-  FaqCategoryBodyType,
-  FaqCategoryParamsType,
-  FaqCategoryResponseType,
+  PostFaqCategoryBodyType,
+  GetFaqCategoryParamsType,
+  GetFaqCategoryResponseType,
 } from "./faq-category.types";
 import { DataResponseType } from "@/interfaces/response";
 
@@ -12,16 +12,16 @@ export const useGetFaqCategoriesService = () =>
   useQuery(["faq-categories"], () => faqCategoryServices.getFaqCategories());
 
 export const usePostFaqCategoryService = () =>
-  useMutation((data: FaqCategoryBodyType) => faqCategoryServices.postFaqCategory(data));
+  useMutation((data: PostFaqCategoryBodyType) => faqCategoryServices.postFaqCategory(data));
 
 export const useGetFaqCategoryService = (
   id: string,
   options:
     | (Omit<
         UseQueryOptions<
-          DataResponseType<FaqCategoryResponseType>,
+          DataResponseType<GetFaqCategoryResponseType>,
           unknown,
-          DataResponseType<FaqCategoryResponseType>,
+          DataResponseType<GetFaqCategoryResponseType>,
           string[]
         >,
         "initialData" | "queryFn" | "queryKey"
@@ -33,7 +33,7 @@ export const useGetFaqCategoryService = (
   });
 
 export const usePutFaqCategoryService = () =>
-  useMutation((params: FaqCategoryParamsType) =>
+  useMutation((params: GetFaqCategoryParamsType) =>
     faqCategoryServices.putFaqCategory(params.id, params.data),
   );
 

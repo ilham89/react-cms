@@ -1,11 +1,12 @@
 import { useState } from "react";
 
-import { DownloadOutlined, PlusOutlined } from "@ant-design/icons";
+import { CloseCircleFilled, DownloadOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
   Dropdown,
   Input,
   MenuProps,
+  Modal,
   Pagination,
   Row,
   Select,
@@ -18,13 +19,10 @@ import {
 import { ColumnsType } from "antd/es/table";
 import { useLocation, useNavigate } from "react-router-dom";
 
-interface DataType {
-  key: string;
-  name: string;
-  featured: string;
-  category: string;
-  status: string;
-}
+import useNotification from "@/hooks/useNotification";
+import { useDeleteFaqService, useGetFaqsService } from "@/services/faq/faq.hooks";
+import { GetFaqResponseType } from "@/services/faq/faq.types";
+import { queryClient } from "@/utils/queryClient";
 
 enum Status {
   Active = "active",
@@ -54,40 +52,41 @@ const Faq = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [page, setPage] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState<number>(-1);
+
+  const { data, isLoading: isLoadingFaqs } = useGetFaqsService();
+  const { mutate: deleteFaq, isLoading: isLoadingDelete } = useDeleteFaqService();
+  const { addError, addSuccess } = useNotification();
   // const pagination = list?.data?.metadata;
   // const data = list?.data?.data;
   // const totalPage = Math.ceil(pagination?.total / pagination?.limit);
 
-  const dataSource: DataType[] = [
-    {
-      key: "1",
-      name: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis, tenetur ab laboriosam eveniet veniam voluptatum sed dicta atque cupiditate doloremque blanditiis natus neque, ad inventore placeat officiis! Ad, ipsam doloremque!",
-      featured: "Yes",
-      category: "John",
-      status: "active",
-    },
-    {
-      key: "2",
-      name: "Lorem, ipsum dolor ",
-      featured: "No",
-      category: "Mikeeeee",
-      status: "inactive",
-    },
-  ];
+  const onOpenModal = (id: number) => setSelectedCategory(id);
+  const onCloseModal = () => setSelectedCategory(-1);
 
-  const columns: ColumnsType<DataType> = [
+  const onDeleteFaq = () =>
+    deleteFaq(selectedCategory, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["faqs"]);
+        setSelectedCategory(-1);
+        addSuccess("Your items are successfully deleted");
+      },
+      onError: () => addError(),
+    });
+
+  const columns: ColumnsType<GetFaqResponseType> = [
     {
       title: "Question List",
-      dataIndex: "name",
-      key: "name",
-      sorter: (a, b) => a.name.length - b.name.length,
+      dataIndex: "question",
+      key: "question",
+      sorter: (a, b) => a.question.length - b.question.length,
       render: (text) => <div>{text.length > 40 ? text.slice(0, 40) + "..." : text}</div>,
     },
 
     {
       title: "Categories",
-      dataIndex: "category",
-      key: "category",
+      dataIndex: "faq_category_id",
+      key: "faq_category_id",
     },
     {
       title: "Featured Question",
@@ -106,9 +105,9 @@ const Faq = () => {
     },
     {
       title: "Action",
-      dataIndex: "key",
-      key: "key",
-      render: () => (
+      dataIndex: "id",
+      key: "id",
+      render: (id) => (
         <Space>
           <Dropdown menu={{ items }} placement="bottom" arrow>
             <Button className="btn-action" type="primary">
@@ -118,7 +117,7 @@ const Faq = () => {
           <Button type="primary" className="btn-update">
             Edit
           </Button>
-          <Button type="primary" danger>
+          <Button type="primary" danger onClick={() => onOpenModal(id)}>
             Delete
           </Button>
         </Space>
@@ -180,7 +179,7 @@ const Faq = () => {
             padding: 16,
           }}
         >
-          <Row justify="space-between">
+          <Row justify="space-between" gutter={[0, 20]}>
             <Space size={12}>
               <div
                 style={{
@@ -211,9 +210,12 @@ const Faq = () => {
           </Row>
         </div>
         <Table
-          dataSource={dataSource}
+          dataSource={data?.data}
+          loading={isLoadingFaqs}
           columns={columns}
+          scroll={{ x: 800 }}
           pagination={false}
+          rowKey={(record) => record.id}
           footer={() => (
             <Row align="middle" justify="space-between">
               <div className="pd__inventory-list__pagination-info">
@@ -237,6 +239,36 @@ const Faq = () => {
           )}
         />
       </div>
+
+      <Modal
+        width={400}
+        title={
+          <Space align="start">
+            <CloseCircleFilled
+              style={{
+                color: "#DA4453",
+                fontSize: 24,
+              }}
+            />
+            <div>Do you want to delete these items?</div>
+          </Space>
+        }
+        open={selectedCategory > 0}
+        onOk={onDeleteFaq}
+        onCancel={onCloseModal}
+        okText="Delete"
+        okButtonProps={{ loading: isLoadingDelete }}
+      >
+        <p
+          style={{
+            color: "#9C9C9C",
+            marginLeft: 32,
+          }}
+        >
+          Deleting this item will remove in the items list and cannot be undone, please be consider
+          and check them again.
+        </p>
+      </Modal>
     </div>
   );
 };

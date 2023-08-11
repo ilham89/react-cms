@@ -4,7 +4,7 @@ import { ColumnsType } from "antd/es/table";
 
 import { useListFaqCategories } from "./list.action";
 import {
-  FaqCategoryResponseType,
+  GetFaqCategoryResponseType,
   FaqCategoryStatusEnum,
 } from "@/services/faq-category/faq-category.types";
 
@@ -22,7 +22,7 @@ const FaqCategories = () => {
     onCloseModal,
   } = useListFaqCategories();
 
-  const columns: ColumnsType<FaqCategoryResponseType> = [
+  const columns: ColumnsType<GetFaqCategoryResponseType> = [
     {
       title: "Category Name",
       dataIndex: "name",

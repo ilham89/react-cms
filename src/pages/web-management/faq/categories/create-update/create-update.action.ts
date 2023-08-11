@@ -11,15 +11,17 @@ import {
 import { FaqCategoryStatusEnum } from "@/services/faq-category/faq-category.types";
 
 export const useCreateUpdateFaqCategory = () => {
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<FormValues>();
 
   const navigate = useNavigate();
   const params = useParams();
   const { addError, addSuccess } = useNotification();
-  const { mutate, isLoading } = usePostFaqCategoryService();
+  const { mutate: createFaqCategory, isLoading } = usePostFaqCategoryService();
   const { mutate: updateFaqCategory } = usePutFaqCategoryService();
 
   const { id } = params;
+
+  const onBack = () => navigate("/web-management/faq/categories");
 
   useGetFaqCategoryService(id as string, {
     enabled: !!id,
@@ -49,7 +51,7 @@ export const useCreateUpdateFaqCategory = () => {
         },
       );
     } else {
-      mutate(data, {
+      createFaqCategory(data, {
         onSuccess: () => {
           addSuccess("Successfully created faq category");
           navigate("/web-management/faq/categories");
@@ -63,5 +65,6 @@ export const useCreateUpdateFaqCategory = () => {
     form,
     isLoading,
     onFinish,
+    onBack,
   };
 };
