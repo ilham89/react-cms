@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { CloseCircleFilled, DownloadOutlined, PlusOutlined } from "@ant-design/icons";
+import { CloseCircleFilled, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
   Dropdown,
@@ -202,7 +202,6 @@ const Faq = () => {
                   { value: 20, label: "20 / page" },
                 ]}
               />
-              <Button icon={<DownloadOutlined />}>Download CSV</Button>
               <Dropdown menu={{ items }} arrow placement="bottomRight">
                 <Button>Filter | 0</Button>
               </Dropdown>
