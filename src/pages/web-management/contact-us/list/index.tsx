@@ -1,48 +1,25 @@
-import { DownloadOutlined } from "@ant-design/icons";
-import { Button, Input, Row, Select, Space, Table, Tabs, TabsProps } from "antd";
+import { Input, Row, Select, Space, Table, Tabs, TabsProps } from "antd";
 import { ColumnsType } from "antd/es/table";
+import dayjs from "dayjs";
 
-interface DataType {
-  key: string;
-  name: string;
-  email: string;
-  phone: string;
-  message: string;
-  date: Date | string;
-}
+import { useGetContactUsService } from "@/services/contact-us/contact-us.hooks";
+import { GetContactUsResponseType } from "@/services/contact-us/contact-us.types";
 
-const FaqCategories = () => {
-  const dataSource: DataType[] = [
-    {
-      key: "1",
-      name: "Mikeeeee",
-      email: "ilham@gmail.com",
-      phone: "+62 81357998228",
-      message: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis",
-      date: new Date().toISOString(),
-    },
-    {
-      key: "2",
-      name: "John",
-      email: "ilham@gmail.com",
-      phone: "+62 81357998228",
-      message: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis",
-      date: new Date().toISOString(),
-    },
-  ];
+const ContactUs = () => {
+  const { data, isLoading } = useGetContactUsService();
 
-  const columns: ColumnsType<DataType> = [
+  const columns: ColumnsType<GetContactUsResponseType> = [
     {
       title: "Date",
-      dataIndex: "date",
-      key: "date",
-      sorter: (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (value) => <>{dayjs(value).format("DD/MM/YYYY")}</>,
+      sorter: (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     },
     {
       title: "Full Name",
-      dataIndex: "name",
-      key: "name",
-      render: (text) => <div>{text.slice(0, 40) + "..."}</div>,
+      dataIndex: "full_name",
+      key: "full_name",
     },
     {
       title: "Email Address",
@@ -51,13 +28,14 @@ const FaqCategories = () => {
     },
     {
       title: "Phone Number",
-      dataIndex: "phone",
-      key: "phone",
+      dataIndex: "phone_number",
+      key: "phone_number",
     },
     {
       title: "Message",
       dataIndex: "message",
       key: "message",
+      render: (text) => <div>{text.length > 40 ? text.slice(0, 40) + "..." : text}</div>,
     },
   ];
 
@@ -115,14 +93,19 @@ const FaqCategories = () => {
                   { value: 20, label: "20 / page" },
                 ]}
               />
-              <Button icon={<DownloadOutlined />}>Download CSV</Button>
             </Space>
           </Row>
         </div>
-        <Table dataSource={dataSource} columns={columns} />;
+        <Table
+          dataSource={data?.data}
+          columns={columns}
+          loading={isLoading}
+          scroll={{ x: 800 }}
+          rowKey={(record) => record.id}
+        />
       </div>
     </div>
   );
 };
 
-export default FaqCategories;
+export default ContactUs;

@@ -2,7 +2,6 @@ import Axios, { InternalAxiosRequestConfig } from "axios";
 import Cookies from "js-cookie";
 
 import useNotification from "@/hooks/useNotification";
-import useUser from "@/stores/user";
 
 export const axiosInstance = Axios.create({
   baseURL: import.meta.env.MODE === "development" ? "/dev" : import.meta.env.VITE_BASE_URL,
@@ -25,14 +24,12 @@ axiosInstance.interceptors.response.use(
   },
   (error) => {
     const { addError } = useNotification();
-    const [setUserItem] = useUser((state) => [state.setUserItem]);
-
     if (error.response?.status === 401) {
       Cookies.remove("user_ct");
-      addError(error?.response?.data?.error);
-      setUserItem({
-        logged: false,
-      });
+      addError("Your session is expired!");
+      setTimeout(() => {
+        location.replace("/login");
+      }, 1000);
     }
 
     if (

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { DownloadOutlined, PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import {
   Button,
   Dropdown,
@@ -205,7 +205,6 @@ const Products = () => {
                   { value: 20, label: "20 / page" },
                 ]}
               />
-              <Button icon={<DownloadOutlined />}>Download CSV</Button>
               <Dropdown menu={{ items }} arrow placement="bottomRight">
                 <Button>Filter | 0</Button>
               </Dropdown>

@@ -10,6 +10,7 @@ import { Dropdown, Layout, theme as antTheme } from "antd";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
+import ChevronIcon from "@/assets/icons/chevron-down.svg";
 import LogoOnly from "@/assets/logo/logo-only.png";
 import SolpacLogo from "@/assets/logo/solpac.png";
 import useUser from "@/stores/user";
@@ -79,6 +80,16 @@ const HeaderComponent: React.FC<HeaderProps> = ({ collapsed, toggle }) => {
                   className="user-avator"
                   alt="avator"
                 />
+                <div
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 600,
+                    marginRight: 12,
+                  }}
+                >
+                  Super Admin
+                </div>
+                <img src={ChevronIcon} alt="icon" />
               </span>
             </Dropdown>
           ) : (
