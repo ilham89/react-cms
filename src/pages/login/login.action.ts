@@ -18,9 +18,7 @@ export const useLogin = () => {
         addSuccess("Welcome to dashboard!");
         navigate("/");
       },
-      onError() {
-        addError("Something went wrong!");
-      },
+      onError: () => addError(),
     });
   };
 

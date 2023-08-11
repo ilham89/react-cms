@@ -13,10 +13,11 @@ export type FaqCategoryResponseType = {
   updatedAt: string;
 };
 
-export type FaqCategoryBodyType = Pick<
-  FaqCategoryResponseType,
-  "name" | "short_description" | "status"
->;
+export type FaqCategoryBodyType = {
+  name?: string;
+  short_description?: string;
+  status: FaqCategoryStatusEnum;
+};
 
 export type FaqCategoryParamsType = {
   data: FaqCategoryBodyType;

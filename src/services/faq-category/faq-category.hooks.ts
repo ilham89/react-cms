@@ -36,3 +36,6 @@ export const usePutFaqCategoryService = () =>
   useMutation((params: FaqCategoryParamsType) =>
     faqCategoryServices.putFaqCategory(params.id, params.data),
   );
+
+export const useDeleteFaqCategoryService = () =>
+  useMutation((id: number) => faqCategoryServices.deleteFaqCategory(id));
