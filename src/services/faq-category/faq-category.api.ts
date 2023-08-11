@@ -36,4 +36,11 @@ export const faqCategoryServices = {
     });
     return response.data;
   },
+  deleteFaqCategory: async (id: number) => {
+    const response = await axiosInstance({
+      url: `/faq-categories/${id}`,
+      method: "delete",
+    });
+    return response.data;
+  },
 };

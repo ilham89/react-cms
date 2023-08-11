@@ -45,7 +45,7 @@ export const useCreateUpdateFaqCategory = () => {
             addSuccess("Successfully updated faq category");
             navigate("/web-management/faq/categories");
           },
-          onError: () => addError("Something went wrong"),
+          onError: () => addError(),
         },
       );
     } else {
@@ -54,7 +54,7 @@ export const useCreateUpdateFaqCategory = () => {
           addSuccess("Successfully created faq category");
           navigate("/web-management/faq/categories");
         },
-        onError: () => addError("Something went wrong"),
+        onError: () => addError(),
       });
     }
   };

@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ConfigProvider, Spin } from "antd";
 import Cookies from "js-cookie";
@@ -8,8 +8,7 @@ import { BrowserRouter } from "react-router-dom";
 
 import RenderRouter from "./router";
 import useUser from "./stores/user";
-
-const queryClient = new QueryClient();
+import { queryClient } from "./utils/queryClient";
 
 const App = () => {
   const [setUserItem] = useUser((state) => [state.setUserItem]);

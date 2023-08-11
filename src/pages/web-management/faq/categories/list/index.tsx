@@ -1,37 +1,26 @@
-import { PlusOutlined } from "@ant-design/icons";
-import { Button, Dropdown, MenuProps, Space, Table, Tabs, TabsProps, Tag } from "antd";
+import { CloseCircleFilled, PlusOutlined } from "@ant-design/icons";
+import { Button, Dropdown, MenuProps, Modal, Space, Table, Tabs, TabsProps, Tag } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { useLocation, useNavigate } from "react-router-dom";
 
-import { useGetFaqCategoriesService } from "@/services/faq-category/faq-category.hooks";
+import { useListFaqCategories } from "./list.action";
 import {
   FaqCategoryResponseType,
   FaqCategoryStatusEnum,
 } from "@/services/faq-category/faq-category.types";
 
-const items: MenuProps["items"] = [
-  {
-    key: "1",
-    label: (
-      <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
-        Active
-      </a>
-    ),
-  },
-  {
-    key: "2",
-    label: (
-      <a target="_blank" rel="noopener noreferrer" href="https://www.aliyun.com">
-        Inactive
-      </a>
-    ),
-  },
-];
-
 const FaqCategories = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { data, isLoading } = useGetFaqCategoriesService();
+  const {
+    navigate,
+    location,
+    data,
+    isLoading,
+    selectedCategory,
+    onDeleteFaqCategory,
+    isLoadingDelete,
+    onUpdateFaqCategory,
+    onOpenModal,
+    onCloseModal,
+  } = useListFaqCategories();
 
   const columns: ColumnsType<FaqCategoryResponseType> = [
     {
@@ -67,9 +56,26 @@ const FaqCategories = () => {
       title: "Action",
       dataIndex: "id",
       key: "id",
-      render: (value) => (
+      render: (id) => (
         <Space>
-          <Dropdown menu={{ items }} placement="bottom" arrow>
+          <Dropdown
+            menu={{
+              items,
+              onClick: ({ key }) =>
+                onUpdateFaqCategory(
+                  id,
+                  {
+                    status:
+                      key === FaqCategoryStatusEnum.Active
+                        ? FaqCategoryStatusEnum.Active
+                        : FaqCategoryStatusEnum.Inactive,
+                  },
+                  key,
+                ),
+            }}
+            placement="bottom"
+            arrow
+          >
             <Button className="btn-action" type="primary">
               Action
             </Button>
@@ -77,11 +83,11 @@ const FaqCategories = () => {
           <Button
             type="primary"
             className="btn-update"
-            onClick={() => navigate(`/web-management/faq/categories/${value}`)}
+            onClick={() => navigate(`/web-management/faq/categories/${id}`)}
           >
             Edit
           </Button>
-          <Button type="primary" danger>
+          <Button type="primary" danger onClick={() => onOpenModal(id)}>
             Delete
           </Button>
         </Space>
@@ -97,6 +103,17 @@ const FaqCategories = () => {
     {
       key: "/web-management/faq",
       label: "FAQ List",
+    },
+  ];
+
+  const items: MenuProps["items"] = [
+    {
+      key: "Active",
+      label: <div>Active</div>,
+    },
+    {
+      key: "Inactive",
+      label: <div>Inactive</div>,
     },
   ];
 
@@ -157,6 +174,36 @@ const FaqCategories = () => {
           rowKey={(record) => record.id}
         />
       </div>
+
+      <Modal
+        width={400}
+        title={
+          <Space align="start">
+            <CloseCircleFilled
+              style={{
+                color: "#DA4453",
+                fontSize: 24,
+              }}
+            />
+            <div>Do you want to delete these items?</div>
+          </Space>
+        }
+        open={selectedCategory > 0}
+        onOk={onDeleteFaqCategory}
+        onCancel={onCloseModal}
+        okText="Delete"
+        okButtonProps={{ loading: isLoadingDelete }}
+      >
+        <p
+          style={{
+            color: "#9C9C9C",
+            marginLeft: 32,
+          }}
+        >
+          This category have 20 question, deleting category will remove the category in that
+          question
+        </p>
+      </Modal>
     </div>
   );
 };
