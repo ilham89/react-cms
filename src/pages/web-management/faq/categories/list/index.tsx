@@ -39,8 +39,18 @@ const FaqCategories = () => {
     },
     {
       title: "Total FAQ Registered",
-      dataIndex: "total",
-      key: "total",
+      dataIndex: "FAQs",
+      key: "FAQs",
+      render: (value) => (
+        <div
+          style={{
+            color: "#52B2BF",
+            textDecoration: "underline",
+          }}
+        >
+          {value.length}
+        </div>
+      ),
     },
     {
       title: "Status",

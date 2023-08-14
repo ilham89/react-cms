@@ -1,44 +1,24 @@
-import { useState } from "react";
-
 import { RightOutlined } from "@ant-design/icons";
 import { Breadcrumb, Button, Divider, Form, Input, Row, Select, Space, Switch } from "antd";
-import { useNavigate } from "react-router-dom";
 
-import { FormValues } from "./create-update.types";
+import { useCreateUpdateFaq } from "./create-update.action";
 import RequiredMessage from "@/components/RequiredMessage";
 import { fullLayout } from "@/constans/form";
-import useNotification from "@/hooks/useNotification";
-import { usePostFaqService } from "@/services/faq/faq.hooks";
-import { FeaturedFaqEnum } from "@/services/faq/faq.types";
-import { useGetFaqCategoriesService } from "@/services/faq-category/faq-category.hooks";
-import { queryClient } from "@/utils/queryClient";
 
 const { TextArea } = Input;
 
 const CreateUpdate = () => {
-  const [form] = Form.useForm<FormValues>();
-  const navigate = useNavigate();
-
-  const { data, isLoading: isLoadingCategories } = useGetFaqCategoriesService();
-  const { mutate: createFaq } = usePostFaqService();
-  const { addSuccess, addError } = useNotification();
-
-  const [featured, setFeatured] = useState(false);
-
-  const onFinish = (values: FormValues) => {
-    const createPayload = {
-      ...values,
-      featured: featured ? FeaturedFaqEnum.Yes : FeaturedFaqEnum.No,
-    };
-    createFaq(createPayload, {
-      onSuccess: () => {
-        addSuccess("You`re changes are saved successfully");
-        queryClient.invalidateQueries(["faqs"]);
-        navigate("/web-management/faq");
-      },
-      onError: () => addError(),
-    });
-  };
+  const {
+    form,
+    id,
+    navigate,
+    faqCategories,
+    isLoadingCategories,
+    isLoadingSubmit,
+    featured,
+    onChangeFeatured,
+    onFinish,
+  } = useCreateUpdateFaq();
 
   return (
     <div>
@@ -64,7 +44,7 @@ const CreateUpdate = () => {
                 href: "/web-management/faq",
               },
               {
-                title: "Add Question",
+                title: `${id ? "Update" : "Add"} Question`,
               },
             ]}
           />
@@ -76,7 +56,7 @@ const CreateUpdate = () => {
                 fontWeight: 600,
               }}
             >
-              Add Question
+              {id ? "Update" : "Add"} Question
             </div>
             <Divider
               style={{
@@ -110,7 +90,7 @@ const CreateUpdate = () => {
                 }}
                 showSearch
                 placeholder="--Please select category--"
-                options={data?.data.map((item) => ({
+                options={faqCategories?.data.map((item) => ({
                   label: item.name,
                   value: item.id,
                 }))}
@@ -126,7 +106,7 @@ const CreateUpdate = () => {
               valuePropName="checked"
             >
               <Space>
-                <Switch onChange={(checked) => setFeatured(checked)} />
+                <Switch onChange={onChangeFeatured} checked={featured} />
                 <div>Featured is {featured ? "On" : "Off"}</div>
               </Space>
             </Form.Item>
@@ -147,7 +127,7 @@ const CreateUpdate = () => {
                 <Button size="large" onClick={() => navigate("/web-management/faq")}>
                   Cancel
                 </Button>
-                <Button type="primary" size="large" htmlType="submit">
+                <Button type="primary" size="large" htmlType="submit" loading={isLoadingSubmit}>
                   Save
                 </Button>
               </Space>

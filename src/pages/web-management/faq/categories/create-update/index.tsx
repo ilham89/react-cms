@@ -8,7 +8,7 @@ import { fullLayout } from "@/constans/form";
 const { TextArea } = Input;
 
 const CreateUpdate = () => {
-  const { form, onFinish, isLoading, onBack } = useCreateUpdateFaqCategory();
+  const { form, onFinish, isLoadingSubmit, onBack, id } = useCreateUpdateFaqCategory();
 
   return (
     <div>
@@ -34,7 +34,7 @@ const CreateUpdate = () => {
                 href: "/web-management/faq/categories",
               },
               {
-                title: "Add Category",
+                title: `${id ? "Update" : "Add"} Category`,
               },
             ]}
           />
@@ -46,7 +46,7 @@ const CreateUpdate = () => {
                 fontWeight: 600,
               }}
             >
-              Add Category
+              {id ? "Update" : "Add"} Category
             </div>
             <Divider
               style={{
@@ -82,7 +82,7 @@ const CreateUpdate = () => {
                 <Button size="large" onClick={onBack}>
                   Cancel
                 </Button>
-                <Button type="primary" size="large" htmlType="submit" loading={isLoading}>
+                <Button type="primary" size="large" htmlType="submit" loading={isLoadingSubmit}>
                   Save
                 </Button>
               </Space>

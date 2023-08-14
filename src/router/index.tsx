@@ -128,6 +128,12 @@ const routeList: RouteObject[] = [
             ),
           },
           {
+            path: "faq/:id",
+            element: (
+              <WrapperRouteComponent element={<FaqQuestion />} titleId="Update Question" auth />
+            ),
+          },
+          {
             path: "contact-us",
             element: <WrapperRouteComponent element={<ContactUs />} titleId="Contact Us" auth />,
           },
