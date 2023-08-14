@@ -124,11 +124,11 @@ const ContactUs = () => {
                 <div className="pd__inventory-list__pagination-info">
                   {data.data.length === 0
                     ? "No items found"
-                    : `Showing ${page == 1 ? 1 : (page - 1) * data.page_limit + 1} - ${
+                    : `Showing ${page == 1 ? 1 : (page - 1) * data.page_limit + 1} to ${
                         page == data.total_page
                           ? (page - 1) * data.page_limit + data.data.length
                           : page * data.page_limit
-                      } of ${data.total_data} items`}
+                      } of ${data.total_data} entries`}
                 </div>
               )}
 

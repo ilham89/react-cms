@@ -1,6 +1,7 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 import { CloseCircleFilled, PlusOutlined } from "@ant-design/icons";
+import { useQuery } from "@tanstack/react-query";
 import {
   Button,
   Dropdown,
@@ -17,52 +18,60 @@ import {
   Tag,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
+import { FilterValue, SorterResult, TablePaginationConfig } from "antd/es/table/interface";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { useDebounce } from "@/hooks/useDebounce";
 import useNotification from "@/hooks/useNotification";
-import { useDeleteFaqService, useGetFaqsService } from "@/services/faq/faq.hooks";
-import { GetFaqResponseType } from "@/services/faq/faq.types";
+import { faqServices } from "@/services/faq/faq.api";
+import { useDeleteFaqService, usePutFaqService } from "@/services/faq/faq.hooks";
+import { FaqStatusEnum, GetFaqResponseType } from "@/services/faq/faq.types";
 import { queryClient } from "@/utils/queryClient";
-
-enum Status {
-  Active = "active",
-  Inactive = "inactive",
-}
-
-const items: MenuProps["items"] = [
-  {
-    key: "1",
-    label: (
-      <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
-        Active
-      </a>
-    ),
-  },
-  {
-    key: "2",
-    label: (
-      <a target="_blank" rel="noopener noreferrer" href="https://www.aliyun.com">
-        Inactive
-      </a>
-    ),
-  },
-];
 
 const Faq = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(5);
   const [selectedCategory, setSelectedCategory] = useState<number>(-1);
+  const [searchValue, setSearchValue] = useState("");
+  const [orderBy, setOrderBy] = useState("");
+  const debounceSearchValue = useDebounce(searchValue);
 
-  const { data, isLoading: isLoadingFaqs } = useGetFaqsService();
+  const { data, isLoading: isLoadingFaqs } = useQuery(
+    ["faqs", limit, page, debounceSearchValue, orderBy],
+    () =>
+      faqServices.getFaqs({
+        limit,
+        page,
+        q: debounceSearchValue,
+        order_field: "question",
+        order_by: orderBy,
+      }),
+  );
   const { mutate: deleteFaq, isLoading: isLoadingDelete } = useDeleteFaqService();
+  const { mutate: updateFaq } = usePutFaqService();
   const { addError, addSuccess } = useNotification();
-  // const pagination = list?.data?.metadata;
-  // const data = list?.data?.data;
-  // const totalPage = Math.ceil(pagination?.total / pagination?.limit);
 
   const onOpenModal = (id: number) => setSelectedCategory(id);
   const onCloseModal = () => setSelectedCategory(-1);
+
+  const onChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+    setPage(1);
+  };
+
+  const onChangeTable = (
+    _pagination: TablePaginationConfig,
+    _filters: Record<string, FilterValue | null>,
+    sorter: SorterResult<GetFaqResponseType> | SorterResult<GetFaqResponseType>[],
+  ) => {
+    if (!Array.isArray(sorter)) {
+      if (!sorter.order) return setOrderBy("");
+      if (sorter.order === "ascend") return setOrderBy("ASC");
+      return setOrderBy("DESC");
+    }
+  };
 
   const onDeleteFaq = () =>
     deleteFaq(selectedCategory, {
@@ -74,19 +83,45 @@ const Faq = () => {
       onError: () => addError(),
     });
 
+  const onUpdateFaq = (id: string, data: { status: FaqStatusEnum }, key: string) =>
+    updateFaq(
+      {
+        id,
+        data,
+      },
+      {
+        onSuccess: () => {
+          addSuccess(`Successfully changed status to ${key}`);
+          queryClient.invalidateQueries(["faqs"]);
+        },
+        onError: () => addError(),
+      },
+    );
+
+  const items: MenuProps["items"] = [
+    {
+      key: "Active",
+      label: <div>Active</div>,
+    },
+    {
+      key: "Inactive",
+      label: <div>Inactive</div>,
+    },
+  ];
+
   const columns: ColumnsType<GetFaqResponseType> = [
     {
       title: "Question List",
       dataIndex: "question",
       key: "question",
-      sorter: (a, b) => a.question.length - b.question.length,
+      sorter: true,
       render: (text) => <div>{text.length > 40 ? text.slice(0, 40) + "..." : text}</div>,
     },
-
     {
       title: "Categories",
-      dataIndex: "faq_category_id",
-      key: "faq_category_id",
+      dataIndex: "FAQCategory",
+      key: "FAQCategory.id",
+      render: (value) => <>{value.name}</>,
     },
     {
       title: "Featured Question",
@@ -98,7 +133,7 @@ const Faq = () => {
       dataIndex: "status",
       key: "status",
       render: (value) => (
-        <Tag bordered={false} color={value === Status.Active ? "success" : "error"}>
+        <Tag bordered={false} color={value === FaqStatusEnum.Active ? "success" : "error"}>
           {value}
         </Tag>
       ),
@@ -109,12 +144,31 @@ const Faq = () => {
       key: "id",
       render: (id) => (
         <Space>
-          <Dropdown menu={{ items }} placement="bottom" arrow>
+          <Dropdown
+            menu={{
+              items,
+              onClick: ({ key }) =>
+                onUpdateFaq(
+                  id,
+                  {
+                    status:
+                      key === FaqStatusEnum.Active ? FaqStatusEnum.Active : FaqStatusEnum.Inactive,
+                  },
+                  key,
+                ),
+            }}
+            placement="bottom"
+            arrow
+          >
             <Button className="btn-action" type="primary">
               Action
             </Button>
           </Dropdown>
-          <Button type="primary" className="btn-update">
+          <Button
+            type="primary"
+            className="btn-update"
+            onClick={() => navigate(`/web-management/faq/${id}`)}
+          >
             Edit
           </Button>
           <Button type="primary" danger onClick={() => onOpenModal(id)}>
@@ -190,7 +244,11 @@ const Faq = () => {
               >
                 Search:
               </div>
-              <Input placeholder="Search something here" allowClear />
+              <Input
+                placeholder="Search something here"
+                allowClear
+                onChange={onChangeSearchValue}
+              />
             </Space>
             <Space>
               <Select
@@ -201,6 +259,7 @@ const Faq = () => {
                   { value: 10, label: "10 / page" },
                   { value: 20, label: "20 / page" },
                 ]}
+                onChange={(value) => setLimit(value)}
               />
               <Dropdown menu={{ items }} arrow placement="bottomRight">
                 <Button>Filter | 0</Button>
@@ -209,6 +268,7 @@ const Faq = () => {
           </Row>
         </div>
         <Table
+          onChange={onChangeTable}
           dataSource={data?.data}
           loading={isLoadingFaqs}
           columns={columns}
@@ -217,19 +277,21 @@ const Faq = () => {
           rowKey={(record) => record.id}
           footer={() => (
             <Row align="middle" justify="space-between">
-              <div className="pd__inventory-list__pagination-info">
-                {/* {data?.length === 0
-                ? "No items found"
-                : `Showing ${page == 1 ? 1 : (page - 1) * pagination?.limit + 1} - ${
-                    page == totalPage
-                      ? (page - 1) * pagination?.limit + data?.length
-                      : page * pagination?.limit
-                  } of ${pagination?.total} items`} */}
-                No items found
-              </div>
+              {data && (
+                <div className="pd__inventory-list__pagination-info">
+                  {data.data.length === 0
+                    ? "No items found"
+                    : `Showing ${page == 1 ? 1 : (page - 1) * data.page_limit + 1} to ${
+                        page == data.total_page
+                          ? (page - 1) * data.page_limit + data.data.length
+                          : page * data.page_limit
+                      } of ${data.total_data} entries`}
+                </div>
+              )}
+
               <Pagination
-                pageSize={10}
-                total={10}
+                pageSize={limit}
+                total={data?.total_data}
                 onChange={(page) => setPage(page)}
                 current={page}
                 showSizeChanger={false}

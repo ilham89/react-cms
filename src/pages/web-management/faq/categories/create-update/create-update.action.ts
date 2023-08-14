@@ -16,12 +16,13 @@ export const useCreateUpdateFaqCategory = () => {
   const navigate = useNavigate();
   const params = useParams();
   const { addError, addSuccess } = useNotification();
-  const { mutate: createFaqCategory, isLoading } = usePostFaqCategoryService();
-  const { mutate: updateFaqCategory } = usePutFaqCategoryService();
+  const { mutate: createFaqCategory, isLoading: isLoadingCreate } = usePostFaqCategoryService();
+  const { mutate: updateFaqCategory, isLoading: isLoadingUpdate } = usePutFaqCategoryService();
 
   const { id } = params;
 
   const onBack = () => navigate("/web-management/faq/categories");
+  const isLoadingSubmit = isLoadingCreate || isLoadingUpdate;
 
   useGetFaqCategoryService(id as string, {
     enabled: !!id,
@@ -63,7 +64,8 @@ export const useCreateUpdateFaqCategory = () => {
 
   return {
     form,
-    isLoading,
+    id,
+    isLoadingSubmit,
     onFinish,
     onBack,
   };
