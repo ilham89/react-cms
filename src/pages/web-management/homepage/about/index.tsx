@@ -1,19 +1,13 @@
 import { Button, Divider, Form, Input, Row, Space, Tabs, TabsProps } from "antd";
-import { useLocation, useNavigate } from "react-router-dom";
 
+import { useAbout } from "./about.action";
 import RequiredMessage from "@/components/RequiredMessage";
 import { fullLayout } from "@/constans/form";
-
-interface IPostCreate {
-  about_section: string;
-}
 
 const { TextArea } = Input;
 
 const About = () => {
-  const [form] = Form.useForm();
-  const location = useLocation();
-  const navigate = useNavigate();
+  const { form, navigate, location, isLoading, onSubmit } = useAbout();
 
   const items: TabsProps["items"] = [
     {
@@ -33,10 +27,6 @@ const About = () => {
       label: "CTA",
     },
   ];
-
-  const onSubmit = (values: IPostCreate) => {
-    console.log(values.about_section);
-  };
 
   return (
     <div>
@@ -75,7 +65,7 @@ const About = () => {
           <Row justify="end">
             <Space size="middle">
               <Button size="large">Cancel</Button>
-              <Button type="primary" size="large" htmlType="submit">
+              <Button type="primary" size="large" htmlType="submit" loading={isLoading}>
                 Save
               </Button>
             </Space>
