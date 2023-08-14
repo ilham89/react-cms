@@ -1,16 +1,17 @@
 import { AxiosResponse } from "axios";
 
-import { GetContactUsResponseType } from "./contact-us.types";
+import { GetContactUsParamsType, GetContactUsResponseType } from "./contact-us.types";
 import { axiosInstance } from "@/configs/axios";
-import { DataResponseType } from "@/interfaces/response";
+import { DataMetaResponseType } from "@/interfaces/response";
 
 export const contactUsServices = {
-  getContactUs: async () => {
-    const response: AxiosResponse<DataResponseType<GetContactUsResponseType[]>> =
+  getContactUs: async (params: GetContactUsParamsType) => {
+    const response: AxiosResponse<DataMetaResponseType<GetContactUsResponseType[]>> =
       await axiosInstance({
         url: "/contact-us",
         method: "get",
+        params,
       });
-    return response.data;
+    return response.data.data;
   },
 };
