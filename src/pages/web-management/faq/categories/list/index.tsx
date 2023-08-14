@@ -22,6 +22,17 @@ const FaqCategories = () => {
     onCloseModal,
   } = useListFaqCategories();
 
+  const items: MenuProps["items"] = [
+    {
+      key: "Active",
+      label: <div>Active</div>,
+    },
+    {
+      key: "Inactive",
+      label: <div>Inactive</div>,
+    },
+  ];
+
   const columns: ColumnsType<GetFaqCategoryResponseType> = [
     {
       title: "Category Name",
@@ -113,17 +124,6 @@ const FaqCategories = () => {
     {
       key: "/web-management/faq",
       label: "FAQ List",
-    },
-  ];
-
-  const items: MenuProps["items"] = [
-    {
-      key: "Active",
-      label: <div>Active</div>,
-    },
-    {
-      key: "Inactive",
-      label: <div>Inactive</div>,
     },
   ];
 
