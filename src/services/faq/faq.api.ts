@@ -2,15 +2,17 @@ import { AxiosResponse } from "axios";
 
 import { GetFaqResponseType, PostFaqBodyType } from "./faq.types";
 import { axiosInstance } from "@/configs/axios";
-import { DataResponseType } from "@/interfaces/response";
+import { DataMetaResponseType } from "@/interfaces/response";
 
 export const faqServices = {
   getFaqs: async () => {
-    const response: AxiosResponse<DataResponseType<GetFaqResponseType[]>> = await axiosInstance({
-      url: "/faq",
-      method: "get",
-    });
-    return response.data;
+    const response: AxiosResponse<DataMetaResponseType<GetFaqResponseType[]>> = await axiosInstance(
+      {
+        url: "/faq",
+        method: "get",
+      },
+    );
+    return response.data.data;
   },
   postFaq: async (data: PostFaqBodyType) => {
     const response = await axiosInstance({
