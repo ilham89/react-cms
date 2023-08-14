@@ -1,19 +1,13 @@
 import { Button, Divider, Form, Row, Space, Tabs, TabsProps } from "antd";
 import ReactQuill from "react-quill";
-import { useLocation, useNavigate } from "react-router-dom";
 
+import { usePrivacyPolicy } from "./privacy-policy.action";
 import RequiredMessage from "@/components/RequiredMessage";
 import { fullLayout } from "@/constans/form";
 import { formats, modules } from "@/constans/react-quill";
 
-interface IPostCreate {
-  return_policy: string;
-}
-
-const ReturnPolicy = () => {
-  const [form] = Form.useForm();
-  const location = useLocation();
-  const navigate = useNavigate();
+const PrivacyPolicy = () => {
+  const { form, location, navigate, isLoading, onSubmit } = usePrivacyPolicy();
 
   const items: TabsProps["items"] = [
     {
@@ -29,10 +23,6 @@ const ReturnPolicy = () => {
       label: "Return Policy",
     },
   ];
-
-  const onSubmit = (values: IPostCreate) => {
-    console.log(values.return_policy);
-  };
 
   return (
     <div>
@@ -60,8 +50,8 @@ const ReturnPolicy = () => {
         <Form form={form} onFinish={onSubmit}>
           <Form.Item
             {...fullLayout}
-            label="Terms and Condition"
-            name="return_policy"
+            label="Privacy Policy"
+            name="privacy_policy"
             className="required-form"
             rules={[{ required: true, message: <RequiredMessage /> }]}
           >
@@ -77,7 +67,7 @@ const ReturnPolicy = () => {
           <Row justify="end">
             <Space size="middle">
               <Button size="large">Cancel</Button>
-              <Button type="primary" size="large" htmlType="submit">
+              <Button type="primary" size="large" htmlType="submit" loading={isLoading}>
                 Save
               </Button>
             </Space>
@@ -88,4 +78,4 @@ const ReturnPolicy = () => {
   );
 };
 
-export default ReturnPolicy;
+export default PrivacyPolicy;

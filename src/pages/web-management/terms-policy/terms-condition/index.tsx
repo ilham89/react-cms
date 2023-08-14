@@ -1,19 +1,13 @@
 import { Button, Divider, Form, Row, Space, Tabs, TabsProps } from "antd";
 import ReactQuill from "react-quill";
-import { useLocation, useNavigate } from "react-router-dom";
 
+import { useTermsCondition } from "./terms-condition.action";
 import RequiredMessage from "@/components/RequiredMessage";
 import { fullLayout } from "@/constans/form";
 import { formats, modules } from "@/constans/react-quill";
 
-interface IPostCreate {
-  privacy_policy: string;
-}
-
-const PrivacyPolicy = () => {
-  const [form] = Form.useForm();
-  const location = useLocation();
-  const navigate = useNavigate();
+const TermsCondition = () => {
+  const { form, location, navigate, isLoading, onSubmit } = useTermsCondition();
 
   const items: TabsProps["items"] = [
     {
@@ -29,10 +23,6 @@ const PrivacyPolicy = () => {
       label: "Return Policy",
     },
   ];
-
-  const onSubmit = (values: IPostCreate) => {
-    console.log(values.privacy_policy);
-  };
 
   return (
     <div>
@@ -60,8 +50,8 @@ const PrivacyPolicy = () => {
         <Form form={form} onFinish={onSubmit}>
           <Form.Item
             {...fullLayout}
-            label="Privacy Policy"
-            name="privacy_policy"
+            label="Terms and Condition"
+            name="terms_condition"
             className="required-form"
             rules={[{ required: true, message: <RequiredMessage /> }]}
           >
@@ -77,7 +67,7 @@ const PrivacyPolicy = () => {
           <Row justify="end">
             <Space size="middle">
               <Button size="large">Cancel</Button>
-              <Button type="primary" size="large" htmlType="submit">
+              <Button type="primary" size="large" htmlType="submit" loading={isLoading}>
                 Save
               </Button>
             </Space>
@@ -88,4 +78,4 @@ const PrivacyPolicy = () => {
   );
 };
 
-export default PrivacyPolicy;
+export default TermsCondition;

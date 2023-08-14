@@ -1,7 +1,4 @@
-import React, { useState } from "react";
-
 import { CloseCircleFilled, PlusOutlined } from "@ant-design/icons";
-import { useQuery } from "@tanstack/react-query";
 import {
   Button,
   Dropdown,
@@ -18,85 +15,29 @@ import {
   Tag,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { FilterValue, SorterResult, TablePaginationConfig } from "antd/es/table/interface";
-import { useLocation, useNavigate } from "react-router-dom";
 
-import { useDebounce } from "@/hooks/useDebounce";
-import useNotification from "@/hooks/useNotification";
-import { faqServices } from "@/services/faq/faq.api";
-import { useDeleteFaqService, usePutFaqService } from "@/services/faq/faq.hooks";
+import { useListFaq } from "./list.action";
 import { FaqStatusEnum, GetFaqResponseType } from "@/services/faq/faq.types";
-import { queryClient } from "@/utils/queryClient";
 
 const Faq = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(5);
-  const [selectedCategory, setSelectedCategory] = useState<number>(-1);
-  const [searchValue, setSearchValue] = useState("");
-  const [orderBy, setOrderBy] = useState("");
-  const debounceSearchValue = useDebounce(searchValue);
-
-  const { data, isLoading: isLoadingFaqs } = useQuery(
-    ["faqs", limit, page, debounceSearchValue, orderBy],
-    () =>
-      faqServices.getFaqs({
-        limit,
-        page,
-        q: debounceSearchValue,
-        order_field: "question",
-        order_by: orderBy,
-      }),
-  );
-  const { mutate: deleteFaq, isLoading: isLoadingDelete } = useDeleteFaqService();
-  const { mutate: updateFaq } = usePutFaqService();
-  const { addError, addSuccess } = useNotification();
-
-  const onOpenModal = (id: number) => setSelectedCategory(id);
-  const onCloseModal = () => setSelectedCategory(-1);
-
-  const onChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(e.target.value);
-    setPage(1);
-  };
-
-  const onChangeTable = (
-    _pagination: TablePaginationConfig,
-    _filters: Record<string, FilterValue | null>,
-    sorter: SorterResult<GetFaqResponseType> | SorterResult<GetFaqResponseType>[],
-  ) => {
-    if (!Array.isArray(sorter)) {
-      if (!sorter.order) return setOrderBy("");
-      if (sorter.order === "ascend") return setOrderBy("ASC");
-      return setOrderBy("DESC");
-    }
-  };
-
-  const onDeleteFaq = () =>
-    deleteFaq(selectedCategory, {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["faqs"]);
-        setSelectedCategory(-1);
-        addSuccess("Your items are successfully deleted");
-      },
-      onError: () => addError(),
-    });
-
-  const onUpdateFaq = (id: string, data: { status: FaqStatusEnum }, key: string) =>
-    updateFaq(
-      {
-        id,
-        data,
-      },
-      {
-        onSuccess: () => {
-          addSuccess(`Successfully changed status to ${key}`);
-          queryClient.invalidateQueries(["faqs"]);
-        },
-        onError: () => addError(),
-      },
-    );
+  const {
+    location,
+    data,
+    isLoadingDelete,
+    isLoadingFaqs,
+    page,
+    limit,
+    selectedCategory,
+    navigate,
+    onOpenModal,
+    onCloseModal,
+    onChangeLimit,
+    onChangePage,
+    onChangeSearchValue,
+    onChangeTable,
+    onDeleteFaq,
+    onUpdateFaq,
+  } = useListFaq();
 
   const items: MenuProps["items"] = [
     {
@@ -259,7 +200,7 @@ const Faq = () => {
                   { value: 10, label: "10 / page" },
                   { value: 20, label: "20 / page" },
                 ]}
-                onChange={(value) => setLimit(value)}
+                onChange={onChangeLimit}
               />
               <Dropdown menu={{ items }} arrow placement="bottomRight">
                 <Button>Filter | 0</Button>
@@ -292,7 +233,7 @@ const Faq = () => {
               <Pagination
                 pageSize={limit}
                 total={data?.total_data}
-                onChange={(page) => setPage(page)}
+                onChange={onChangePage}
                 current={page}
                 showSizeChanger={false}
               />
