@@ -39,7 +39,7 @@ export const useCta = () => {
   const onSubmit = (values: IFormValues) => {
     if (indexPage === -1) {
       const createPayload = {
-        name: "About",
+        name: "CTA",
         description: values.description,
         title: values.title,
       };
