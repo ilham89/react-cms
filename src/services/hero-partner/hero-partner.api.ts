@@ -1,31 +1,31 @@
 import { AxiosResponse } from "axios";
 
 import {
-  GetHeroSectionResponseType,
-  PostHeroSectionBodyType,
-  PutHeroSectionBodyType,
-} from "./hero-section.types";
+  GetHeroPartnerResponseType,
+  PostHeroPartnerBodyType,
+  PutHeroPartnerBodyType,
+} from "./hero-partner.types";
 import { axiosInstance } from "@/configs/axios";
 import { DataResponseType } from "@/interfaces/response";
 
-export const heroSectionServices = {
-  getHeroSections: async () => {
-    const response: AxiosResponse<DataResponseType<GetHeroSectionResponseType[]>> =
+export const heroPartnerServices = {
+  getHeroPartners: async () => {
+    const response: AxiosResponse<DataResponseType<GetHeroPartnerResponseType[]>> =
       await axiosInstance({
         url: "/hero-section-and-partners?type=Hero Sections",
         method: "get",
       });
     return response.data;
   },
-  getHeroSection: async (id: string) => {
-    const response: AxiosResponse<DataResponseType<GetHeroSectionResponseType>> =
+  getHeroPartner: async (id: string) => {
+    const response: AxiosResponse<DataResponseType<GetHeroPartnerResponseType>> =
       await axiosInstance({
         url: `/hero-section-and-partners/${id}`,
         method: "get",
       });
     return response.data;
   },
-  postHeroSection: async (data: PostHeroSectionBodyType) => {
+  postHeroPartner: async (data: PostHeroPartnerBodyType) => {
     const response = await axiosInstance({
       url: "/hero-section-and-partners",
       method: "post",
@@ -33,7 +33,7 @@ export const heroSectionServices = {
     });
     return response.data;
   },
-  putHeroSection: async (id: string, data: PutHeroSectionBodyType) => {
+  putHeroPartner: async (id: string, data: PutHeroPartnerBodyType) => {
     const response = await axiosInstance({
       url: `/hero-section-and-partners/${id}`,
       method: "put",
@@ -41,7 +41,7 @@ export const heroSectionServices = {
     });
     return response.data;
   },
-  deleteHeroSection: async (id: number) => {
+  deleteHeroPartner: async (id: number) => {
     const response = await axiosInstance({
       url: `/hero-section-and-partners/${id}`,
       method: "delete",

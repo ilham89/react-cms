@@ -7,10 +7,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { File, FormValues } from "./create-update.types";
 import useNotification from "@/hooks/useNotification";
 import {
-  useGetHeroSectionService,
-  usePostHeroSectionService,
-  usePutHeroSectionService,
-} from "@/services/hero-section/hero-section.hooks";
+  useGetHeroPartnerService,
+  usePostHeroPartnerService,
+  usePutHeroPartnerService,
+} from "@/services/hero-partner/hero-partner.hooks";
 import { imageServices } from "@/services/image/image.api";
 
 export const useCreateUpdateHeroSection = () => {
@@ -21,7 +21,7 @@ export const useCreateUpdateHeroSection = () => {
   const [file, setFile] = useState({} as File);
   const { addError, addSuccess } = useNotification();
 
-  useGetHeroSectionService(id as string, {
+  useGetHeroPartnerService(id as string, {
     enabled: !!id,
     onSuccess: ({ data }) => {
       form.setFieldsValue({
@@ -36,8 +36,8 @@ export const useCreateUpdateHeroSection = () => {
     },
   });
 
-  const { mutate: create, isLoading: isLoadingCreate } = usePostHeroSectionService();
-  const { mutate: update, isLoading: isLoadingUpdate } = usePutHeroSectionService();
+  const { mutate: create, isLoading: isLoadingCreate } = usePostHeroPartnerService();
+  const { mutate: update, isLoading: isLoadingUpdate } = usePutHeroPartnerService();
 
   const onSubmit = (values: FormValues) => {
     delete values.image;

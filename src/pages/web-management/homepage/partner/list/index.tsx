@@ -105,36 +105,38 @@ const Partner = () => {
 
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+      <Space size="middle" direction="vertical" style={{ width: "100%" }}>
         <div
           style={{
-            fontSize: 30,
-            fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          Homepage
+          <div
+            style={{
+              fontSize: 30,
+              fontWeight: 600,
+            }}
+          >
+            Homepage
+          </div>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            size="large"
+            onClick={() => navigate("/web-management/homepage/partner/add")}
+          >
+            Add Partner
+          </Button>
         </div>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          size="large"
-          onClick={() => navigate("/web-management/homepage/partner/add")}
-        >
-          Add Partner
-        </Button>
-      </div>
-      <Tabs
-        tabBarStyle={{ margin: 0 }}
-        defaultActiveKey={location.pathname}
-        items={tabs}
-        onChange={(active) => navigate(active)}
-      />
+        <Tabs
+          tabBarStyle={{ margin: 0 }}
+          defaultActiveKey={location.pathname}
+          items={tabs}
+          onChange={(active) => navigate(active)}
+        />
+      </Space>
 
       <div
         className="box-wrapper"

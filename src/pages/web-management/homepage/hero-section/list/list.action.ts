@@ -4,9 +4,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import useNotification from "@/hooks/useNotification";
 import {
-  useDeleteHeroSectionService,
-  useGetHeroSectionsService,
-} from "@/services/hero-section/hero-section.hooks";
+  useDeleteHeroPartnerService,
+  useGetHeroPartnersService,
+} from "@/services/hero-partner/hero-partner.hooks";
 import { queryClient } from "@/utils/queryClient";
 
 export const useListHeroSection = () => {
@@ -18,11 +18,11 @@ export const useListHeroSection = () => {
   const onCloseModal = () => setSelectedRow(-1);
 
   const { addError, addSuccess } = useNotification();
-  const { data, isLoading } = useGetHeroSectionsService();
+  const { data, isLoading } = useGetHeroPartnersService();
 
-  const { mutate, isLoading: isLoadingDelete } = useDeleteHeroSectionService();
+  const { mutate, isLoading: isLoadingDelete } = useDeleteHeroPartnerService();
 
-  const onDeleteHerosection = () =>
+  const onDeleteHeroPartner = () =>
     mutate(selectedRow, {
       onSuccess: () => {
         queryClient.invalidateQueries(["hero-sections"]);
@@ -40,7 +40,7 @@ export const useListHeroSection = () => {
     data,
     isLoading,
     isLoadingDelete,
-    onDeleteHerosection,
+    onDeleteHeroPartner,
     selectedRow,
   };
 };

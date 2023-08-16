@@ -4,7 +4,7 @@ import { ColumnsType } from "antd/es/table";
 
 import { useListHeroSection } from "./list.action";
 import DraggableIcon from "@/assets/icons/draggable.svg";
-import { GetHeroSectionResponseType } from "@/services/hero-section/hero-section.types";
+import { GetHeroPartnerResponseType } from "@/services/hero-partner/hero-partner.types";
 
 const HeroSection = () => {
   const {
@@ -15,11 +15,11 @@ const HeroSection = () => {
     data,
     isLoading,
     isLoadingDelete,
-    onDeleteHerosection,
+    onDeleteHeroPartner,
     selectedRow,
   } = useListHeroSection();
 
-  const columns: ColumnsType<GetHeroSectionResponseType> = [
+  const columns: ColumnsType<GetHeroPartnerResponseType> = [
     {
       title: "",
       dataIndex: "id",
@@ -103,36 +103,38 @@ const HeroSection = () => {
 
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+      <Space size="middle" direction="vertical" style={{ width: "100%" }}>
         <div
           style={{
-            fontSize: 30,
-            fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          Homepage
+          <div
+            style={{
+              fontSize: 30,
+              fontWeight: 600,
+            }}
+          >
+            Homepage
+          </div>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            size="large"
+            onClick={() => navigate("/web-management/homepage/hero-section/add")}
+          >
+            Add Banner
+          </Button>
         </div>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          size="large"
-          onClick={() => navigate("/web-management/homepage/hero-section/add")}
-        >
-          Add Banner
-        </Button>
-      </div>
-      <Tabs
-        tabBarStyle={{ margin: 0 }}
-        defaultActiveKey={location.pathname}
-        items={tabs}
-        onChange={(active) => navigate(active)}
-      />
+        <Tabs
+          tabBarStyle={{ margin: 0 }}
+          defaultActiveKey={location.pathname}
+          items={tabs}
+          onChange={(active) => navigate(active)}
+        />
+      </Space>
 
       <div
         className="box-wrapper"
@@ -172,7 +174,7 @@ const HeroSection = () => {
           </Space>
         }
         open={selectedRow > 0}
-        onOk={onDeleteHerosection}
+        onOk={onDeleteHeroPartner}
         onCancel={onCloseModal}
         okText="Delete"
         okButtonProps={{ loading: isLoadingDelete }}

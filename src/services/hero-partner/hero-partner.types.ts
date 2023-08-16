@@ -1,4 +1,4 @@
-export type GetHeroSectionResponseType = {
+export type GetHeroPartnerResponseType = {
   id: number;
   image: string;
   name: string;
@@ -10,20 +10,20 @@ export type GetHeroSectionResponseType = {
   image_url: string;
 };
 
-export type PostHeroSectionBodyType = {
+export type PostHeroPartnerBodyType = {
   name: string;
   description: string;
   image: string;
   type?: string;
 };
 
-export type PutHeroSectionBodyType = {
+export type PutHeroPartnerBodyType = {
   name: string;
   description: string;
   image: string;
 };
 
-export type PutHeroSectionParamsType = {
+export type PutHeroPartnerParamsType = {
   id: string;
-  data: PutHeroSectionBodyType;
+  data: PutHeroPartnerBodyType;
 };
