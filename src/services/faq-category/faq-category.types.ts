@@ -11,6 +11,9 @@ export type GetFaqCategoryResponseType = {
   admin_id: number;
   createdAt: string;
   updatedAt: string;
+  FAQs: {
+    id: string;
+  }[];
 };
 
 export type PostFaqCategoryBodyType = {

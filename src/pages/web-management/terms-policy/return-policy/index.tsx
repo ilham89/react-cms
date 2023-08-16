@@ -50,7 +50,7 @@ const ReturnPolicy = () => {
         <Form form={form} onFinish={onSubmit}>
           <Form.Item
             {...fullLayout}
-            label="Terms and Condition"
+            label="Return Policy"
             name="return_policy"
             className="required-form"
             rules={[{ required: true, message: <RequiredMessage /> }]}

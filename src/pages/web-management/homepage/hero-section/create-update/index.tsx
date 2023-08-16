@@ -1,43 +1,59 @@
 import { useState } from "react";
 
 import { CloudUploadOutlined, RightOutlined } from "@ant-design/icons";
-import {
-  Breadcrumb,
-  Button,
-  Col,
-  Divider,
-  Form,
-  Input,
-  Row,
-  Space,
-  Upload,
-  UploadFile,
-  UploadProps,
-} from "antd";
+import { Breadcrumb, Button, Col, Divider, Form, Input, Row, Space, Upload } from "antd";
 
 import RequiredMessage from "@/components/RequiredMessage";
 import { fullLayout } from "@/constans/form";
+import { imageServices } from "@/services/image/image.api";
 
 const { TextArea } = Input;
 
 const uploadButton = (
-  <Space direction="vertical">
-    <CloudUploadOutlined />
-    <div
-      style={{
-        color: "#6C6C6C",
-      }}
-    >
-      Drop files here to upload
-    </div>
-  </Space>
+  <div
+    style={{
+      height: 170,
+      aspectRatio: 16 / 9,
+      background: "white",
+      borderRadius: 12,
+      border: "1px dashed #D2DDEC",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      cursor: "pointer",
+    }}
+  >
+    <Space direction="vertical" align="center">
+      <CloudUploadOutlined />
+      <div
+        style={{
+          color: "#6C6C6C",
+        }}
+      >
+        Drop files here to upload
+      </div>
+    </Space>
+  </div>
 );
 
-const CreateUpdate = () => {
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+type file = {
+  file_name: string;
+};
 
-  const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) =>
-    setFileList(newFileList);
+type FormValues = {
+  name: string;
+  description: string;
+  image: string;
+};
+
+const CreateUpdate = () => {
+  const [fileList, setFileList] = useState<file[]>([]);
+
+  const onSubmit = (values: FormValues) => {
+    // let data = new FormData();
+    // data.append('image', values.image.file);
+    console.log(values, "valuess");
+  };
 
   return (
     <div>
@@ -85,7 +101,7 @@ const CreateUpdate = () => {
           </div>
         </Space>
         <div>
-          <Form>
+          <Form onFinish={onSubmit}>
             <Form.Item
               {...fullLayout}
               label="Banner Name"
@@ -128,16 +144,18 @@ const CreateUpdate = () => {
                   rules={[{ required: true, message: <RequiredMessage /> }]}
                 >
                   <Upload
-                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                    listType="picture-card"
-                    fileList={fileList}
-                    onChange={handleChange}
-                    style={{
-                      border: "1px dashed #D2DDEC",
-                      background: "white",
+                    customRequest={({ file }) => {
+                      const formData = new FormData();
+                      formData.append("file", file);
+
+                      imageServices
+                        .postImage(formData)
+                        .then((res) => setFileList([...fileList, res.data]))
+                        .catch((err) => console.log(err));
                     }}
+                    showUploadList={false}
                   >
-                    {fileList.length >= 1 ? null : uploadButton}
+                    {fileList.length >= 1 ? <div>udah keupload</div> : uploadButton}
                   </Upload>
                 </Form.Item>
               </Col>

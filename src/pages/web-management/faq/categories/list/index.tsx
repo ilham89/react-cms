@@ -210,8 +210,9 @@ const FaqCategories = () => {
             marginLeft: 32,
           }}
         >
-          This category have 20 question, deleting category will remove the category in that
-          question
+          This category have{" "}
+          {data?.data[data.data.findIndex((item) => item.id === selectedCategory)]?.FAQs.length}{" "}
+          question, deleting category will remove the category in that question
         </p>
       </Modal>
     </div>

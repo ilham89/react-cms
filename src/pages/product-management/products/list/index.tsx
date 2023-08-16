@@ -1,6 +1,7 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 import { PlusOutlined } from "@ant-design/icons";
+import { useQuery } from "@tanstack/react-query";
 import {
   Button,
   Dropdown,
@@ -18,18 +19,13 @@ import {
 import { ColumnsType } from "antd/es/table";
 import { useLocation, useNavigate } from "react-router-dom";
 
-interface DataType {
-  key: string;
-  name: string;
-  size: string;
-  category: string;
-  price: string;
-  label: string;
-}
+import { useDebounce } from "@/hooks/useDebounce";
+import { productServices } from "@/services/product/product.api";
+import { GetProductResponseType } from "@/services/product/product.types";
 
 enum Status {
-  Active = "active",
-  Inactive = "inactive",
+  Active = "Active",
+  Inactive = "Inactive",
 }
 
 const items: MenuProps["items"] = [
@@ -55,41 +51,40 @@ const Products = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [page, setPage] = useState(1);
-  // const pagination = list?.data?.metadata;
-  // const data = list?.data?.data;
-  // const totalPage = Math.ceil(pagination?.total / pagination?.limit);
+  const [limit, setLimit] = useState(5);
+  const [searchValue, setSearchValue] = useState("");
+  const debounceSearchValue = useDebounce(searchValue);
 
-  const dataSource: DataType[] = [
-    {
-      key: "1",
-      name: "Pizza",
-      size: "12x40x20",
-      category: "John",
-      price: "$ 20 each",
-      label: "Customize",
-    },
-    {
-      key: "2",
-      name: "Pizza",
-      size: "12x40x20",
-      category: "John",
-      price: "$ 20 each",
-      label: "Plain",
-    },
-  ];
+  const { data, isLoading } = useQuery(["products", page, limit, debounceSearchValue], () =>
+    productServices.getProducts({
+      limit,
+      page,
+      q: debounceSearchValue,
+      order_by: "",
+      order_field: "name",
+    }),
+  );
 
-  const columns: ColumnsType<DataType> = [
+  const onChangePage = (value: number) => setPage(value);
+  const onChangeLimit = (value: number) => setLimit(value);
+  const onChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPage(1);
+    setSearchValue(e.target.value);
+  };
+
+  const columns: ColumnsType<GetProductResponseType> = [
     {
       title: "Product Name",
       dataIndex: "name",
       key: "name",
-      sorter: (a, b) => a.name.length - b.name.length,
+      sorter: true,
     },
 
     {
       title: "Categories",
-      dataIndex: "category",
-      key: "category",
+      dataIndex: "ProductCategory",
+      key: "ProductCategory",
+      render: (value) => <>{value.name}</>,
     },
     {
       title: "Product Size",
@@ -193,7 +188,11 @@ const Products = () => {
               >
                 Search:
               </div>
-              <Input placeholder="Search something here" allowClear />
+              <Input
+                placeholder="Search something here"
+                allowClear
+                onChange={onChangeSearchValue}
+              />
             </Space>
             <Space>
               <Select
@@ -204,6 +203,7 @@ const Products = () => {
                   { value: 10, label: "10 / page" },
                   { value: 20, label: "20 / page" },
                 ]}
+                onChange={onChangeLimit}
               />
               <Dropdown menu={{ items }} arrow placement="bottomRight">
                 <Button>Filter | 0</Button>
@@ -212,25 +212,29 @@ const Products = () => {
           </Row>
         </div>
         <Table
-          dataSource={dataSource}
+          dataSource={data?.data}
+          loading={isLoading}
           columns={columns}
+          scroll={{ x: 800 }}
           pagination={false}
+          rowKey={(record) => record.id}
           footer={() => (
             <Row align="middle" justify="space-between">
-              <div className="pd__inventory-list__pagination-info">
-                {/* {data?.length === 0
-                ? "No items found"
-                : `Showing ${page == 1 ? 1 : (page - 1) * pagination?.limit + 1} - ${
-                    page == totalPage
-                      ? (page - 1) * pagination?.limit + data?.length
-                      : page * pagination?.limit
-                  } of ${pagination?.total} items`} */}
-                No items found
-              </div>
+              {data && (
+                <div className="pd__inventory-list__pagination-info">
+                  {data.data.length === 0
+                    ? "No items found"
+                    : `Showing ${page == 1 ? 1 : (page - 1) * data.page_limit + 1} to ${
+                        page == data.total_page
+                          ? (page - 1) * data.page_limit + data.data.length
+                          : page * data.page_limit
+                      } of ${data.total_data} entries`}
+                </div>
+              )}
               <Pagination
-                pageSize={5}
-                total={5}
-                onChange={(page) => setPage(page)}
+                pageSize={limit}
+                total={data?.total_data}
+                onChange={onChangePage}
                 current={page}
                 showSizeChanger={false}
               />
