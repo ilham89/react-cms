@@ -80,6 +80,12 @@ const routeList: RouteObject[] = [
             ),
           },
           {
+            path: "homepage/hero-section/:id",
+            element: (
+              <WrapperRouteComponent element={<FormHeroSection />} titleId="Update Banner" auth />
+            ),
+          },
+          {
             path: "homepage/partner",
             element: <WrapperRouteComponent element={<Partner />} titleId="Partner" auth />,
           },

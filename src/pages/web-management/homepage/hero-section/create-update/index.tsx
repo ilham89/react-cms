@@ -1,11 +1,9 @@
-import { useState } from "react";
-
 import { CloudUploadOutlined, RightOutlined } from "@ant-design/icons";
 import { Breadcrumb, Button, Col, Divider, Form, Input, Row, Space, Upload } from "antd";
 
+import { useCreateUpdateHeroSection } from "./create-update.action";
 import RequiredMessage from "@/components/RequiredMessage";
 import { fullLayout } from "@/constans/form";
-import { imageServices } from "@/services/image/image.api";
 
 const { TextArea } = Input;
 
@@ -36,24 +34,9 @@ const uploadButton = (
   </div>
 );
 
-type file = {
-  file_name: string;
-};
-
-type FormValues = {
-  name: string;
-  description: string;
-  image: string;
-};
-
 const CreateUpdate = () => {
-  const [fileList, setFileList] = useState<file[]>([]);
-
-  const onSubmit = (values: FormValues) => {
-    // let data = new FormData();
-    // data.append('image', values.image.file);
-    console.log(values, "valuess");
-  };
+  const { form, navigate, id, file, onSubmit, isLoading, onCustomRequest } =
+    useCreateUpdateHeroSection();
 
   return (
     <div>
@@ -79,7 +62,7 @@ const CreateUpdate = () => {
                 href: "/web-management/homepage/hero-section",
               },
               {
-                title: "Add Banner",
+                title: `${id ? "Update" : "Add"} Banner`,
               },
             ]}
           />
@@ -91,7 +74,7 @@ const CreateUpdate = () => {
                 fontWeight: 600,
               }}
             >
-              Add Banner
+              {id ? "Update" : "Add"} Banner
             </div>
             <Divider
               style={{
@@ -101,7 +84,7 @@ const CreateUpdate = () => {
           </div>
         </Space>
         <div>
-          <Form onFinish={onSubmit}>
+          <Form onFinish={onSubmit} form={form}>
             <Form.Item
               {...fullLayout}
               label="Banner Name"
@@ -144,18 +127,23 @@ const CreateUpdate = () => {
                   rules={[{ required: true, message: <RequiredMessage /> }]}
                 >
                   <Upload
-                    customRequest={({ file }) => {
-                      const formData = new FormData();
-                      formData.append("file", file);
-
-                      imageServices
-                        .postImage(formData)
-                        .then((res) => setFileList([...fileList, res.data]))
-                        .catch((err) => console.log(err));
-                    }}
+                    customRequest={({ file }) => onCustomRequest(file)}
                     showUploadList={false}
                   >
-                    {fileList.length >= 1 ? <div>udah keupload</div> : uploadButton}
+                    {Object.keys(file).length >= 1 ? (
+                      <img
+                        src={file.preview}
+                        height={170}
+                        width="100%"
+                        alt="preview"
+                        style={{
+                          aspectRatio: 16 / 9,
+                          objectFit: "cover",
+                        }}
+                      />
+                    ) : (
+                      uploadButton
+                    )}
                   </Upload>
                 </Form.Item>
               </Col>
@@ -164,8 +152,13 @@ const CreateUpdate = () => {
             <Divider />
             <Row justify="end">
               <Space size="middle">
-                <Button size="large">Cancel</Button>
-                <Button type="primary" size="large" htmlType="submit">
+                <Button
+                  size="large"
+                  onClick={() => navigate("/web-management/homepage/hero-section")}
+                >
+                  Cancel
+                </Button>
+                <Button type="primary" size="large" htmlType="submit" loading={isLoading}>
                   Save
                 </Button>
               </Space>

@@ -1,45 +1,29 @@
-import { PlusOutlined } from "@ant-design/icons";
-import { Button, Space, Table, Tabs, TabsProps } from "antd";
+import { CloseCircleFilled, PlusOutlined } from "@ant-design/icons";
+import { Button, Modal, Space, Table, Tabs, TabsProps } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { useLocation, useNavigate } from "react-router-dom";
 
+import { useListHeroSection } from "./list.action";
 import DraggableIcon from "@/assets/icons/draggable.svg";
-
-interface DataType {
-  key: string;
-  name: string;
-  description: string;
-  image: string;
-}
+import { GetHeroSectionResponseType } from "@/services/hero-section/hero-section.types";
 
 const HeroSection = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const {
+    navigate,
+    location,
+    onOpenModal,
+    onCloseModal,
+    data,
+    isLoading,
+    isLoadingDelete,
+    onDeleteHerosection,
+    selectedRow,
+  } = useListHeroSection();
 
-  const dataSource: DataType[] = [
-    {
-      key: "1",
-      name: "Mikeeeee",
-      description:
-        "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis, tenetur ab laboriosam eveniet veniam voluptatum sed dicta atque cupiditate doloremque blanditiis natus neque, ad inventore placeat officiis! Ad, ipsam doloremque!",
-      image:
-        "https://res.cloudinary.com/ds73yosji/image/upload/v1678074667/gemilang/354072278ea3016361f1453d9659c212_bei0uy.jpg",
-    },
-    {
-      key: "2",
-      name: "John",
-      description:
-        "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis, tenetur ab laboriosam eveniet veniam voluptatum sed dicta atque cupiditate doloremque blanditiis natus neque, ad inventore placeat officiis! Ad, ipsam doloremque!",
-      image:
-        "https://res.cloudinary.com/ds73yosji/image/upload/v1678074667/gemilang/354072278ea3016361f1453d9659c212_bei0uy.jpg",
-    },
-  ];
-
-  const columns: ColumnsType<DataType> = [
+  const columns: ColumnsType<GetHeroSectionResponseType> = [
     {
       title: "",
-      dataIndex: "key",
-      key: "key",
+      dataIndex: "id",
+      key: "id",
       render: () => (
         <img
           src={DraggableIcon}
@@ -52,9 +36,19 @@ const HeroSection = () => {
     },
     {
       title: "Image",
-      dataIndex: "image",
-      key: "image",
-      render: (value) => <img src={value} width={80} height={40} alt={value} />,
+      dataIndex: "image_url",
+      key: "image_url",
+      render: (value, record) => (
+        <img
+          src={value}
+          width={80}
+          height={40}
+          alt={record.name}
+          style={{
+            objectFit: "contain",
+          }}
+        />
+      ),
     },
     {
       title: "Banner Name",
@@ -69,14 +63,18 @@ const HeroSection = () => {
     },
     {
       title: "Action",
-      dataIndex: "key",
-      key: "key",
-      render: () => (
+      dataIndex: "id",
+      key: "id",
+      render: (id) => (
         <Space>
-          <Button type="primary" className="btn-update">
+          <Button
+            type="primary"
+            className="btn-update"
+            onClick={() => navigate(`/web-management/homepage/hero-section/${id}`)}
+          >
             Edit
           </Button>
-          <Button type="primary" danger>
+          <Button type="primary" danger onClick={() => onOpenModal(id)}>
             Delete
           </Button>
         </Space>
@@ -151,8 +149,44 @@ const HeroSection = () => {
         >
           Banner List
         </div>
-        <Table dataSource={dataSource} columns={columns} pagination={false} />
+        <Table
+          dataSource={data?.data}
+          columns={columns}
+          pagination={false}
+          loading={isLoading}
+          rowKey={(record) => record.id}
+          scroll={{ x: 800 }}
+        />
       </div>
+      <Modal
+        width={400}
+        title={
+          <Space align="start">
+            <CloseCircleFilled
+              style={{
+                color: "#DA4453",
+                fontSize: 24,
+              }}
+            />
+            <div>Do you want to delete these items?</div>
+          </Space>
+        }
+        open={selectedRow > 0}
+        onOk={onDeleteHerosection}
+        onCancel={onCloseModal}
+        okText="Delete"
+        okButtonProps={{ loading: isLoadingDelete }}
+      >
+        <p
+          style={{
+            color: "#9C9C9C",
+            marginLeft: 32,
+          }}
+        >
+          Deleting this item will remove in the items list and cannot be undone, please be consider
+          and check them again.
+        </p>
+      </Modal>
     </div>
   );
 };
