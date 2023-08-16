@@ -94,6 +94,12 @@ const routeList: RouteObject[] = [
             element: <WrapperRouteComponent element={<FormPartner />} titleId="Add Partner" auth />,
           },
           {
+            path: "homepage/partner/:id",
+            element: (
+              <WrapperRouteComponent element={<FormPartner />} titleId="Update Partner" auth />
+            ),
+          },
+          {
             path: "homepage/about",
             element: <WrapperRouteComponent element={<About />} titleId="About" auth />,
           },

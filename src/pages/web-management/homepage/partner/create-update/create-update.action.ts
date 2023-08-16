@@ -13,7 +13,7 @@ import {
 } from "@/services/hero-partner/hero-partner.hooks";
 import { imageServices } from "@/services/image/image.api";
 
-export const useCreateUpdateHeroSection = () => {
+export const useCreateUpdatePartner = () => {
   const [form] = Form.useForm<FormValues>();
   const navigate = useNavigate();
   const params = useParams();
@@ -47,7 +47,7 @@ export const useCreateUpdateHeroSection = () => {
       ...values,
       image: file.file_name,
       ...(!id && {
-        type: "Hero Sections",
+        type: "Partners",
       }),
     };
 
@@ -57,7 +57,7 @@ export const useCreateUpdateHeroSection = () => {
         {
           onSuccess: () => {
             addSuccess("You`re changes are saved successfully");
-            navigate("/web-management/homepage/hero-section");
+            navigate("/web-management/homepage/partner");
           },
           onError: () => addError(),
         },
@@ -66,7 +66,7 @@ export const useCreateUpdateHeroSection = () => {
       create(payload, {
         onSuccess: () => {
           addSuccess("You`re changes are saved successfully");
-          navigate("/web-management/homepage/hero-section");
+          navigate("/web-management/homepage/partner");
         },
         onError: () => addError(),
       });

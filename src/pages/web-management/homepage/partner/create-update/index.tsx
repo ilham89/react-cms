@@ -1,43 +1,42 @@
-import { useState } from "react";
-
 import { CloudUploadOutlined, RightOutlined } from "@ant-design/icons";
-import {
-  Breadcrumb,
-  Button,
-  Col,
-  Divider,
-  Form,
-  Input,
-  Row,
-  Space,
-  Upload,
-  UploadFile,
-  UploadProps,
-} from "antd";
+import { Breadcrumb, Button, Col, Divider, Form, Input, Row, Space, Upload } from "antd";
 
+import { useCreateUpdatePartner } from "./create-update.action";
 import RequiredMessage from "@/components/RequiredMessage";
 import { fullLayout } from "@/constans/form";
 
 const { TextArea } = Input;
 
 const uploadButton = (
-  <Space direction="vertical">
-    <CloudUploadOutlined />
-    <div
-      style={{
-        color: "#6C6C6C",
-      }}
-    >
-      Drop files here to upload
-    </div>
-  </Space>
+  <div
+    style={{
+      height: 170,
+      aspectRatio: 16 / 9,
+      background: "white",
+      borderRadius: 12,
+      border: "1px dashed #D2DDEC",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      cursor: "pointer",
+    }}
+  >
+    <Space direction="vertical" align="center">
+      <CloudUploadOutlined />
+      <div
+        style={{
+          color: "#6C6C6C",
+        }}
+      >
+        Drop files here to upload
+      </div>
+    </Space>
+  </div>
 );
 
 const CreateUpdate = () => {
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
-
-  const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) =>
-    setFileList(newFileList);
+  const { form, navigate, id, file, onSubmit, isLoading, onCustomRequest } =
+    useCreateUpdatePartner();
 
   return (
     <div>
@@ -63,7 +62,7 @@ const CreateUpdate = () => {
                 href: "/web-management/homepage/partner",
               },
               {
-                title: "Add Partner",
+                title: `${id ? "Update" : "Add"}  Partner`,
               },
             ]}
           />
@@ -75,7 +74,7 @@ const CreateUpdate = () => {
                 fontWeight: 600,
               }}
             >
-              Add Partner
+              {id ? "Update" : "Add"} Partner
             </div>
             <Divider
               style={{
@@ -85,7 +84,7 @@ const CreateUpdate = () => {
           </div>
         </Space>
         <div>
-          <Form>
+          <Form form={form} onFinish={onSubmit}>
             <Form.Item
               {...fullLayout}
               label="Partner Name"
@@ -128,16 +127,23 @@ const CreateUpdate = () => {
                   rules={[{ required: true, message: <RequiredMessage /> }]}
                 >
                   <Upload
-                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                    listType="picture-card"
-                    fileList={fileList}
-                    onChange={handleChange}
-                    style={{
-                      border: "1px dashed #D2DDEC",
-                      background: "white",
-                    }}
+                    customRequest={({ file }) => onCustomRequest(file)}
+                    showUploadList={false}
                   >
-                    {fileList.length >= 1 ? null : uploadButton}
+                    {Object.keys(file).length >= 1 ? (
+                      <img
+                        src={file.preview}
+                        height={170}
+                        width="100%"
+                        alt="preview"
+                        style={{
+                          aspectRatio: 16 / 9,
+                          objectFit: "cover",
+                        }}
+                      />
+                    ) : (
+                      uploadButton
+                    )}
                   </Upload>
                 </Form.Item>
               </Col>
@@ -146,8 +152,10 @@ const CreateUpdate = () => {
             <Divider />
             <Row justify="end">
               <Space size="middle">
-                <Button size="large">Cancel</Button>
-                <Button type="primary" size="large" htmlType="submit">
+                <Button size="large" onClick={() => navigate("/web-management/homepage/partner")}>
+                  Cancel
+                </Button>
+                <Button type="primary" size="large" htmlType="submit" loading={isLoading}>
                   Save
                 </Button>
               </Space>

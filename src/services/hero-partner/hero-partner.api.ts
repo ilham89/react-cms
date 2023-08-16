@@ -1,6 +1,7 @@
 import { AxiosResponse } from "axios";
 
 import {
+  GetHeroPartnerParamsType,
   GetHeroPartnerResponseType,
   PostHeroPartnerBodyType,
   PutHeroPartnerBodyType,
@@ -9,11 +10,12 @@ import { axiosInstance } from "@/configs/axios";
 import { DataResponseType } from "@/interfaces/response";
 
 export const heroPartnerServices = {
-  getHeroPartners: async () => {
+  getHeroPartners: async (params: GetHeroPartnerParamsType) => {
     const response: AxiosResponse<DataResponseType<GetHeroPartnerResponseType[]>> =
       await axiosInstance({
-        url: "/hero-section-and-partners?type=Hero Sections",
+        url: "/hero-section-and-partners",
         method: "get",
+        params,
       });
     return response.data;
   },

@@ -27,3 +27,7 @@ export type PutHeroPartnerParamsType = {
   id: string;
   data: PutHeroPartnerBodyType;
 };
+
+export type GetHeroPartnerParamsType = {
+  type: string;
+};

@@ -9,7 +9,7 @@ import {
 } from "@/services/hero-partner/hero-partner.hooks";
 import { queryClient } from "@/utils/queryClient";
 
-export const useListHeroSection = () => {
+export const useListPartner = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedRow, setSelectedRow] = useState(-1);
@@ -18,7 +18,7 @@ export const useListHeroSection = () => {
   const onCloseModal = () => setSelectedRow(-1);
 
   const { addError, addSuccess } = useNotification();
-  const { data, isLoading } = useGetHeroPartnersService({ type: "Hero Sections" });
+  const { data, isLoading } = useGetHeroPartnersService({ type: "Partners" });
 
   const { mutate, isLoading: isLoadingDelete } = useDeleteHeroPartnerService();
 

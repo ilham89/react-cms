@@ -2,14 +2,15 @@ import { UseQueryOptions, useMutation, useQuery } from "@tanstack/react-query";
 
 import { heroPartnerServices } from "./hero-partner.api";
 import {
+  GetHeroPartnerParamsType,
   GetHeroPartnerResponseType,
   PostHeroPartnerBodyType,
   PutHeroPartnerParamsType,
 } from "./hero-partner.types";
 import { DataResponseType } from "@/interfaces/response";
 
-export const useGetHeroPartnersService = () =>
-  useQuery(["hero-partners"], () => heroPartnerServices.getHeroPartners());
+export const useGetHeroPartnersService = (params: GetHeroPartnerParamsType) =>
+  useQuery(["hero-partners"], () => heroPartnerServices.getHeroPartners(params));
 
 export const useGetHeroPartnerService = (
   id: string,
