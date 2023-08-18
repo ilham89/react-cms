@@ -28,6 +28,7 @@ export type GetFaqParamsType = {
   q: string;
   order_field?: string;
   order_by?: string;
+  status?: string;
 };
 
 export type PostFaqBodyType = {

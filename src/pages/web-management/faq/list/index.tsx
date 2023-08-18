@@ -28,6 +28,8 @@ const Faq = () => {
     page,
     limit,
     selectedCategory,
+    filter,
+    setFilter,
     navigate,
     onOpenModal,
     onCloseModal,
@@ -202,8 +204,65 @@ const Faq = () => {
                 ]}
                 onChange={onChangeLimit}
               />
-              <Dropdown menu={{ items }} arrow placement="bottomRight">
-                <Button>Filter | 0</Button>
+              <Dropdown
+                trigger={["click"]}
+                dropdownRender={() => (
+                  <div
+                    style={{
+                      background: "white",
+                      width: 300,
+                      borderRadius: 8,
+                      boxShadow:
+                        "0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px 0 rgba(0,0,0,.08), 0 9px 28px 8px rgba(0,0,0,.05)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: "12px 16px",
+                        borderBottom: "1px solid #E3EBF6",
+                      }}
+                    >
+                      <div>Filter</div>
+                      <div>Clear Filter</div>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: "12px 16px",
+                        borderBottom: "1px solid #E3EBF6",
+                      }}
+                    >
+                      <div>Status</div>
+                      <Select
+                        placeholder="Status"
+                        options={[
+                          { value: "", label: "All" },
+                          { value: "Active", label: "Active" },
+                          { value: "Inactive", label: "Inactive" },
+                        ]}
+                        onChange={(value) => setFilter(value)}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        padding: "12px 16px",
+                      }}
+                    >
+                      <Button type="primary" block>
+                        Apply Filter
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                arrow
+                placement="bottomRight"
+              >
+                <Button>Filter | {filter ? 1 : 0}</Button>
               </Dropdown>
             </Space>
           </Row>

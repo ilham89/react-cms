@@ -1,6 +1,6 @@
-import { Fragment, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 
-import { CloudUploadOutlined, RightOutlined } from "@ant-design/icons";
+import { CloudUploadOutlined, PlusOutlined, RightOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import {
   Breadcrumb,
@@ -10,6 +10,7 @@ import {
   Form,
   Input,
   InputNumber,
+  InputRef,
   Row,
   Select,
   Space,
@@ -22,9 +23,14 @@ import RequiredMessage from "@/components/RequiredMessage";
 import { fullLayout } from "@/constans/form";
 import useNotification from "@/hooks/useNotification";
 import { imageServices } from "@/services/image/image.api";
-import { usePostProductService } from "@/services/product/product.hooks";
+import { productServices } from "@/services/product/product.api";
+import {
+  usePostProductLabelsService,
+  usePostProductService,
+} from "@/services/product/product.hooks";
 import { productCategoryServices } from "@/services/product-category/product-category.api";
 import { GetProductCategoryResponseType } from "@/services/product-category/product-category.types";
+import { queryClient } from "@/utils/queryClient";
 
 const { TextArea } = Input;
 
@@ -108,7 +114,6 @@ const CreateUpdate = () => {
       brochure: brochure.file_name,
       main_image: fileList[0].file_name,
       images: fileList.map((list) => list.file_name).filter((list) => list !== ""),
-      label: ["wibu"],
     };
     create(payload, {
       onSuccess: () => {
@@ -169,6 +174,30 @@ const CreateUpdate = () => {
       },
     },
   );
+
+  const { data: productLabels, isLoading: isLoadingProductLabel } = useQuery(
+    ["product-labels"],
+    () => productServices.getLabelProduct(),
+    {
+      select: ({ data }) => data,
+    },
+  );
+
+  const inputRef = useRef<InputRef>(null);
+
+  const { mutate: createLabel } = usePostProductLabelsService();
+
+  const addItem = () => {
+    createLabel(
+      { name: inputRef.current?.input?.value || "" },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries(["product-labels"]);
+        },
+        onError: () => addError("Please input label!"),
+      },
+    );
+  };
 
   return (
     <div>
@@ -352,18 +381,27 @@ const CreateUpdate = () => {
                 style={{
                   width: 205,
                 }}
+                mode="multiple"
+                allowClear
                 showSearch
                 placeholder="--Please select label--"
-                options={[
-                  {
-                    value: "wibu",
-                    label: "Wibu",
-                  },
-                  {
-                    value: "wota",
-                    label: "Wota",
-                  },
-                ]}
+                options={productLabels?.map((label) => ({
+                  label: label.name,
+                  value: label.name,
+                }))}
+                loading={isLoadingProductLabel}
+                dropdownRender={(menu) => (
+                  <>
+                    {menu}
+                    <Divider style={{ margin: "8px 0" }} />
+                    <Space style={{ padding: "0 8px 4px" }}>
+                      <Input placeholder="Please enter label" ref={inputRef} />
+                      <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
+                        Add item
+                      </Button>
+                    </Space>
+                  </>
+                )}
               />
             </Form.Item>
             <Divider />

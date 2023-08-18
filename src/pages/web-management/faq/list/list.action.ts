@@ -20,10 +20,11 @@ export const useListFaq = () => {
   const [selectedCategory, setSelectedCategory] = useState<number>(-1);
   const [searchValue, setSearchValue] = useState("");
   const [orderBy, setOrderBy] = useState("");
+  const [filter, setFilter] = useState("");
   const debounceSearchValue = useDebounce(searchValue);
 
   const { data, isLoading: isLoadingFaqs } = useQuery(
-    ["faqs", limit, page, debounceSearchValue, orderBy],
+    ["faqs", limit, page, debounceSearchValue, orderBy, filter],
     () =>
       faqServices.getFaqs({
         limit,
@@ -31,6 +32,7 @@ export const useListFaq = () => {
         q: debounceSearchValue,
         order_field: "question",
         order_by: orderBy,
+        status: filter,
       }),
   );
   const { mutate: deleteFaq, isLoading: isLoadingDelete } = useDeleteFaqService();
@@ -93,6 +95,8 @@ export const useListFaq = () => {
     page,
     limit,
     selectedCategory,
+    filter,
+    setFilter,
     navigate,
     onOpenModal,
     onCloseModal,

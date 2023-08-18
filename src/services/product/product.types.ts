@@ -49,3 +49,15 @@ export type GetProductParamsType = {
   order_by?: string;
   order_field?: string;
 };
+
+export type GetProductLabelResponseType = {
+  id: number;
+  name: string;
+  admin_id: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type PostProductLabelBodyType = {
+  name: string;
+};
