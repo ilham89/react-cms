@@ -42,7 +42,10 @@ export const productCategoryServices = {
     });
     return response.data;
   },
-  putProductCategory: async (id: number, data: PutProductCategoryBodyType) => {
+  putProductCategory: async (
+    id: number,
+    data: PutProductCategoryBodyType | Pick<PutProductCategoryBodyType, "status">,
+  ) => {
     const response = await axiosInstance({
       url: `/product-categories/${id}`,
       method: "put",

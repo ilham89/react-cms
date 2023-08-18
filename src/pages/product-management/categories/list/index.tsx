@@ -1,7 +1,4 @@
-import { useState } from "react";
-
 import { CloseCircleFilled, PlusOutlined } from "@ant-design/icons";
-import { useQuery } from "@tanstack/react-query";
 import {
   Button,
   Dropdown,
@@ -15,87 +12,41 @@ import {
   TabsProps,
   Tag,
 } from "antd";
-import { ColumnsType, TablePaginationConfig } from "antd/es/table";
-import { FilterValue, SorterResult } from "antd/es/table/interface";
-import { useLocation, useNavigate } from "react-router-dom";
+import { ColumnsType } from "antd/es/table";
 
-import useNotification from "@/hooks/useNotification";
-import { productCategoryServices } from "@/services/product-category/product-category.api";
-import { useDeleteProductCategoryService } from "@/services/product-category/product-category.hooks";
-import { GetProductCategoryResponseType } from "@/services/product-category/product-category.types";
-import { queryClient } from "@/utils/queryClient";
-
-enum Status {
-  Active = "Active",
-  Inactive = "Inactive",
-}
-
-const items: MenuProps["items"] = [
-  {
-    key: "1",
-    label: (
-      <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
-        Active
-      </a>
-    ),
-  },
-  {
-    key: "2",
-    label: (
-      <a target="_blank" rel="noopener noreferrer" href="https://www.aliyun.com">
-        Inactive
-      </a>
-    ),
-  },
-];
+import { useListProductCategories } from "./list.action";
+import {
+  GetProductCategoryResponseType,
+  ProductCategoryStatusEnum,
+} from "@/services/product-category/product-category.types";
 
 const ProductCategories = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const {
+    navigate,
+    location,
+    data,
+    isLoading,
+    isLoadingDelete,
+    page,
+    selectedCategory,
+    onChangePage,
+    onOpenModal,
+    onCloseModal,
+    onDeleteFaq,
+    onUpdateProductCategory,
+    onChangeTable,
+  } = useListProductCategories();
 
-  const [page, setPage] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState(-1);
-  const [orderBy, setOrderBy] = useState("");
-
-  const { addError, addSuccess } = useNotification();
-  const { data, isLoading } = useQuery(["product-categories", page, orderBy], () =>
-    productCategoryServices.getProductCategories({
-      limit: 10,
-      page,
-      order_by: orderBy,
-      order_field: "name",
-    }),
-  );
-
-  const { mutate: deleteCategory, isLoading: isLoadingDelete } = useDeleteProductCategoryService();
-
-  const onChangePage = (value: number) => setPage(value);
-  const onOpenModal = (id: number) => setSelectedCategory(id);
-  const onCloseModal = () => setSelectedCategory(-1);
-
-  const onDeleteFaq = () =>
-    deleteCategory(selectedCategory, {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["product-categories"]);
-        setSelectedCategory(-1);
-        addSuccess("Your items are successfully deleted");
-      },
-      onError: () => addError(),
-    });
-
-  const onChangeTable = (
-    _pagination: TablePaginationConfig,
-    _filters: Record<string, FilterValue | null>,
-    sorter:
-      | SorterResult<GetProductCategoryResponseType>
-      | SorterResult<GetProductCategoryResponseType>[],
-  ) => {
-    if (!Array.isArray(sorter)) {
-      if (!sorter.order) return setOrderBy("");
-      if (sorter.order === "ascend") return setOrderBy("ASC");
-      return setOrderBy("DESC");
-    }
-  };
+  const items: MenuProps["items"] = [
+    {
+      key: "Active",
+      label: <div>Active</div>,
+    },
+    {
+      key: "Inactive",
+      label: <div>Inactive</div>,
+    },
+  ];
 
   const columns: ColumnsType<GetProductCategoryResponseType> = [
     {
@@ -124,7 +75,10 @@ const ProductCategories = () => {
       key: "status",
       align: "center",
       render: (value) => (
-        <Tag bordered={false} color={value === Status.Active ? "success" : "error"}>
+        <Tag
+          bordered={false}
+          color={value === ProductCategoryStatusEnum.Active ? "success" : "error"}
+        >
           {value}
         </Tag>
       ),
@@ -136,7 +90,24 @@ const ProductCategories = () => {
       align: "center",
       render: (id) => (
         <Space>
-          <Dropdown menu={{ items }} placement="bottom" arrow>
+          <Dropdown
+            menu={{
+              items,
+              onClick: ({ key }) =>
+                onUpdateProductCategory(
+                  id,
+                  {
+                    status:
+                      key === ProductCategoryStatusEnum.Active
+                        ? ProductCategoryStatusEnum.Active
+                        : ProductCategoryStatusEnum.Inactive,
+                  },
+                  key,
+                ),
+            }}
+            placement="bottom"
+            arrow
+          >
             <Button className="btn-action" type="primary">
               Action
             </Button>

@@ -6,37 +6,45 @@ import {
   EditOutlined,
   RightOutlined,
 } from "@ant-design/icons";
-import {
-  Breadcrumb,
-  Button,
-  Col,
-  Divider,
-  Form,
-  Input,
-  Row,
-  Space,
-  Upload,
-  UploadFile,
-  UploadProps,
-} from "antd";
+import { Breadcrumb, Button, Col, Divider, Form, Input, Row, Space, Upload } from "antd";
+import { RcFile } from "antd/es/upload";
+import { useNavigate } from "react-router-dom";
 
 import AddIcon from "@/assets/icons/add.svg";
 import RequiredMessage from "@/components/RequiredMessage";
 import { fullLayout } from "@/constans/form";
+import useNotification from "@/hooks/useNotification";
+import { imageServices } from "@/services/image/image.api";
+import { usePostProductCategoryService } from "@/services/product-category/product-category.hooks";
+import { ProductCategoryStatusEnum } from "@/services/product-category/product-category.types";
 
 const { TextArea } = Input;
 
 const uploadButton = (
-  <Space direction="vertical">
-    <CloudUploadOutlined />
-    <div
-      style={{
-        color: "#6C6C6C",
-      }}
-    >
-      Drop files here to upload
-    </div>
-  </Space>
+  <div
+    style={{
+      height: 170,
+      aspectRatio: 1,
+      background: "white",
+      borderRadius: 12,
+      border: "1px dashed #D2DDEC",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      cursor: "pointer",
+    }}
+  >
+    <Space direction="vertical" align="center">
+      <CloudUploadOutlined />
+      <div
+        style={{
+          color: "#6C6C6C",
+        }}
+      >
+        Drop files here to upload
+      </div>
+    </Space>
+  </div>
 );
 
 const baseCustomField = [
@@ -55,11 +63,29 @@ const baseCustomField = [
     ],
   },
 ];
-const CreateUpdate = () => {
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
 
-  const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) =>
-    setFileList(newFileList);
+export type File = {
+  file_name: string;
+  preview: string;
+};
+
+export type CustomFieldValue = {
+  placeholder: string;
+  value: string;
+};
+
+export type FormValues = {
+  name: string;
+  short_description: string;
+  image?: string;
+};
+
+const CreateUpdate = () => {
+  const [file, setFile] = useState({} as File);
+
+  const navigate = useNavigate();
+  const { addError, addSuccess } = useNotification();
+  const { mutate: create, isLoading: isLoadingCreate } = usePostProductCategoryService();
 
   const [dynamicFields, setDynamicFields] = useState([
     {
@@ -176,6 +202,53 @@ const CreateUpdate = () => {
     }
     setCustomField(newCustomField);
   };
+
+  const onCustomRequest = (file: string | Blob | RcFile) => {
+    const preview = URL.createObjectURL(file as Blob);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    imageServices
+      .postImage(formData)
+      .then((res) =>
+        setFile({
+          file_name: res.data.file_name,
+          preview,
+        }),
+      )
+      .catch(() => addError());
+  };
+
+  const getValueField = (data: CustomFieldValue[]) =>
+    data.map((datum) => datum.value).filter((datum) => datum !== "");
+
+  const onSubmit = (values: FormValues) => {
+    delete values.image;
+
+    const payload = {
+      ...values,
+      image: file.file_name,
+      size: getValueField(dynamicFields[0].inputs),
+      color: getValueField(dynamicFields[1].inputs),
+      material: getValueField(dynamicFields[2].inputs),
+      additional_info: {
+        [customFields[0].name]: getValueField(customFields[0].inputs),
+        [customFields[1].name]: getValueField(customFields[1].inputs),
+        [customFields[2].name]: getValueField(customFields[2].inputs),
+      },
+      status: ProductCategoryStatusEnum.Active,
+    };
+
+    create(payload, {
+      onSuccess: () => {
+        addSuccess("You`re changes are saved successfully");
+        navigate("/product-management/categories");
+      },
+      onError: () => addError(),
+    });
+  };
+
+  const isLoading = isLoadingCreate;
   return (
     <div>
       <Space
@@ -222,7 +295,7 @@ const CreateUpdate = () => {
           </div>
         </Space>
         <div>
-          <Form>
+          <Form onFinish={onSubmit}>
             <Row>
               <Col span={6}>
                 <Space direction="vertical">
@@ -246,16 +319,23 @@ const CreateUpdate = () => {
                   rules={[{ required: true, message: <RequiredMessage /> }]}
                 >
                   <Upload
-                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                    listType="picture-card"
-                    fileList={fileList}
-                    onChange={handleChange}
-                    style={{
-                      border: "1px dashed #D2DDEC",
-                      background: "white",
-                    }}
+                    customRequest={({ file }) => onCustomRequest(file)}
+                    showUploadList={false}
                   >
-                    {fileList.length >= 1 ? null : uploadButton}
+                    {Object.keys(file).length >= 1 ? (
+                      <img
+                        src={file.preview}
+                        height={170}
+                        width="100%"
+                        alt="preview"
+                        style={{
+                          aspectRatio: 1,
+                          objectFit: "cover",
+                        }}
+                      />
+                    ) : (
+                      uploadButton
+                    )}
                   </Upload>
                 </Form.Item>
               </Col>
@@ -273,7 +353,7 @@ const CreateUpdate = () => {
             <Form.Item
               {...fullLayout}
               label="Short Description"
-              name="description"
+              name="short_description"
               className="required-form"
               rules={[{ required: true, message: <RequiredMessage /> }]}
             >
@@ -380,8 +460,10 @@ const CreateUpdate = () => {
             ))}
             <Row justify="end">
               <Space size="middle">
-                <Button size="large">Cancel</Button>
-                <Button type="primary" size="large" htmlType="submit">
+                <Button size="large" onClick={() => navigate("/product-management/categories")}>
+                  Cancel
+                </Button>
+                <Button type="primary" size="large" htmlType="submit" loading={isLoading}>
                   Save
                 </Button>
               </Space>

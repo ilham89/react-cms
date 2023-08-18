@@ -1,4 +1,4 @@
-enum ProductCategoryStatusEnum {
+export enum ProductCategoryStatusEnum {
   Active = "Active",
   Inactive = "Inactive",
 }
@@ -36,12 +36,14 @@ export type PostProductCategoryBodyType = {
   size: string[];
   color: string[];
   material: string[];
-  additional_info: {
-    info_1: string[];
-    info_2: string[];
-    info_3: string[];
+  additional_info?: {
+    [key: string]: string[];
   };
   status: ProductCategoryStatusEnum;
 };
 
 export type PutProductCategoryBodyType = PostProductCategoryBodyType;
+export type PutProductCategoryParamsType = {
+  id: number;
+  data: Pick<PutProductCategoryBodyType, "status">;
+};
