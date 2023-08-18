@@ -38,7 +38,6 @@ export type PostProductBodyType = {
   size: string;
   material: string;
   brochure: string;
-  additional_info: string;
 };
 
 export type PutProductBodyType = PostProductBodyType;

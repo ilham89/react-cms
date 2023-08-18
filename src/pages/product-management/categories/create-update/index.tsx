@@ -8,14 +8,18 @@ import {
 } from "@ant-design/icons";
 import { Breadcrumb, Button, Col, Divider, Form, Input, Row, Space, Upload } from "antd";
 import { RcFile } from "antd/es/upload";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import AddIcon from "@/assets/icons/add.svg";
 import RequiredMessage from "@/components/RequiredMessage";
 import { fullLayout } from "@/constans/form";
 import useNotification from "@/hooks/useNotification";
 import { imageServices } from "@/services/image/image.api";
-import { usePostProductCategoryService } from "@/services/product-category/product-category.hooks";
+import {
+  useGetProductCategoryService,
+  usePostProductCategoryService,
+  usePutProductCategoryService,
+} from "@/services/product-category/product-category.hooks";
 import { ProductCategoryStatusEnum } from "@/services/product-category/product-category.types";
 
 const { TextArea } = Input;
@@ -82,10 +86,82 @@ export type FormValues = {
 
 const CreateUpdate = () => {
   const [file, setFile] = useState({} as File);
-
+  const [form] = Form.useForm();
   const navigate = useNavigate();
+  const params = useParams();
+
+  const { id } = params;
+
   const { addError, addSuccess } = useNotification();
   const { mutate: create, isLoading: isLoadingCreate } = usePostProductCategoryService();
+  const { mutate: update, isLoading: isLoadingUpdate } = usePutProductCategoryService();
+
+  useGetProductCategoryService(id as string, {
+    enabled: !!id,
+    onSuccess: ({ data }) => {
+      form.setFieldsValue({
+        image: data.image,
+        name: data.name,
+        short_description: data.short_description,
+      });
+
+      setFile({
+        preview: data.image_url,
+        file_name: data.image,
+      });
+
+      const updatedFields = dynamicFields.map((field) => {
+        if (field.name === "Size") {
+          const newInputs = data.size.map((value) => ({
+            placeholder: "Input size",
+            value: value,
+          }));
+
+          return {
+            ...field,
+            inputs: newInputs,
+          };
+        }
+
+        if (field.name === "Color") {
+          const newInputs = data.color.map((value) => ({
+            placeholder: "Input color",
+            value: value,
+          }));
+
+          return {
+            ...field,
+            inputs: newInputs,
+          };
+        }
+
+        if (field.name === "Material") {
+          const newInputs = data.material.map((value) => ({
+            placeholder: "Input material",
+            value: value,
+          }));
+
+          return {
+            ...field,
+            inputs: newInputs,
+          };
+        }
+        return field;
+      });
+
+      const updatedDynamicFields = Object.keys(data.additional_info).map((key) => ({
+        name: key,
+        inputs: data.additional_info[key].map((value) => ({
+          placeholder: `Input ${key}`,
+          value: value,
+        })),
+      }));
+
+      setDynamicFields(updatedFields);
+
+      setCustomFields(updatedDynamicFields);
+    },
+  });
 
   const [dynamicFields, setDynamicFields] = useState([
     {
@@ -129,7 +205,7 @@ const CreateUpdate = () => {
     },
   ]);
 
-  const [customFields, setCustomField] = useState([
+  const [customFields, setCustomFields] = useState([
     ...JSON.parse(JSON.stringify(baseCustomField)),
     ...JSON.parse(JSON.stringify(baseCustomField)),
     ...JSON.parse(JSON.stringify(baseCustomField)),
@@ -173,7 +249,7 @@ const CreateUpdate = () => {
 
     newCustomField[index].inputs[childIndex].value = event.target.value;
 
-    setCustomField(newCustomField);
+    setCustomFields(newCustomField);
   };
 
   const addCustomField = (index: number) => {
@@ -183,14 +259,14 @@ const CreateUpdate = () => {
       value: "",
     });
 
-    setCustomField(newCustomField);
+    setCustomFields(newCustomField);
   };
 
   const deleteCustomField = (index: number, childIndex: number) => {
     const newCustomField = [...customFields];
 
     newCustomField[index].inputs.splice(childIndex, 1);
-    setCustomField(newCustomField);
+    setCustomFields(newCustomField);
   };
 
   const updateTitleCustomField = (index: number, e: React.ChangeEvent<HTMLInputElement> | null) => {
@@ -200,7 +276,7 @@ const CreateUpdate = () => {
     } else {
       newCustomField[index].isUpdate = !newCustomField[index].isUpdate;
     }
-    setCustomField(newCustomField);
+    setCustomFields(newCustomField);
   };
 
   const onCustomRequest = (file: string | Blob | RcFile) => {
@@ -239,16 +315,30 @@ const CreateUpdate = () => {
       status: ProductCategoryStatusEnum.Active,
     };
 
-    create(payload, {
-      onSuccess: () => {
-        addSuccess("You`re changes are saved successfully");
-        navigate("/product-management/categories");
-      },
-      onError: () => addError(),
-    });
+    if (id) {
+      update(
+        { id: Number(id), data: payload },
+        {
+          onSuccess: () => {
+            addSuccess("You`re changes are saved successfully");
+            navigate("/product-management/categories");
+          },
+          onError: () => addError(),
+        },
+      );
+    } else {
+      create(payload, {
+        onSuccess: () => {
+          addSuccess("You`re changes are saved successfully");
+          navigate("/product-management/categories");
+        },
+        onError: () => addError(),
+      });
+    }
   };
 
-  const isLoading = isLoadingCreate;
+  const isLoading = isLoadingCreate || isLoadingUpdate;
+
   return (
     <div>
       <Space
@@ -273,7 +363,7 @@ const CreateUpdate = () => {
                 href: "/product-management/categories",
               },
               {
-                title: "Add Category",
+                title: `${id ? "Update" : "Add"} Category`,
               },
             ]}
           />
@@ -285,7 +375,7 @@ const CreateUpdate = () => {
                 fontWeight: 600,
               }}
             >
-              Add Category
+              {id ? "Update" : "Add"} Category
             </div>
             <Divider
               style={{
@@ -295,7 +385,7 @@ const CreateUpdate = () => {
           </div>
         </Space>
         <div>
-          <Form onFinish={onSubmit}>
+          <Form onFinish={onSubmit} form={form}>
             <Row>
               <Col span={6}>
                 <Space direction="vertical">

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 import { CloudUploadOutlined, RightOutlined } from "@ant-design/icons";
+import { useQuery } from "@tanstack/react-query";
 import {
   Breadcrumb,
   Button,
@@ -13,33 +14,161 @@ import {
   Select,
   Space,
   Upload,
-  UploadFile,
-  UploadProps,
 } from "antd";
+import { RcFile } from "antd/es/upload";
+import { useNavigate } from "react-router-dom";
 
 import RequiredMessage from "@/components/RequiredMessage";
 import { fullLayout } from "@/constans/form";
+import useNotification from "@/hooks/useNotification";
+import { imageServices } from "@/services/image/image.api";
+import { usePostProductService } from "@/services/product/product.hooks";
+import { productCategoryServices } from "@/services/product-category/product-category.api";
+import { GetProductCategoryResponseType } from "@/services/product-category/product-category.types";
 
 const { TextArea } = Input;
 
 const uploadButton = (
-  <Space direction="vertical">
-    <CloudUploadOutlined />
-    <div
-      style={{
-        color: "#6C6C6C",
-      }}
-    >
-      Drop files here to upload
-    </div>
-  </Space>
+  <div
+    style={{
+      height: 140,
+      aspectRatio: 1,
+      background: "white",
+      borderRadius: 12,
+      border: "1px dashed #D2DDEC",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      cursor: "pointer",
+      textAlign: "center",
+    }}
+  >
+    <Space direction="vertical" align="center">
+      <CloudUploadOutlined />
+      <div
+        style={{
+          color: "#6C6C6C",
+        }}
+      >
+        Drop files here to upload
+      </div>
+    </Space>
+  </div>
 );
 
-const CreateUpdate = () => {
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+export type File = {
+  file_name: string;
+  preview: string;
+};
 
-  const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) =>
-    setFileList(newFileList);
+const defaultFiles = [
+  {
+    file_name: "",
+    preview: "",
+  },
+  {
+    file_name: "",
+    preview: "",
+  },
+  {
+    file_name: "",
+    preview: "",
+  },
+  {
+    file_name: "",
+    preview: "",
+  },
+  {
+    file_name: "",
+    preview: "",
+  },
+];
+
+type SelectField = {
+  label: string;
+  value: number;
+};
+
+const CreateUpdate = () => {
+  const navigate = useNavigate();
+  const [form] = Form.useForm();
+  const [fileList, setFileList] = useState<File[]>(defaultFiles);
+  const [brochure, setBrochure] = useState({} as File);
+  const [categories, setCategories] = useState<SelectField[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState(-1);
+
+  const { addError, addSuccess } = useNotification();
+  const { mutate: create } = usePostProductService();
+
+  const onSubmit = (values: any) => {
+    delete values.image;
+
+    const payload = {
+      ...values,
+      brochure: brochure.file_name,
+      main_image: fileList[0].file_name,
+      images: fileList.map((list) => list.file_name).filter((list) => list !== ""),
+      label: ["wibu"],
+    };
+    create(payload, {
+      onSuccess: () => {
+        addSuccess("You`re changes are saved successfully");
+        navigate("/product-management/products");
+      },
+      onError: () => addError(),
+    });
+  };
+
+  const onCustomRequest = (file: string | Blob | RcFile, index: number) => {
+    const preview = URL.createObjectURL(file as Blob);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    imageServices
+      .postImage(formData)
+      .then((res) => {
+        const newFiles = [...fileList];
+        newFiles[index].file_name = res.data.file_name;
+        newFiles[index].preview = preview;
+
+        setFileList(newFiles);
+      })
+      .catch(() => addError());
+  };
+
+  const onUploadBrochure = (file: string | Blob | RcFile) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    imageServices.postImage(formData).then(({ data }) => {
+      setBrochure({
+        file_name: data.file_name,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        preview: file.name,
+      });
+    });
+  };
+
+  const { data, isLoading } = useQuery(
+    ["product-categories"],
+    () =>
+      productCategoryServices.getProductCategories({
+        limit: 50,
+        page: 1,
+      }),
+    {
+      select: (data) => data.data,
+      onSuccess: (data) => {
+        setCategories(
+          data.map((datum) => ({
+            label: datum.name,
+            value: datum.id,
+          })),
+        );
+      },
+    },
+  );
 
   return (
     <div>
@@ -87,7 +216,7 @@ const CreateUpdate = () => {
           </div>
         </Space>
         <div>
-          <Form>
+          <Form form={form} onFinish={onSubmit}>
             <Row>
               <Col span={6}>
                 <Space direction="vertical">
@@ -110,18 +239,36 @@ const CreateUpdate = () => {
                   className="required-form"
                   rules={[{ required: true, message: <RequiredMessage /> }]}
                 >
-                  <Upload
-                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                    listType="picture-card"
-                    fileList={fileList}
-                    onChange={handleChange}
+                  <div
                     style={{
-                      border: "1px dashed #D2DDEC",
-                      background: "white",
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: 8,
                     }}
                   >
-                    {fileList.length >= 5 ? null : uploadButton}
-                  </Upload>
+                    {fileList.map((file, index) => (
+                      <Upload
+                        key={index}
+                        customRequest={({ file }) => onCustomRequest(file, index)}
+                        showUploadList={false}
+                      >
+                        {file.preview ? (
+                          <img
+                            src={file.preview}
+                            height={140}
+                            width="100%"
+                            alt="preview"
+                            style={{
+                              aspectRatio: 1,
+                              objectFit: "cover",
+                            }}
+                          />
+                        ) : (
+                          uploadButton
+                        )}
+                      </Upload>
+                    ))}
+                  </div>
                 </Form.Item>
               </Col>
             </Row>
@@ -138,7 +285,7 @@ const CreateUpdate = () => {
             <Form.Item
               {...fullLayout}
               label="Product Category"
-              name="category"
+              name="category_id"
               className="required-form"
               rules={[{ required: true, message: <RequiredMessage /> }]}
             >
@@ -148,16 +295,9 @@ const CreateUpdate = () => {
                 }}
                 showSearch
                 placeholder="--Please select category--"
-                options={[
-                  {
-                    value: "wibu",
-                    label: "Wibu",
-                  },
-                  {
-                    value: "wota",
-                    label: "Wota",
-                  },
-                ]}
+                loading={isLoading}
+                options={categories}
+                onSelect={(value) => setSelectedCategory(value)}
               />
             </Form.Item>
             <Divider />
@@ -194,7 +334,7 @@ const CreateUpdate = () => {
             <Form.Item
               {...fullLayout}
               label="Order Minimum"
-              name="min"
+              name="order_minimum"
               className="required-form"
               rules={[{ required: true, message: <RequiredMessage /> }]}
             >
@@ -240,16 +380,13 @@ const CreateUpdate = () => {
                 }}
                 showSearch
                 placeholder="--Please select color--"
-                options={[
-                  {
-                    value: "wibu",
-                    label: "Wibu",
-                  },
-                  {
-                    value: "wota",
-                    label: "Wota",
-                  },
-                ]}
+                options={data?.[
+                  data.findIndex((datum) => datum.id === selectedCategory)
+                ]?.color?.map((color) => ({
+                  label: color,
+                  value: color,
+                }))}
+                disabled={selectedCategory === -1}
               />
             </Form.Item>
             <Divider />
@@ -266,16 +403,13 @@ const CreateUpdate = () => {
                 }}
                 showSearch
                 placeholder="--Please select size--"
-                options={[
-                  {
-                    value: "wibu",
-                    label: "Wibu",
-                  },
-                  {
-                    value: "wota",
-                    label: "Wota",
-                  },
-                ]}
+                options={data?.[
+                  data.findIndex((datum) => datum.id === selectedCategory)
+                ]?.size?.map((size) => ({
+                  label: size,
+                  value: size,
+                }))}
+                disabled={selectedCategory === -1}
               />
             </Form.Item>
             <Divider />
@@ -292,16 +426,13 @@ const CreateUpdate = () => {
                 }}
                 showSearch
                 placeholder="--Please select material--"
-                options={[
-                  {
-                    value: "wibu",
-                    label: "Wibu",
-                  },
-                  {
-                    value: "wota",
-                    label: "Wota",
-                  },
-                ]}
+                options={data?.[
+                  data.findIndex((datum) => datum.id === selectedCategory)
+                ]?.material?.map((material) => ({
+                  label: material,
+                  value: material,
+                }))}
+                disabled={selectedCategory === -1}
               />
             </Form.Item>
             <Divider />
@@ -312,7 +443,7 @@ const CreateUpdate = () => {
               className="required-form"
               rules={[{ required: true, message: <RequiredMessage /> }]}
             >
-              <Upload name="file">
+              <Upload customRequest={({ file }) => onUploadBrochure(file)} showUploadList={false}>
                 <div
                   style={{
                     padding: "8px 16px",
@@ -332,41 +463,49 @@ const CreateUpdate = () => {
                     </div>
                   </Space>
                 </div>
+                {Object.keys(brochure).length > 0 && <div>{brochure.preview}</div>}
               </Upload>
             </Form.Item>
             <Divider />
 
-            <Form.Item
-              {...fullLayout}
-              label="Additional Information"
-              name="information"
-              className="required-form"
-              rules={[{ required: true, message: <RequiredMessage /> }]}
-            >
-              <Select
-                style={{
-                  width: 205,
-                }}
-                showSearch
-                placeholder="--Please select--"
-                options={[
-                  {
-                    value: "wibu",
-                    label: "Wibu",
-                  },
-                  {
-                    value: "wota",
-                    label: "Wota",
-                  },
-                ]}
-              />
-            </Form.Item>
-            <Divider />
+            {selectedCategory !== -1 && (
+              <>
+                {Object.entries(
+                  (data as GetProductCategoryResponseType[])[
+                    (data as GetProductCategoryResponseType[]).findIndex(
+                      (datum) => datum.id === selectedCategory,
+                    )
+                  ].additional_info,
+                ).map(([key, value]) => (
+                  <Fragment key={key}>
+                    <Form.Item
+                      {...fullLayout}
+                      label={key}
+                      name={key}
+                      className="required-form"
+                      rules={[{ required: true, message: <RequiredMessage /> }]}
+                    >
+                      <Select
+                        style={{
+                          width: 205,
+                        }}
+                        showSearch
+                        placeholder="--Please select--"
+                        options={value.map((d) => ({ label: d, value: d }))}
+                      />
+                    </Form.Item>
+                    <Divider />
+                  </Fragment>
+                ))}
+              </>
+            )}
 
             <Row justify="end">
               <Space size="middle">
-                <Button size="large">Cancel</Button>
-                <Button type="primary" size="large" htmlType="submit">
+                <Button size="large" onClick={() => navigate("/product-management/products")}>
+                  Cancel
+                </Button>
+                <Button type="primary" size="large" htmlType="submit" loading={isLoading}>
                   Save
                 </Button>
               </Space>

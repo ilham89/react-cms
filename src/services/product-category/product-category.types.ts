@@ -6,15 +6,14 @@ export enum ProductCategoryStatusEnum {
 export type GetProductCategoryResponseType = {
   id: number;
   image: string;
+  image_url: string;
   name: string;
   short_description: string;
   size: string[];
   color: string[];
   material: string[];
   additional_info: {
-    info_1: string[];
-    info_2: string[];
-    info_3: string[];
+    [key: string]: string[];
   };
   status: ProductCategoryStatusEnum;
   createdAt: string;
@@ -25,8 +24,8 @@ export type GetProductCategoryResponseType = {
 export type GetProductCategoryParamsType = {
   page: number;
   limit: number;
-  order_by: string;
-  order_field: string;
+  order_by?: string;
+  order_field?: string;
 };
 
 export type PostProductCategoryBodyType = {
