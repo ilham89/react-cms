@@ -1,10 +1,14 @@
 import React from "react";
 
-import { DesktopOutlined, PieChartOutlined } from "@ant-design/icons";
+import Icon from "@ant-design/icons/lib/components/Icon";
 import type { MenuProps } from "antd";
 import { Menu } from "antd";
 import type { SelectInfo } from "rc-menu/lib/interface";
 import { useNavigate } from "react-router-dom";
+
+import Dashboard from "@/assets/menu/dashboard";
+import ProductManagement from "@/assets/menu/product-management";
+import WebManagement from "@/assets/menu/web-management";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -25,8 +29,8 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-  getItem("Dashboard", "/dashboard", <PieChartOutlined />),
-  getItem("Web Management", "/web-management", <DesktopOutlined />, [
+  getItem("Dashboard", "/dashboard", <Icon component={Dashboard} />),
+  getItem("Web Management", "/web-management", <Icon component={WebManagement} />, [
     getItem("Homepage", "/homepage", null, [
       getItem("Hero Section", "/web-management/homepage/hero-section"),
       getItem("Partner", "/web-management/homepage/partner"),
@@ -45,14 +49,9 @@ const items: MenuItem[] = [
     getItem("Contact Us", "/web-management/contact-us"),
   ]),
 
-  getItem("Product Management", "/product-management", <DesktopOutlined />, [
+  getItem("Product Management", "/product-management", <Icon component={ProductManagement} />, [
     getItem("Categories", "/product-management/categories"),
     getItem("Product List", "/product-management/products"),
-  ]),
-
-  getItem("Permission", "/permission", <DesktopOutlined />, [
-    getItem("Route Permission", "/permission/route"),
-    getItem("404", "/permission/404"),
   ]),
 ];
 

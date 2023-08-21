@@ -41,6 +41,9 @@
     .ant-menu-light > .ant-menu .ant-menu-item-selected {
       color: white;
       background-color: #1f456e;
+      & svg > path {
+        fill: #ffffff !important;
+      }
     }
   }
   &-content {
