@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 
-import { PlusOutlined } from "@ant-design/icons";
+import { CloseCircleFilled, PlusOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import {
   Button,
   Dropdown,
   Input,
   MenuProps,
+  Modal,
   Pagination,
   Row,
   Select,
@@ -20,13 +21,11 @@ import { ColumnsType } from "antd/es/table";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { useDebounce } from "@/hooks/useDebounce";
+import useNotification from "@/hooks/useNotification";
 import { productServices } from "@/services/product/product.api";
+import { useDeleteProductService } from "@/services/product/product.hooks";
 import { GetProductResponseType } from "@/services/product/product.types";
-
-enum Status {
-  Active = "Active",
-  Inactive = "Inactive",
-}
+import { queryClient } from "@/utils/queryClient";
 
 const items: MenuProps["items"] = [
   {
@@ -53,7 +52,10 @@ const Products = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(5);
   const [searchValue, setSearchValue] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState(-1);
   const debounceSearchValue = useDebounce(searchValue);
+
+  const { addError, addSuccess } = useNotification();
 
   const { data, isLoading } = useQuery(["products", page, limit, debounceSearchValue], () =>
     productServices.getProducts({
@@ -62,8 +64,12 @@ const Products = () => {
       q: debounceSearchValue,
       order_by: "",
       order_field: "name",
+      status: "Inactive",
     }),
   );
+
+  const onOpenModal = (id: number) => setSelectedProduct(id);
+  const onCloseModal = () => setSelectedProduct(-1);
 
   const onChangePage = (value: number) => setPage(value);
   const onChangeLimit = (value: number) => setLimit(value);
@@ -71,6 +77,18 @@ const Products = () => {
     setPage(1);
     setSearchValue(e.target.value);
   };
+
+  const { mutate: deleteProduct, isLoading: isLoadingDelete } = useDeleteProductService();
+
+  const onDeleteFaq = () =>
+    deleteProduct(selectedProduct, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["products"]);
+        setSelectedProduct(-1);
+        addSuccess("Your items are successfully deleted");
+      },
+      onError: () => addError(),
+    });
 
   const columns: ColumnsType<GetProductResponseType> = [
     {
@@ -101,21 +119,36 @@ const Products = () => {
       dataIndex: "label",
       key: "label",
       render: (value) => (
-        <Tag bordered={false} color={value === Status.Active ? "success" : "error"}>
-          {value}
-        </Tag>
+        <Space>
+          {value.map((v: string) => (
+            <Tag
+              key={v}
+              bordered={false}
+              style={{
+                backgroundColor: "#1a252d",
+                color: "white",
+              }}
+            >
+              {v}
+            </Tag>
+          ))}
+        </Space>
       ),
     },
     {
       title: "Action",
-      dataIndex: "key",
-      key: "key",
-      render: () => (
+      dataIndex: "id",
+      key: "id",
+      render: (id) => (
         <Space>
-          <Button type="primary" className="btn-update">
+          <Button
+            type="primary"
+            className="btn-update"
+            onClick={() => navigate(`/product-management/products/${id}`)}
+          >
             Edit
           </Button>
-          <Button type="primary" danger>
+          <Button type="primary" danger onClick={() => onOpenModal(id)}>
             Delete
           </Button>
         </Space>
@@ -242,6 +275,35 @@ const Products = () => {
           )}
         />
       </div>
+      <Modal
+        width={400}
+        title={
+          <Space align="start">
+            <CloseCircleFilled
+              style={{
+                color: "#DA4453",
+                fontSize: 24,
+              }}
+            />
+            <div>Do you want to delete these items?</div>
+          </Space>
+        }
+        open={selectedProduct > 0}
+        onOk={onDeleteFaq}
+        onCancel={onCloseModal}
+        okText="Delete"
+        okButtonProps={{ loading: isLoadingDelete }}
+      >
+        <p
+          style={{
+            color: "#9C9C9C",
+            marginLeft: 32,
+          }}
+        >
+          Deleting this item will remove in the items list and cannot be undone, please be consider
+          and check them again.
+        </p>
+      </Modal>
     </div>
   );
 };

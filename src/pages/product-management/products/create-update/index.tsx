@@ -17,7 +17,7 @@ import {
   Upload,
 } from "antd";
 import { RcFile } from "antd/es/upload";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import RequiredMessage from "@/components/RequiredMessage";
 import { fullLayout } from "@/constans/form";
@@ -25,6 +25,7 @@ import useNotification from "@/hooks/useNotification";
 import { imageServices } from "@/services/image/image.api";
 import { productServices } from "@/services/product/product.api";
 import {
+  useGetProductService,
   usePostProductLabelsService,
   usePostProductService,
 } from "@/services/product/product.hooks";
@@ -97,6 +98,8 @@ type SelectField = {
 
 const CreateUpdate = () => {
   const navigate = useNavigate();
+  const params = useParams();
+  const { id } = params;
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<File[]>(defaultFiles);
   const [brochure, setBrochure] = useState({} as File);
@@ -109,12 +112,39 @@ const CreateUpdate = () => {
   const onSubmit = (values: any) => {
     delete values.image;
 
+    // const dataWithoutAdditionalInfo = [
+    //   "name",
+    //   "category_id",
+    //   "information",
+    //   "description",
+    //   "price",
+    //   "order_minimum",
+    //   "label",
+    //   "color",
+    //   "size",
+    //   "material",
+    //   "brochure",
+    //   "main_image",
+    //   "images",
+    // ];
+
     const payload = {
       ...values,
       brochure: brochure.file_name,
       main_image: fileList[0].file_name,
       images: fileList.map((list) => list.file_name).filter((list) => list !== ""),
     };
+
+    // const additional_info = {} as any;
+
+    // for (const key in payload) {
+    //   if (payload.hasOwnProperty(key) && !dataWithoutAdditionalInfo.includes(key)) {
+    //     additional_info[key] = payload[key];
+
+    //     delete payload[key];
+    //   }
+    // }
+
     create(payload, {
       onSuccess: () => {
         addSuccess("You`re changes are saved successfully");
@@ -199,6 +229,27 @@ const CreateUpdate = () => {
     );
   };
 
+  useGetProductService(id as string, {
+    enabled: !!id,
+    onSuccess: ({ data }) => {
+      form.setFieldsValue({
+        name: data.name,
+        category_id: data.category_id,
+        information: data.information,
+        description: data.description,
+        price: data.price,
+        order_minimum: data.order_minimum,
+        label: data.label,
+        color: data.color,
+        material: data.material,
+        size: data.size,
+      });
+
+      // local state
+      setSelectedCategory(data.category_id);
+    },
+  });
+
   return (
     <div>
       <Space
@@ -223,7 +274,7 @@ const CreateUpdate = () => {
                 href: "/product-management/products",
               },
               {
-                title: "Add Product",
+                title: `${id ? "Update" : "Add"} Product`,
               },
             ]}
           />
@@ -235,7 +286,7 @@ const CreateUpdate = () => {
                 fontWeight: 600,
               }}
             >
-              Add Product
+              {id ? "Update" : "Add"} Product
             </div>
             <Divider
               style={{

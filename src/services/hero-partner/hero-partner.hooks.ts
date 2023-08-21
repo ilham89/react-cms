@@ -5,12 +5,28 @@ import {
   GetHeroPartnerParamsType,
   GetHeroPartnerResponseType,
   PostHeroPartnerBodyType,
+  PutHeroPartnerOrderBodyType,
   PutHeroPartnerParamsType,
 } from "./hero-partner.types";
 import { DataResponseType } from "@/interfaces/response";
 
-export const useGetHeroPartnersService = (params: GetHeroPartnerParamsType) =>
-  useQuery(["hero-partners"], () => heroPartnerServices.getHeroPartners(params));
+export const useGetHeroPartnersService = (
+  params: GetHeroPartnerParamsType,
+  options?:
+    | (Omit<
+        UseQueryOptions<
+          DataResponseType<GetHeroPartnerResponseType[]>,
+          unknown,
+          DataResponseType<GetHeroPartnerResponseType[]>,
+          string[]
+        >,
+        "initialData" | "queryFn" | "queryKey"
+      > & { initialData?: (() => undefined) | undefined })
+    | undefined,
+) =>
+  useQuery(["hero-partners"], () => heroPartnerServices.getHeroPartners(params), {
+    ...options,
+  });
 
 export const useGetHeroPartnerService = (
   id: string,
@@ -37,3 +53,6 @@ export const usePutHeroPartnerService = () =>
   useMutation((params: PutHeroPartnerParamsType) =>
     heroPartnerServices.putHeroPartner(params.id, params.data),
   );
+
+export const usePutHeroPartnerOrderService = () =>
+  useMutation((data: PutHeroPartnerOrderBodyType) => heroPartnerServices.orderHeroPartner(data));

@@ -48,6 +48,7 @@ export type GetProductParamsType = {
   q: string;
   order_by?: string;
   order_field?: string;
+  status?: string;
 };
 
 export type GetProductLabelResponseType = {

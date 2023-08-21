@@ -1,10 +1,59 @@
-import { CloseCircleFilled, PlusOutlined } from "@ant-design/icons";
+import React from "react";
+
+import { CloseCircleFilled, MenuOutlined, PlusOutlined } from "@ant-design/icons";
+import { DndContext } from "@dnd-kit/core";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { Button, Modal, Space, Table, Tabs, TabsProps } from "antd";
 import { ColumnsType } from "antd/es/table";
 
 import { useListPartner } from "./list.action";
-import DraggableIcon from "@/assets/icons/draggable.svg";
 import { GetHeroPartnerResponseType } from "@/services/hero-partner/hero-partner.types";
+
+interface RowProps extends React.HTMLAttributes<HTMLTableRowElement> {
+  "data-row-key": string;
+}
+
+const Row = ({ children, ...props }: RowProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: props["data-row-key"],
+  });
+
+  const style: React.CSSProperties = {
+    ...props.style,
+    transform: CSS.Transform.toString(transform && { ...transform, scaleY: 1 }),
+    transition,
+    ...(isDragging ? { position: "relative", zIndex: 9999 } : {}),
+  };
+
+  return (
+    <tr {...props} ref={setNodeRef} style={style} {...attributes}>
+      {React.Children.map(children, (child) => {
+        if ((child as React.ReactElement).key === "id") {
+          return React.cloneElement(child as React.ReactElement, {
+            children: (
+              <MenuOutlined
+                ref={setActivatorNodeRef}
+                style={{ touchAction: "none", cursor: "move" }}
+                {...listeners}
+              />
+            ),
+          });
+        }
+        return child;
+      })}
+    </tr>
+  );
+};
 
 const Partner = () => {
   const {
@@ -12,11 +61,12 @@ const Partner = () => {
     location,
     onOpenModal,
     onCloseModal,
-    data,
+    dataSource,
     isLoading,
     isLoadingDelete,
     onDeleteHeroPartner,
     selectedRow,
+    onDragEnd,
   } = useListPartner();
 
   const columns: ColumnsType<GetHeroPartnerResponseType> = [
@@ -24,15 +74,6 @@ const Partner = () => {
       title: "",
       dataIndex: "id",
       key: "id",
-      render: () => (
-        <img
-          src={DraggableIcon}
-          alt="draggable"
-          width={24}
-          height={24}
-          style={{ cursor: "pointer" }}
-        />
-      ),
     },
     {
       title: "Image",
@@ -150,14 +191,27 @@ const Partner = () => {
         >
           Partner List
         </div>
-        <Table
-          dataSource={data?.data}
-          columns={columns}
-          pagination={false}
-          loading={isLoading}
-          rowKey={(record) => record.id}
-          scroll={{ x: 800 }}
-        />
+        <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
+          <SortableContext
+            // rowKey array
+            items={dataSource.map((i) => i.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <Table
+              components={{
+                body: {
+                  row: Row,
+                },
+              }}
+              dataSource={dataSource}
+              columns={columns}
+              pagination={false}
+              loading={isLoading}
+              rowKey={(record) => record.id}
+              scroll={{ x: 800 }}
+            />
+          </SortableContext>
+        </DndContext>
       </div>
       <Modal
         width={400}

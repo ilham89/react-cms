@@ -8,6 +8,7 @@ export type GetHeroPartnerResponseType = {
   createdAt: string;
   updatedAt: string;
   image_url: string;
+  order_number: number;
 };
 
 export type PostHeroPartnerBodyType = {
@@ -30,4 +31,8 @@ export type PutHeroPartnerParamsType = {
 
 export type GetHeroPartnerParamsType = {
   type: string;
+};
+
+export type PutHeroPartnerOrderBodyType = {
+  data: GetHeroPartnerResponseType[];
 };

@@ -28,8 +28,6 @@ const Faq = () => {
     page,
     limit,
     selectedCategory,
-    filter,
-    setFilter,
     navigate,
     onOpenModal,
     onCloseModal,
@@ -39,6 +37,10 @@ const Faq = () => {
     onChangeTable,
     onDeleteFaq,
     onUpdateFaq,
+    setOpenStatus,
+    openStatus,
+    setFilter,
+    filter,
   } = useListFaq();
 
   const items: MenuProps["items"] = [
@@ -205,6 +207,8 @@ const Faq = () => {
                 onChange={onChangeLimit}
               />
               <Dropdown
+                open={openStatus}
+                onOpenChange={(open) => setOpenStatus(open)}
                 trigger={["click"]}
                 dropdownRender={() => (
                   <div
@@ -226,7 +230,9 @@ const Faq = () => {
                       }}
                     >
                       <div>Filter</div>
-                      <div>Clear Filter</div>
+                      <div role="button" tabIndex={0} onClick={() => setFilter("")}>
+                        Clear Filter
+                      </div>
                     </div>
                     <div
                       style={{
@@ -245,7 +251,7 @@ const Faq = () => {
                           { value: "Active", label: "Active" },
                           { value: "Inactive", label: "Inactive" },
                         ]}
-                        onChange={(value) => setFilter(value)}
+                        onSelect={(value) => setFilter(value)}
                       />
                     </div>
                     <div
@@ -253,7 +259,7 @@ const Faq = () => {
                         padding: "12px 16px",
                       }}
                     >
-                      <Button type="primary" block>
+                      <Button type="primary" block onClick={() => setOpenStatus(false)}>
                         Apply Filter
                       </Button>
                     </div>

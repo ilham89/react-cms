@@ -5,6 +5,7 @@ import {
   GetHeroPartnerResponseType,
   PostHeroPartnerBodyType,
   PutHeroPartnerBodyType,
+  PutHeroPartnerOrderBodyType,
 } from "./hero-partner.types";
 import { axiosInstance } from "@/configs/axios";
 import { DataResponseType } from "@/interfaces/response";
@@ -47,6 +48,14 @@ export const heroPartnerServices = {
     const response = await axiosInstance({
       url: `/hero-section-and-partners/${id}`,
       method: "delete",
+    });
+    return response.data;
+  },
+  orderHeroPartner: async (data: PutHeroPartnerOrderBodyType) => {
+    const response = await axiosInstance({
+      url: `/hero-section-and-partners/order`,
+      method: "put",
+      data,
     });
     return response.data;
   },

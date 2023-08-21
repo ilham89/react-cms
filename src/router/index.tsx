@@ -206,6 +206,12 @@ const routeList: RouteObject[] = [
             path: "products/add",
             element: <WrapperRouteComponent element={<FormProduct />} titleId="Add Product" auth />,
           },
+          {
+            path: "products/:id",
+            element: (
+              <WrapperRouteComponent element={<FormProduct />} titleId="Update Product" auth />
+            ),
+          },
         ],
       },
       {
