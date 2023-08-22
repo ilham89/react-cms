@@ -5,6 +5,7 @@ import {
   GetProductResponseType,
   PostProductBodyType,
   PostProductLabelBodyType,
+  PutProductParamsType,
 } from "./product.types";
 import { DataResponseType } from "@/interfaces/response";
 
@@ -34,3 +35,6 @@ export const useGetProductService = (
 
 export const useDeleteProductService = () =>
   useMutation((id: number) => productServices.deleteProduct(id));
+
+export const usePutProductService = () =>
+  useMutation((params: PutProductParamsType) => productServices.putProduct(params.id, params.data));

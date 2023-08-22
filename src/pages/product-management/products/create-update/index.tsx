@@ -28,6 +28,7 @@ import {
   useGetProductService,
   usePostProductLabelsService,
   usePostProductService,
+  usePutProductService,
 } from "@/services/product/product.hooks";
 import { productCategoryServices } from "@/services/product-category/product-category.api";
 import { GetProductCategoryResponseType } from "@/services/product-category/product-category.types";
@@ -108,25 +109,26 @@ const CreateUpdate = () => {
 
   const { addError, addSuccess } = useNotification();
   const { mutate: create } = usePostProductService();
+  const { mutate: update } = usePutProductService();
 
   const onSubmit = (values: any) => {
     delete values.image;
 
-    // const dataWithoutAdditionalInfo = [
-    //   "name",
-    //   "category_id",
-    //   "information",
-    //   "description",
-    //   "price",
-    //   "order_minimum",
-    //   "label",
-    //   "color",
-    //   "size",
-    //   "material",
-    //   "brochure",
-    //   "main_image",
-    //   "images",
-    // ];
+    const dataWithoutAdditionalInfo = [
+      "name",
+      "category_id",
+      "information",
+      "description",
+      "price",
+      "order_minimum",
+      "label",
+      "color",
+      "size",
+      "material",
+      "brochure",
+      "main_image",
+      "images",
+    ];
 
     const payload = {
       ...values,
@@ -135,23 +137,46 @@ const CreateUpdate = () => {
       images: fileList.map((list) => list.file_name).filter((list) => list !== ""),
     };
 
-    // const additional_info = {} as any;
+    const additional_info = {} as any;
 
-    // for (const key in payload) {
-    //   if (payload.hasOwnProperty(key) && !dataWithoutAdditionalInfo.includes(key)) {
-    //     additional_info[key] = payload[key];
+    for (const key in payload) {
+      //eslint-disable-next-line
+      if (payload.hasOwnProperty(key) && !dataWithoutAdditionalInfo.includes(key)) {
+        additional_info[key] = payload[key];
 
-    //     delete payload[key];
-    //   }
-    // }
+        delete payload[key];
+      }
+    }
 
-    create(payload, {
-      onSuccess: () => {
-        addSuccess("You`re changes are saved successfully");
-        navigate("/product-management/products");
-      },
-      onError: () => addError(),
-    });
+    const transformed = Object.keys(additional_info).map((key) => ({
+      [key]: additional_info[key],
+    }));
+
+    const newPayload = { ...payload, additional_info: [...transformed] };
+
+    if (id) {
+      update(
+        {
+          id: Number(id),
+          data: newPayload,
+        },
+        {
+          onSuccess: () => {
+            addSuccess("You`re changes are saved successfully");
+            navigate("/product-management/products");
+          },
+          onError: () => addError(),
+        },
+      );
+    } else {
+      create(newPayload, {
+        onSuccess: () => {
+          addSuccess("You`re changes are saved successfully");
+          navigate("/product-management/products");
+        },
+        onError: () => addError(),
+      });
+    }
   };
 
   const onCustomRequest = (file: string | Blob | RcFile, index: number) => {
@@ -232,6 +257,14 @@ const CreateUpdate = () => {
   useGetProductService(id as string, {
     enabled: !!id,
     onSuccess: ({ data }) => {
+      const additional_info = {} as { [key: string]: string };
+
+      data.additional_info.forEach((info) => {
+        const key = Object.keys(info)[0]; // Ambil kunci dari objek
+        const value = info[key]; // Ambil nilai dari objek
+        additional_info[key] = value; // Tambahkan pasangan kunci dan nilai ke dalam objek additional_info
+      });
+
       form.setFieldsValue({
         name: data.name,
         category_id: data.category_id,
@@ -243,11 +276,25 @@ const CreateUpdate = () => {
         color: data.color,
         material: data.material,
         size: data.size,
+        image: data.main_image,
+        brochure: data.brochure,
+        ...additional_info,
       });
+
+      const newFileList = data.images.map((name, index) => ({
+        file_name: name,
+        preview: data.images_url[index],
+      }));
 
       // local state
       setSelectedCategory(data.category_id);
+      setFileList(newFileList);
+      setBrochure({
+        file_name: data.brochure,
+        preview: data.brochure,
+      });
     },
+    refetchOnWindowFocus: false,
   });
 
   return (
@@ -467,6 +514,8 @@ const CreateUpdate = () => {
                 style={{
                   width: 205,
                 }}
+                mode="multiple"
+                allowClear
                 showSearch
                 placeholder="--Please select color--"
                 options={data?.[
@@ -490,6 +539,8 @@ const CreateUpdate = () => {
                 style={{
                   width: 205,
                 }}
+                mode="multiple"
+                allowClear
                 showSearch
                 placeholder="--Please select size--"
                 options={data?.[
@@ -513,6 +564,8 @@ const CreateUpdate = () => {
                 style={{
                   width: 205,
                 }}
+                mode="multiple"
+                allowClear
                 showSearch
                 placeholder="--Please select material--"
                 options={data?.[
@@ -578,6 +631,8 @@ const CreateUpdate = () => {
                         style={{
                           width: 205,
                         }}
+                        mode="multiple"
+                        allowClear
                         showSearch
                         placeholder="--Please select--"
                         options={value.map((d) => ({ label: d, value: d }))}

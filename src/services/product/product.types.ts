@@ -6,7 +6,9 @@ export type ProductCategoryType = {
 export type GetProductResponseType = {
   id: number;
   main_image: string;
+  main_image_url: string;
   images: string[];
+  images_url: string[];
   name: string;
   information: string;
   description: string;
@@ -17,7 +19,7 @@ export type GetProductResponseType = {
   size: string;
   material: string;
   brochure: string;
-  additional_info: string;
+  additional_info: any[];
   category_id: number;
   createdAt: string;
   updatedAt: string;
@@ -61,4 +63,9 @@ export type GetProductLabelResponseType = {
 
 export type PostProductLabelBodyType = {
   name: string;
+};
+
+export type PutProductParamsType = {
+  id: number;
+  data: PutProductBodyType;
 };
