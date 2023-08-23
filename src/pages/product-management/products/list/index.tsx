@@ -27,6 +27,7 @@ import { productServices } from "@/services/product/product.api";
 import { useDeleteProductService } from "@/services/product/product.hooks";
 import { GetProductResponseType } from "@/services/product/product.types";
 import { queryClient } from "@/utils/queryClient";
+import { thousandFormat } from "@/utils/string";
 
 const items: MenuProps["items"] = [
   {
@@ -124,6 +125,7 @@ const Products = () => {
       title: "Price",
       dataIndex: "price",
       key: "price",
+      render: (value) => <>{thousandFormat(value)}</>,
     },
     {
       title: "Label",

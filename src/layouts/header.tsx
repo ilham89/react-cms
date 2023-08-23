@@ -76,7 +76,7 @@ const HeaderComponent: React.FC<HeaderProps> = ({ collapsed, toggle }) => {
             >
               <span className="user-action">
                 <img
-                  src="https://solpac-staging.s3.ap-southeast-1.amazonaws.com/cca3a03c35b6afce0e5b4ff5fb121b7bd2411ab3228fbc0dc5bc2ba27044886e_Frame%201.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA2C2YX6HVCRCJCRQQ%2F20230823%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20230823T103802Z&X-Amz-Expires=3600&X-Amz-Signature=f67fbbff0bd59beaefc10cb84089d535ca9e1f1f9743a36315acef098c124818&X-Amz-SignedHeaders=host&x-id=GetObject"
+                  src="https://res.cloudinary.com/ds73yosji/image/upload/v1692803403/solpac/Frame_1_lzqojw.png"
                   className="user-avator"
                   alt="avator"
                 />

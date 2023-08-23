@@ -19,6 +19,7 @@ export type GetProductResponseType = {
   size: string;
   material: string;
   brochure: string;
+  brochure_url: string;
   additional_info: any[];
   category_id: number;
   createdAt: string;

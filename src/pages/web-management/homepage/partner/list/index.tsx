@@ -92,7 +92,7 @@ const Partner = () => {
       ),
     },
     {
-      title: "Banner Name",
+      title: "Partner Name",
       dataIndex: "name",
       key: "name",
       sorter: (a, b) => a.name.length - b.name.length,
@@ -193,7 +193,6 @@ const Partner = () => {
         </div>
         <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
           <SortableContext
-            // rowKey array
             items={dataSource.map((i) => i.id)}
             strategy={verticalListSortingStrategy}
           >

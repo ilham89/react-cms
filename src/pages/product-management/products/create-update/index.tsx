@@ -255,7 +255,7 @@ const CreateUpdate = () => {
         onSuccess: () => {
           queryClient.invalidateQueries(["product-labels"]);
         },
-        onError: () => addError("Please input label!"),
+        onError: (error: any) => addError(error?.response?.data.error[0]),
       },
     );
   };
@@ -301,7 +301,7 @@ const CreateUpdate = () => {
       setFileList(newFileList);
       setBrochure({
         file_name: data.brochure,
-        preview: data.brochure,
+        preview: data.brochure_url,
       });
     },
     refetchOnWindowFocus: false,
@@ -388,6 +388,7 @@ const CreateUpdate = () => {
                         key={index}
                         customRequest={({ file }) => onCustomRequest(file, index)}
                         showUploadList={false}
+                        accept="image/*"
                       >
                         {file.preview ? (
                           <img
@@ -445,7 +446,7 @@ const CreateUpdate = () => {
               className="required-form"
               rules={[{ required: true, message: <RequiredMessage /> }]}
             >
-              <TextArea rows={4} placeholder="Product information" maxLength={150} showCount />
+              <TextArea rows={4} placeholder="Product information" maxLength={300} showCount />
             </Form.Item>
             <Divider />
             <Form.Item
@@ -455,7 +456,7 @@ const CreateUpdate = () => {
               className="required-form"
               rules={[{ required: true, message: <RequiredMessage /> }]}
             >
-              <TextArea rows={4} placeholder="Product description" maxLength={150} showCount />
+              <TextArea rows={4} placeholder="Product description" maxLength={300} showCount />
             </Form.Item>
             <Divider />
             <Form.Item
@@ -465,7 +466,12 @@ const CreateUpdate = () => {
               className="required-form"
               rules={[{ required: true, message: <RequiredMessage /> }]}
             >
-              <InputNumber addonAfter="each" placeholder="Input price" />
+              <InputNumber
+                addonAfter="each"
+                placeholder="Input price"
+                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                parser={(value) => value!.replace(/\$\s?|(,*)/g, "")}
+              />
             </Form.Item>
             <Divider />
             <Form.Item
@@ -475,7 +481,12 @@ const CreateUpdate = () => {
               className="required-form"
               rules={[{ required: true, message: <RequiredMessage /> }]}
             >
-              <InputNumber addonAfter="product" placeholder="Order minimum" />
+              <InputNumber
+                addonAfter="product"
+                placeholder="Order minimum"
+                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                parser={(value) => value!.replace(/\$\s?|(,*)/g, "")}
+              />
             </Form.Item>
             <Divider />
             <Form.Item
@@ -589,7 +600,11 @@ const CreateUpdate = () => {
             </Form.Item>
             <Divider />
             <Form.Item {...fullLayout} label="Product Brochure" name="brochure">
-              <Upload customRequest={({ file }) => onUploadBrochure(file)} showUploadList={false}>
+              <Upload
+                customRequest={({ file }) => onUploadBrochure(file)}
+                showUploadList={false}
+                accept="application/pdf, image/*"
+              >
                 <div
                   style={{
                     padding: "8px 16px",
@@ -609,8 +624,12 @@ const CreateUpdate = () => {
                     </div>
                   </Space>
                 </div>
-                {Object.keys(brochure).length > 0 && <div>{brochure.preview}</div>}
               </Upload>
+              {Object.keys(brochure).length > 0 && (
+                <a href={brochure.preview} download target="_blank" rel="noreferrer">
+                  {brochure.file_name}
+                </a>
+              )}
             </Form.Item>
             <Divider />
 

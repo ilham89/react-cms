@@ -7,3 +7,8 @@ export const getBase64 = (file: RcFile): Promise<string> =>
     reader.onload = () => resolve(reader.result as string);
     reader.onerror = (error) => reject(error);
   });
+
+export const thousandFormat = (x: string | number) =>
+  x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+export const rupiahCurrency = (x: string | number) => `Rp ${thousandFormat(x)}`;

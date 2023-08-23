@@ -59,7 +59,7 @@ const About = () => {
             className="required-form"
             rules={[{ required: true, message: <RequiredMessage /> }]}
           >
-            <TextArea rows={4} placeholder="About section" maxLength={150} showCount />
+            <TextArea rows={4} placeholder="About section" maxLength={300} showCount />
           </Form.Item>
           <Divider />
           <Row justify="end">

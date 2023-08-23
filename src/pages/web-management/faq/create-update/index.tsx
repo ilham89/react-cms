@@ -119,7 +119,7 @@ const CreateUpdate = () => {
               className="required-form"
               rules={[{ required: true, message: <RequiredMessage /> }]}
             >
-              <TextArea rows={4} placeholder="Question Answer" maxLength={150} showCount />
+              <TextArea rows={4} placeholder="Question Answer" maxLength={300} showCount />
             </Form.Item>
             <Divider />
             <Row justify="end">
