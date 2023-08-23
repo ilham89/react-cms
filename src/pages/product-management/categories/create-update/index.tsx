@@ -226,8 +226,6 @@ const CreateUpdate = () => {
         return false;
       });
 
-      console.log(customFields.length - mergedFields.length > 0);
-
       for (let i = 0; i < customFields.length - mergedFields.length; i++) {
         mergedFields.push(...baseCustomField);
       }
@@ -321,7 +319,7 @@ const CreateUpdate = () => {
   };
 
   const getValueField = (data: CustomFieldValue[]) =>
-    data.map((datum) => datum.value).filter((datum) => datum !== "");
+    data?.map((datum) => datum.value)?.filter((datum) => datum !== "");
 
   const onSubmit = (values: FormValues) => {
     delete values.image;
@@ -333,9 +331,9 @@ const CreateUpdate = () => {
       color: getValueField(dynamicFields[1].inputs),
       material: getValueField(dynamicFields[2].inputs),
       additional_info: {
-        [customFields[0].name]: getValueField(customFields[0].inputs),
-        [customFields[1].name]: getValueField(customFields[1].inputs),
-        [customFields[2].name]: getValueField(customFields[2].inputs),
+        [customFields[0]?.name]: getValueField(customFields[0]?.inputs),
+        [customFields[1]?.name]: getValueField(customFields[1]?.inputs),
+        [customFields[2]?.name]: getValueField(customFields[2]?.inputs),
       },
       status:
         id && data?.data.status === ProductCategoryStatusEnum.Inactive
