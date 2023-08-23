@@ -151,6 +151,7 @@ const CreateUpdate = () => {
 
       const updatedDynamicFields = Object.keys(data.additional_info).map((key) => ({
         name: key,
+        isUpdate: false,
         inputs: data.additional_info[key].map((value) => ({
           placeholder: `Input ${key}`,
           value: value,
@@ -159,7 +160,25 @@ const CreateUpdate = () => {
 
       setDynamicFields(updatedFields);
 
-      setCustomFields(updatedDynamicFields);
+      const combinedFields = updatedDynamicFields.concat(customFields);
+
+      // Buat objek untuk menyimpan data unik berdasarkan name
+      const uniqueFields = {} as { [key: string]: boolean };
+
+      // Filter elemen-elemen yang memiliki properti yang sama
+      const mergedFields = combinedFields.filter((field) => {
+        if (!uniqueFields[field.name]) {
+          uniqueFields[field.name] = true;
+          return true;
+        }
+        return false;
+      });
+
+      for (let i = 0; i < customFields.length - mergedFields.length; i++) {
+        mergedFields.push(...baseCustomField);
+      }
+
+      setCustomFields(mergedFields);
     },
   });
 
@@ -315,25 +334,33 @@ const CreateUpdate = () => {
       status: ProductCategoryStatusEnum.Active,
     };
 
-    if (id) {
-      update(
-        { id: Number(id), data: payload },
-        {
+    // eslint-disable-next-line
+    // @ts-ignore
+    delete payload.additional_info["Additional Information"];
+
+    try {
+      if (id) {
+        update(
+          { id: Number(id), data: payload },
+          {
+            onSuccess: () => {
+              addSuccess("You`re changes are saved successfully");
+              navigate("/product-management/categories");
+            },
+            onError: () => addError(),
+          },
+        );
+      } else {
+        create(payload, {
           onSuccess: () => {
             addSuccess("You`re changes are saved successfully");
             navigate("/product-management/categories");
           },
           onError: () => addError(),
-        },
-      );
-    } else {
-      create(payload, {
-        onSuccess: () => {
-          addSuccess("You`re changes are saved successfully");
-          navigate("/product-management/categories");
-        },
-        onError: () => addError(),
-      });
+        });
+      }
+    } catch (error) {
+      console.log(error, "ini errror");
     }
   };
 

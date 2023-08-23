@@ -152,7 +152,13 @@ const CreateUpdate = () => {
       [key]: additional_info[key],
     }));
 
-    const newPayload = { ...payload, additional_info: [...transformed] };
+    const additional_info_payload = transformed.filter((item) => {
+      // Menggunakan Object.values(item)[0] untuk mendapatkan array value pertama pada objek
+      const values = Object.values(item)[0];
+      return values?.length > 0; // Mengembalikan true jika panjang array value lebih dari 0
+    });
+
+    const newPayload = { ...payload, additional_info: [...additional_info_payload] };
 
     if (id) {
       update(
@@ -285,6 +291,10 @@ const CreateUpdate = () => {
         file_name: name,
         preview: data.images_url[index],
       }));
+
+      for (let i = 0; i < defaultFiles.length - data.images.length; i++) {
+        newFileList.push(defaultFiles[0]);
+      }
 
       // local state
       setSelectedCategory(data.category_id);
@@ -578,13 +588,7 @@ const CreateUpdate = () => {
               />
             </Form.Item>
             <Divider />
-            <Form.Item
-              {...fullLayout}
-              label="Product Brochure"
-              name="brochure"
-              className="required-form"
-              rules={[{ required: true, message: <RequiredMessage /> }]}
-            >
+            <Form.Item {...fullLayout} label="Product Brochure" name="brochure">
               <Upload customRequest={({ file }) => onUploadBrochure(file)} showUploadList={false}>
                 <div
                   style={{
@@ -620,13 +624,7 @@ const CreateUpdate = () => {
                   ].additional_info,
                 ).map(([key, value]) => (
                   <Fragment key={key}>
-                    <Form.Item
-                      {...fullLayout}
-                      label={key}
-                      name={key}
-                      className="required-form"
-                      rules={[{ required: true, message: <RequiredMessage /> }]}
-                    >
+                    <Form.Item {...fullLayout} label={key} name={key}>
                       <Select
                         style={{
                           width: 205,
