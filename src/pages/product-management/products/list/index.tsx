@@ -17,7 +17,8 @@ import {
   TabsProps,
   Tag,
 } from "antd";
-import { ColumnsType } from "antd/es/table";
+import { ColumnsType, TablePaginationConfig } from "antd/es/table";
+import { FilterValue, SorterResult } from "antd/es/table/interface";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { useDebounce } from "@/hooks/useDebounce";
@@ -53,19 +54,22 @@ const Products = () => {
   const [limit, setLimit] = useState(5);
   const [searchValue, setSearchValue] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(-1);
+  const [orderBy, setOrderBy] = useState("");
+
   const debounceSearchValue = useDebounce(searchValue);
 
   const { addError, addSuccess } = useNotification();
 
-  const { data, isLoading } = useQuery(["products", page, limit, debounceSearchValue], () =>
-    productServices.getProducts({
-      limit,
-      page,
-      q: debounceSearchValue,
-      order_by: "",
-      order_field: "name",
-      status: "Inactive",
-    }),
+  const { data, isLoading } = useQuery(
+    ["products", page, limit, debounceSearchValue, orderBy],
+    () =>
+      productServices.getProducts({
+        limit,
+        page,
+        q: debounceSearchValue,
+        order_by: orderBy,
+        order_field: "name",
+      }),
   );
 
   const onOpenModal = (id: number) => setSelectedProduct(id);
@@ -76,6 +80,18 @@ const Products = () => {
   const onChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPage(1);
     setSearchValue(e.target.value);
+  };
+
+  const onChangeTable = (
+    _pagination: TablePaginationConfig,
+    _filters: Record<string, FilterValue | null>,
+    sorter: SorterResult<GetProductResponseType> | SorterResult<GetProductResponseType>[],
+  ) => {
+    if (!Array.isArray(sorter)) {
+      if (!sorter.order) return setOrderBy("");
+      if (sorter.order === "ascend") return setOrderBy("ASC");
+      return setOrderBy("DESC");
+    }
   };
 
   const { mutate: deleteProduct, isLoading: isLoadingDelete } = useDeleteProductService();
@@ -245,6 +261,7 @@ const Products = () => {
           </Row>
         </div>
         <Table
+          onChange={onChangeTable}
           dataSource={data?.data}
           loading={isLoading}
           columns={columns}
