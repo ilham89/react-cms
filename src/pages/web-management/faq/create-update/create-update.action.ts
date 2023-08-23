@@ -24,7 +24,7 @@ export const useCreateUpdateFaq = () => {
 
   const isLoadingSubmit = isLoadingCreate || isLoadingUpdate;
 
-  useGetFaqService(id as string, {
+  const { data: detail } = useGetFaqService(id as string, {
     enabled: !!id,
     onSuccess: ({ data }) => {
       form.setFieldsValue({
@@ -42,7 +42,10 @@ export const useCreateUpdateFaq = () => {
     const data = {
       ...values,
       featured: featured ? FeaturedFaqEnum.Yes : FeaturedFaqEnum.No,
-      status: FaqStatusEnum.Active,
+      status:
+        id && detail?.data.status === FaqStatusEnum.Inactive
+          ? FaqStatusEnum.Inactive
+          : FaqStatusEnum.Active,
     };
     if (id) {
       updateFaq(

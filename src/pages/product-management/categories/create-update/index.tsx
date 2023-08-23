@@ -96,7 +96,7 @@ const CreateUpdate = () => {
   const { mutate: create, isLoading: isLoadingCreate } = usePostProductCategoryService();
   const { mutate: update, isLoading: isLoadingUpdate } = usePutProductCategoryService();
 
-  useGetProductCategoryService(id as string, {
+  const { data } = useGetProductCategoryService(id as string, {
     enabled: !!id,
     onSuccess: ({ data }) => {
       form.setFieldsValue({
@@ -331,7 +331,10 @@ const CreateUpdate = () => {
         [customFields[1].name]: getValueField(customFields[1].inputs),
         [customFields[2].name]: getValueField(customFields[2].inputs),
       },
-      status: ProductCategoryStatusEnum.Active,
+      status:
+        id && data?.data.status === ProductCategoryStatusEnum.Inactive
+          ? ProductCategoryStatusEnum.Inactive
+          : ProductCategoryStatusEnum.Active,
     };
 
     // eslint-disable-next-line

@@ -24,7 +24,7 @@ export const useCreateUpdateFaqCategory = () => {
   const onBack = () => navigate("/web-management/faq/categories");
   const isLoadingSubmit = isLoadingCreate || isLoadingUpdate;
 
-  useGetFaqCategoryService(id as string, {
+  const { data: detail } = useGetFaqCategoryService(id as string, {
     enabled: !!id,
     onSuccess: ({ data }) => {
       form.setFieldsValue({
@@ -37,7 +37,10 @@ export const useCreateUpdateFaqCategory = () => {
   const onFinish = (values: FormValues) => {
     const data = {
       ...values,
-      status: FaqCategoryStatusEnum.Active,
+      status:
+        id && detail?.data.status === FaqCategoryStatusEnum.Inactive
+          ? FaqCategoryStatusEnum.Inactive
+          : FaqCategoryStatusEnum.Active,
     };
 
     if (id) {
