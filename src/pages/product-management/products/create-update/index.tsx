@@ -293,7 +293,7 @@ const CreateUpdate = () => {
       }));
 
       for (let i = 0; i < defaultFiles.length - data.images.length; i++) {
-        newFileList.push(defaultFiles[0]);
+        newFileList.push(JSON.parse(JSON.stringify(defaultFiles[0])));
       }
 
       // local state
