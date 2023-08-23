@@ -121,11 +121,6 @@ const Products = () => {
       render: (value) => <>{value.name}</>,
     },
     {
-      title: "Product Size",
-      dataIndex: "size",
-      key: "size",
-    },
-    {
       title: "Price",
       dataIndex: "price",
       key: "price",
