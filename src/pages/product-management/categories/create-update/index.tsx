@@ -92,6 +92,54 @@ const CreateUpdate = () => {
 
   const { id } = params;
 
+  const [dynamicFields, setDynamicFields] = useState([
+    {
+      name: "Size",
+      inputs: [
+        {
+          placeholder: "Input size",
+          value: "",
+        },
+        {
+          placeholder: "Input size",
+          value: "",
+        },
+      ],
+    },
+    {
+      name: "Color",
+      inputs: [
+        {
+          placeholder: "Input color",
+          value: "",
+        },
+        {
+          placeholder: "Input color",
+          value: "",
+        },
+      ],
+    },
+    {
+      name: "Material",
+      inputs: [
+        {
+          placeholder: "Input material",
+          value: "",
+        },
+        {
+          placeholder: "Input material",
+          value: "",
+        },
+      ],
+    },
+  ]);
+
+  const [customFields, setCustomFields] = useState([
+    ...JSON.parse(JSON.stringify(baseCustomField)),
+    ...JSON.parse(JSON.stringify(baseCustomField)),
+    ...JSON.parse(JSON.stringify(baseCustomField)),
+  ]);
+
   const { addError, addSuccess } = useNotification();
   const { mutate: create, isLoading: isLoadingCreate } = usePostProductCategoryService();
   const { mutate: update, isLoading: isLoadingUpdate } = usePutProductCategoryService();
@@ -160,6 +208,10 @@ const CreateUpdate = () => {
 
       setDynamicFields(updatedFields);
 
+      // jika value additional info dari detail = 3
+      if (updatedDynamicFields.length === 3) return setCustomFields(updatedDynamicFields);
+
+      // jika value additional info dari detail kurang dari 3
       const combinedFields = updatedDynamicFields.concat(customFields);
 
       // Buat objek untuk menyimpan data unik berdasarkan name
@@ -174,6 +226,8 @@ const CreateUpdate = () => {
         return false;
       });
 
+      console.log(customFields.length - mergedFields.length > 0);
+
       for (let i = 0; i < customFields.length - mergedFields.length; i++) {
         mergedFields.push(...baseCustomField);
       }
@@ -181,54 +235,6 @@ const CreateUpdate = () => {
       setCustomFields(mergedFields);
     },
   });
-
-  const [dynamicFields, setDynamicFields] = useState([
-    {
-      name: "Size",
-      inputs: [
-        {
-          placeholder: "Input size",
-          value: "",
-        },
-        {
-          placeholder: "Input size",
-          value: "",
-        },
-      ],
-    },
-    {
-      name: "Color",
-      inputs: [
-        {
-          placeholder: "Input color",
-          value: "",
-        },
-        {
-          placeholder: "Input color",
-          value: "",
-        },
-      ],
-    },
-    {
-      name: "Material",
-      inputs: [
-        {
-          placeholder: "Input material",
-          value: "",
-        },
-        {
-          placeholder: "Input material",
-          value: "",
-        },
-      ],
-    },
-  ]);
-
-  const [customFields, setCustomFields] = useState([
-    ...JSON.parse(JSON.stringify(baseCustomField)),
-    ...JSON.parse(JSON.stringify(baseCustomField)),
-    ...JSON.parse(JSON.stringify(baseCustomField)),
-  ]);
 
   const onChangeDynamicField = (
     index: number,
