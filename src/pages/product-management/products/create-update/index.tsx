@@ -1,6 +1,13 @@
 import { Fragment, useRef, useState } from "react";
 
-import { CloseOutlined, CloudUploadOutlined, PlusOutlined, RightOutlined } from "@ant-design/icons";
+import {
+  CloseOutlined,
+  CloudUploadOutlined,
+  DeleteOutlined,
+  FileOutlined,
+  PlusOutlined,
+  RightOutlined,
+} from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   Breadcrumb,
@@ -304,10 +311,13 @@ const CreateUpdate = () => {
       // local state
       setSelectedCategory(data.category_id);
       setFileList(newFileList);
-      setBrochure({
-        file_name: data.brochure,
-        preview: data.brochure_url,
-      });
+
+      if (data.brochure) {
+        setBrochure({
+          file_name: data.brochure,
+          preview: data.brochure_url,
+        });
+      }
     },
     refetchOnWindowFocus: false,
   });
@@ -396,16 +406,48 @@ const CreateUpdate = () => {
                         accept="image/*"
                       >
                         {file.preview ? (
-                          <img
-                            src={file.preview}
-                            height={140}
-                            width="100%"
-                            alt="preview"
+                          <div
                             style={{
-                              aspectRatio: 1,
-                              objectFit: "cover",
+                              position: "relative",
                             }}
-                          />
+                          >
+                            <img
+                              src={file.preview}
+                              height={140}
+                              width="100%"
+                              alt="preview"
+                              style={{
+                                aspectRatio: 1,
+                                objectFit: "cover",
+                                borderRadius: 12,
+                              }}
+                            />
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: 8,
+                                right: 8,
+                                padding: "0px 4px",
+                                background: "white",
+                                borderRadius: 4,
+                                cursor: "pointer",
+                              }}
+                              role="none"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const newFileList = [...fileList];
+                                newFileList[index].file_name = "";
+                                newFileList[index].preview = "";
+                                setFileList(newFileList);
+
+                                if (newFileList.every((file) => !file.file_name)) {
+                                  form.setFieldValue("image", "");
+                                }
+                              }}
+                            >
+                              <DeleteOutlined />
+                            </div>
+                          </div>
                         ) : (
                           uploadButton
                         )}
@@ -657,9 +699,18 @@ const CreateUpdate = () => {
                 </div>
               </Upload>
               {Object.keys(brochure).length > 0 && (
-                <a href={brochure.preview} download target="_blank" rel="noreferrer">
-                  {brochure.file_name}
-                </a>
+                <Space>
+                  <FileOutlined />
+                  <a href={brochure.preview} download target="_blank" rel="noreferrer">
+                    {brochure.file_name}
+                  </a>
+                  <DeleteOutlined
+                    onClick={() => {
+                      setBrochure({} as File);
+                      form.setFieldValue("brochure", "");
+                    }}
+                  />
+                </Space>
               )}
             </Form.Item>
             <Divider />
