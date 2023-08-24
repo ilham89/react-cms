@@ -67,4 +67,11 @@ export const productServices = {
     });
     return response.data;
   },
+  deleteLabelProduct: async (id: number) => {
+    const response = await axiosInstance({
+      url: `/product-labels/${id}`,
+      method: "delete",
+    });
+    return response.data;
+  },
 };

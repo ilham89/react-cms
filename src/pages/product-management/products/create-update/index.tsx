@@ -1,7 +1,7 @@
 import { Fragment, useRef, useState } from "react";
 
-import { CloudUploadOutlined, PlusOutlined, RightOutlined } from "@ant-design/icons";
-import { useQuery } from "@tanstack/react-query";
+import { CloseOutlined, CloudUploadOutlined, PlusOutlined, RightOutlined } from "@ant-design/icons";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   Breadcrumb,
   Button,
@@ -106,6 +106,7 @@ const CreateUpdate = () => {
   const [brochure, setBrochure] = useState({} as File);
   const [categories, setCategories] = useState<SelectField[]>([]);
   const [selectedCategory, setSelectedCategory] = useState(-1);
+  const [selectedLabel, setSelectedLabel] = useState<string[]>([]);
 
   const { addError, addSuccess } = useNotification();
   const { mutate: create } = usePostProductService();
@@ -242,6 +243,10 @@ const CreateUpdate = () => {
     {
       select: ({ data }) => data,
     },
+  );
+
+  const { mutate: deleteLabel, isLoading: isLoadingDeleteLabel } = useMutation((id: number) =>
+    productServices.deleteLabelProduct(id),
   );
 
   const inputRef = useRef<InputRef>(null);
@@ -500,15 +505,13 @@ const CreateUpdate = () => {
                 style={{
                   width: 205,
                 }}
+                value={selectedLabel}
                 mode="multiple"
-                allowClear
-                showSearch
+                menuItemSelectedIcon={null}
                 placeholder="--Please select label--"
-                options={productLabels?.map((label) => ({
-                  label: label.name,
-                  value: label.name,
-                }))}
-                loading={isLoadingProductLabel}
+                loading={isLoadingProductLabel || isLoadingDeleteLabel}
+                optionLabelProp="label"
+                onChange={setSelectedLabel}
                 dropdownRender={(menu) => (
                   <>
                     {menu}
@@ -521,7 +524,32 @@ const CreateUpdate = () => {
                     </Space>
                   </>
                 )}
-              />
+              >
+                {productLabels
+                  ?.filter((d) => !selectedLabel.includes(d.name))
+                  ?.map((label) => (
+                    <Select.Option key={label.name} value={label.name} label={label.name}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <div>{label.name}</div>
+                        <CloseOutlined
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteLabel(label.id, {
+                              onSuccess: () => queryClient.invalidateQueries(["product-labels"]),
+                              onError: () => addError(),
+                            });
+                          }}
+                        />
+                      </div>
+                    </Select.Option>
+                  ))}
+              </Select>
             </Form.Item>
             <Divider />
             <Form.Item
@@ -538,6 +566,7 @@ const CreateUpdate = () => {
                 mode="multiple"
                 allowClear
                 showSearch
+                menuItemSelectedIcon={null}
                 placeholder="--Please select color--"
                 options={data?.[
                   data.findIndex((datum) => datum.id === selectedCategory)
@@ -563,6 +592,7 @@ const CreateUpdate = () => {
                 mode="multiple"
                 allowClear
                 showSearch
+                menuItemSelectedIcon={null}
                 placeholder="--Please select size--"
                 options={data?.[
                   data.findIndex((datum) => datum.id === selectedCategory)
@@ -588,6 +618,7 @@ const CreateUpdate = () => {
                 mode="multiple"
                 allowClear
                 showSearch
+                menuItemSelectedIcon={null}
                 placeholder="--Please select material--"
                 options={data?.[
                   data.findIndex((datum) => datum.id === selectedCategory)
@@ -651,6 +682,7 @@ const CreateUpdate = () => {
                         mode="multiple"
                         allowClear
                         showSearch
+                        menuItemSelectedIcon={null}
                         placeholder="--Please select--"
                         options={value.map((d) => ({ label: d, value: d }))}
                       />
