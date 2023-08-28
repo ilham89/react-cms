@@ -482,7 +482,14 @@ const CreateUpdate = () => {
                 placeholder="--Please select category--"
                 loading={isLoading}
                 options={categories}
-                onSelect={(value) => setSelectedCategory(value)}
+                onSelect={(value) => {
+                  setSelectedCategory(value);
+                  form.setFieldsValue({
+                    color: [],
+                    size: [],
+                    material: [],
+                  });
+                }}
               />
             </Form.Item>
             <Divider />
