@@ -331,6 +331,9 @@ const CreateUpdate = () => {
     refetchOnWindowFocus: false,
   });
 
+  const categoryIndex = (data as GetProductCategoryResponseType[])?.findIndex(
+    (datum) => datum.id === selectedCategory,
+  );
   return (
     <div>
       <Space
@@ -731,14 +734,10 @@ const CreateUpdate = () => {
             </Form.Item>
             <Divider />
 
-            {selectedCategory !== -1 && (
+            {selectedCategory !== -1 && categoryIndex !== -1 && (
               <>
                 {Object.entries(
-                  (data as GetProductCategoryResponseType[])[
-                    (data as GetProductCategoryResponseType[]).findIndex(
-                      (datum) => datum.id === selectedCategory,
-                    )
-                  ].additional_info,
+                  (data as GetProductCategoryResponseType[])[categoryIndex].additional_info,
                 ).map(([key, value]) => (
                   <Fragment key={key}>
                     <Form.Item {...fullLayout} label={key} name={key}>
