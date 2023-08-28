@@ -24,6 +24,7 @@ import {
   Upload,
 } from "antd";
 import { RcFile } from "antd/es/upload";
+import Cookies from "js-cookie";
 import { useNavigate, useParams } from "react-router-dom";
 
 import RequiredMessage from "@/components/RequiredMessage";
@@ -207,7 +208,15 @@ const CreateUpdate = () => {
 
         setFileList(newFiles);
       })
-      .catch(() => addError());
+      .catch((error) => {
+        if (error.response?.status === 401) {
+          Cookies.remove("user_ct");
+          addError("Your session is expired!");
+          setTimeout(() => {
+            location.replace("/login");
+          }, 1000);
+        }
+      });
   };
 
   const onUploadBrochure = (file: string | Blob | RcFile) => {

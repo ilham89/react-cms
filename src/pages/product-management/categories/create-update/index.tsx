@@ -8,6 +8,7 @@ import {
 } from "@ant-design/icons";
 import { Breadcrumb, Button, Col, Divider, Form, Input, Row, Space, Upload } from "antd";
 import { RcFile } from "antd/es/upload";
+import Cookies from "js-cookie";
 import { useNavigate, useParams } from "react-router-dom";
 
 import AddIcon from "@/assets/icons/add.svg";
@@ -315,7 +316,15 @@ const CreateUpdate = () => {
           preview,
         }),
       )
-      .catch(() => addError());
+      .catch((error) => {
+        if (error.response?.status === 401) {
+          Cookies.remove("user_ct");
+          addError("Your session is expired!");
+          setTimeout(() => {
+            location.replace("/login");
+          }, 1000);
+        }
+      });
   };
 
   const getValueField = (data: CustomFieldValue[]) =>

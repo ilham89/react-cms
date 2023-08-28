@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { Form } from "antd";
 import { RcFile } from "antd/es/upload";
+import Cookies from "js-cookie";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { File, FormValues } from "./create-update.types";
@@ -86,7 +87,15 @@ export const useCreateUpdateHeroSection = () => {
           preview,
         }),
       )
-      .catch(() => addError());
+      .catch((error) => {
+        if (error.response?.status === 401) {
+          Cookies.remove("user_ct");
+          addError("Your session is expired!");
+          setTimeout(() => {
+            location.replace("/login");
+          }, 1000);
+        }
+      });
   };
 
   const isLoading = isLoadingCreate || isLoadingUpdate;
