@@ -13,8 +13,8 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import AddIcon from "@/assets/icons/add.svg";
 import RequiredMessage from "@/components/RequiredMessage";
-import { fullLayout } from "@/constans/form";
 import useNotification from "@/hooks/useNotification";
+import { fullLayout } from "@/models/form";
 import { imageServices } from "@/services/image/image.api";
 import {
   useGetProductCategoryService,

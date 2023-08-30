@@ -3,7 +3,7 @@ import { Breadcrumb, Button, Divider, Form, Input, Row, Space } from "antd";
 
 import { useCreateUpdateFaqCategory } from "./create-update.action";
 import RequiredMessage from "@/components/RequiredMessage";
-import { fullLayout } from "@/constans/form";
+import { fullLayout } from "@/models/form";
 
 const { TextArea } = Input;
 

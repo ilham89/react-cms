@@ -3,7 +3,7 @@ import { Breadcrumb, Button, Col, Divider, Form, Input, Row, Space, Upload } fro
 
 import { useCreateUpdatePartner } from "./create-update.action";
 import RequiredMessage from "@/components/RequiredMessage";
-import { fullLayout } from "@/constans/form";
+import { fullLayout } from "@/models/form";
 
 const { TextArea } = Input;
 
