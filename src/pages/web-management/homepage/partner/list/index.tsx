@@ -1,60 +1,14 @@
-import React from "react";
-
-import { CloseCircleFilled, MenuOutlined, PlusOutlined } from "@ant-design/icons";
+import { CloseCircleFilled, PlusOutlined } from "@ant-design/icons";
 import { DndContext } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { Button, Modal, Space, Table, Tabs } from "antd";
 import { ColumnsType } from "antd/es/table";
 
 import { useListPartner } from "./list.action";
+import RowDraggable from "@/components/RowDraggable";
 import { homeManagement } from "@/models/tabs";
 import { GetHeroPartnerResponseType } from "@/services/hero-partner/hero-partner.types";
-
-interface RowProps extends React.HTMLAttributes<HTMLTableRowElement> {
-  "data-row-key": string;
-}
-
-const Row = ({ children, ...props }: RowProps) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    setActivatorNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: props["data-row-key"],
-  });
-
-  const style: React.CSSProperties = {
-    ...props.style,
-    transform: CSS.Transform.toString(transform && { ...transform, scaleY: 1 }),
-    transition,
-    ...(isDragging ? { position: "relative", zIndex: 9999 } : {}),
-  };
-
-  return (
-    <tr {...props} ref={setNodeRef} style={style} {...attributes}>
-      {React.Children.map(children, (child) => {
-        if ((child as React.ReactElement).key === "id") {
-          return React.cloneElement(child as React.ReactElement, {
-            children: (
-              <MenuOutlined
-                ref={setActivatorNodeRef}
-                style={{ touchAction: "none", cursor: "move" }}
-                {...listeners}
-              />
-            ),
-          });
-        }
-        return child;
-      })}
-    </tr>
-  );
-};
 
 const Partner = () => {
   const {
@@ -182,7 +136,7 @@ const Partner = () => {
             <Table
               components={{
                 body: {
-                  row: Row,
+                  row: RowDraggable,
                 },
               }}
               dataSource={dataSource}

@@ -1,15 +1,14 @@
 import { useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
-import { TablePaginationConfig } from "antd";
-import { FilterValue, SorterResult } from "antd/es/table/interface";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { useDebounce } from "@/hooks/useDebounce";
 import useNotification from "@/hooks/useNotification";
+import { useSortTable } from "@/hooks/useSortTable";
 import { faqServices } from "@/services/faq/faq.api";
 import { useDeleteFaqService, usePutFaqService } from "@/services/faq/faq.hooks";
-import { FaqStatusEnum, GetFaqResponseType } from "@/services/faq/faq.types";
+import { FaqStatusEnum } from "@/services/faq/faq.types";
 import { queryClient } from "@/utils/queryClient";
 
 export const useListFaq = () => {
@@ -19,10 +18,11 @@ export const useListFaq = () => {
   const [limit, setLimit] = useState<number>(5);
   const [selectedCategory, setSelectedCategory] = useState<number>(-1);
   const [searchValue, setSearchValue] = useState<string>("");
-  const [orderBy, setOrderBy] = useState<string>("");
   const [filter, setFilter] = useState<string>("");
   const [openStatus, setOpenStatus] = useState<boolean>(false);
   const debounceSearchValue = useDebounce(searchValue);
+
+  const { orderBy, onChangeTable } = useSortTable();
 
   const { data, isLoading: isLoadingFaqs } = useQuery(
     ["faqs", limit, page, debounceSearchValue, orderBy, openStatus],
@@ -49,18 +49,6 @@ export const useListFaq = () => {
   const onChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
     setPage(1);
-  };
-
-  const onChangeTable = (
-    _pagination: TablePaginationConfig,
-    _filters: Record<string, FilterValue | null>,
-    sorter: SorterResult<GetFaqResponseType> | SorterResult<GetFaqResponseType>[],
-  ) => {
-    if (!Array.isArray(sorter)) {
-      if (!sorter.order) return setOrderBy("");
-      if (sorter.order === "ascend") return setOrderBy("ASC");
-      return setOrderBy("DESC");
-    }
   };
 
   const onDeleteFaq = () =>

@@ -10,6 +10,7 @@ import {
   usePutHeroPartnerOrderService,
 } from "@/services/hero-partner/hero-partner.hooks";
 import { GetHeroPartnerResponseType } from "@/services/hero-partner/hero-partner.types";
+import { updateOrder } from "@/utils/array";
 import { queryClient } from "@/utils/queryClient";
 
 export const useListPartner = () => {
@@ -41,22 +42,6 @@ export const useListPartner = () => {
       },
       onError: () => addError(),
     });
-
-  const updateOrder = (
-    data: GetHeroPartnerResponseType[],
-    startIndex: number,
-    endIndex: number,
-  ) => {
-    const result = Array.from(data);
-    const [movedItem] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, movedItem);
-
-    result.forEach((item, index) => {
-      item.order_number = index;
-    });
-
-    return result;
-  };
 
   const onDragEnd = ({ active, over }: DragEndEvent) => {
     if (active.id !== over?.id) {

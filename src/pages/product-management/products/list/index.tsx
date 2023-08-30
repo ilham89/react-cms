@@ -15,13 +15,14 @@ import {
   Tabs,
   Tag,
 } from "antd";
-import { ColumnsType, TablePaginationConfig } from "antd/es/table";
-import { FilterValue, SorterResult } from "antd/es/table/interface";
+import { ColumnsType } from "antd/es/table";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import Pagination from "@/components/Pagination";
 import { useDebounce } from "@/hooks/useDebounce";
 import useNotification from "@/hooks/useNotification";
+import { useSortTable } from "@/hooks/useSortTable";
+import { pageSize } from "@/models/page";
 import { productManagement } from "@/models/tabs";
 import { productServices } from "@/services/product/product.api";
 import { useDeleteProductService } from "@/services/product/product.hooks";
@@ -55,11 +56,11 @@ const Products = () => {
   const [limit, setLimit] = useState(5);
   const [searchValue, setSearchValue] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(-1);
-  const [orderBy, setOrderBy] = useState("");
 
   const debounceSearchValue = useDebounce(searchValue);
 
   const { addError, addSuccess } = useNotification();
+  const { orderBy, onChangeTable } = useSortTable();
 
   const { data, isLoading } = useQuery(
     ["products", page, limit, debounceSearchValue, orderBy],
@@ -81,18 +82,6 @@ const Products = () => {
   const onChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPage(1);
     setSearchValue(e.target.value);
-  };
-
-  const onChangeTable = (
-    _pagination: TablePaginationConfig,
-    _filters: Record<string, FilterValue | null>,
-    sorter: SorterResult<GetProductResponseType> | SorterResult<GetProductResponseType>[],
-  ) => {
-    if (!Array.isArray(sorter)) {
-      if (!sorter.order) return setOrderBy("");
-      if (sorter.order === "ascend") return setOrderBy("ASC");
-      return setOrderBy("DESC");
-    }
   };
 
   const { mutate: deleteProduct, isLoading: isLoadingDelete } = useDeleteProductService();
@@ -233,11 +222,7 @@ const Products = () => {
               <Select
                 defaultValue={5}
                 bordered={false}
-                options={[
-                  { value: 5, label: "5 / page" },
-                  { value: 10, label: "10 / page" },
-                  { value: 20, label: "20 / page" },
-                ]}
+                options={pageSize}
                 onChange={onChangeLimit}
               />
               <Dropdown menu={{ items }} arrow placement="bottomRight">

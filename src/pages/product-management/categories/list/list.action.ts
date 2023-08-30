@@ -1,20 +1,16 @@
 import { useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
-import { TablePaginationConfig } from "antd";
-import { FilterValue, SorterResult } from "antd/es/table/interface";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import useNotification from "@/hooks/useNotification";
+import { useSortTable } from "@/hooks/useSortTable";
 import { productCategoryServices } from "@/services/product-category/product-category.api";
 import {
   useDeleteProductCategoryService,
   usePutProductCategoryService,
 } from "@/services/product-category/product-category.hooks";
-import {
-  GetProductCategoryResponseType,
-  ProductCategoryStatusEnum,
-} from "@/services/product-category/product-category.types";
+import { ProductCategoryStatusEnum } from "@/services/product-category/product-category.types";
 import { queryClient } from "@/utils/queryClient";
 
 export const useListProductCategories = () => {
@@ -23,9 +19,10 @@ export const useListProductCategories = () => {
 
   const [page, setPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState(-1);
-  const [orderBy, setOrderBy] = useState("");
 
   const { addError, addSuccess } = useNotification();
+  const { orderBy, onChangeTable } = useSortTable();
+
   const { data, isLoading } = useQuery(["product-categories", page, orderBy], () =>
     productCategoryServices.getProductCategories({
       limit: 10,
@@ -71,19 +68,6 @@ export const useListProductCategories = () => {
       },
     );
 
-  const onChangeTable = (
-    _pagination: TablePaginationConfig,
-    _filters: Record<string, FilterValue | null>,
-    sorter:
-      | SorterResult<GetProductCategoryResponseType>
-      | SorterResult<GetProductCategoryResponseType>[],
-  ) => {
-    if (!Array.isArray(sorter)) {
-      if (!sorter.order) return setOrderBy("");
-      if (sorter.order === "ascend") return setOrderBy("ASC");
-      return setOrderBy("DESC");
-    }
-  };
   return {
     navigate,
     location,

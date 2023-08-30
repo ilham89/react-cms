@@ -6,8 +6,8 @@ import { Outlet, useLocation } from "react-router-dom";
 import HeaderComponent from "./header";
 import MenuComponent from "./menu";
 import useUser from "@/stores/user";
-import { getPathExceptLast } from "@/utils/getFirstPathCode";
 import { getGlobalState } from "@/utils/getGlobal";
+import { getPathExceptLast } from "@/utils/string";
 
 import "./index.scss";
 
