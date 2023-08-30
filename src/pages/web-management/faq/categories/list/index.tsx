@@ -1,8 +1,10 @@
 import { CloseCircleFilled, PlusOutlined } from "@ant-design/icons";
-import { Button, Dropdown, MenuProps, Modal, Space, Table, Tabs, TabsProps, Tag } from "antd";
+import { Button, Dropdown, Modal, Space, Table, Tabs, Tag } from "antd";
 import { ColumnsType } from "antd/es/table";
 
 import { useListFaqCategories } from "./list.action";
+import { status } from "@/models/status";
+import { faqManagement } from "@/models/tabs";
 import {
   GetFaqCategoryResponseType,
   FaqCategoryStatusEnum,
@@ -21,17 +23,6 @@ const FaqCategories = () => {
     onOpenModal,
     onCloseModal,
   } = useListFaqCategories();
-
-  const items: MenuProps["items"] = [
-    {
-      key: "Active",
-      label: <div>Active</div>,
-    },
-    {
-      key: "Inactive",
-      label: <div>Inactive</div>,
-    },
-  ];
 
   const columns: ColumnsType<GetFaqCategoryResponseType> = [
     {
@@ -81,7 +72,7 @@ const FaqCategories = () => {
         <Space>
           <Dropdown
             menu={{
-              items,
+              items: status,
               onClick: ({ key }) =>
                 onUpdateFaqCategory(
                   id,
@@ -116,17 +107,6 @@ const FaqCategories = () => {
     },
   ];
 
-  const tabs: TabsProps["items"] = [
-    {
-      key: "/web-management/faq/categories",
-      label: "Category List",
-    },
-    {
-      key: "/web-management/faq",
-      label: "FAQ List",
-    },
-  ];
-
   return (
     <div>
       <div
@@ -156,7 +136,7 @@ const FaqCategories = () => {
       <Tabs
         tabBarStyle={{ margin: 0 }}
         defaultActiveKey={location.pathname}
-        items={tabs}
+        items={faqManagement}
         onChange={(active) => navigate(active)}
       />
 

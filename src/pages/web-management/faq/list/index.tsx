@@ -1,22 +1,12 @@
 import { CloseCircleFilled, PlusOutlined } from "@ant-design/icons";
-import {
-  Button,
-  Dropdown,
-  Input,
-  MenuProps,
-  Modal,
-  Pagination,
-  Row,
-  Select,
-  Space,
-  Table,
-  Tabs,
-  TabsProps,
-  Tag,
-} from "antd";
+import { Button, Dropdown, Input, Modal, Row, Select, Space, Table, Tabs, Tag } from "antd";
 import { ColumnsType } from "antd/es/table";
 
 import { useListFaq } from "./list.action";
+import Pagination from "@/components/Pagination";
+import { pageSize } from "@/models/page";
+import { status } from "@/models/status";
+import { faqManagement } from "@/models/tabs";
 import { FaqStatusEnum, GetFaqResponseType } from "@/services/faq/faq.types";
 
 const Faq = () => {
@@ -42,17 +32,6 @@ const Faq = () => {
     setFilter,
     filter,
   } = useListFaq();
-
-  const items: MenuProps["items"] = [
-    {
-      key: "Active",
-      label: <div>Active</div>,
-    },
-    {
-      key: "Inactive",
-      label: <div>Inactive</div>,
-    },
-  ];
 
   const columns: ColumnsType<GetFaqResponseType> = [
     {
@@ -91,7 +70,7 @@ const Faq = () => {
         <Space>
           <Dropdown
             menu={{
-              items,
+              items: status,
               onClick: ({ key }) =>
                 onUpdateFaq(
                   id,
@@ -124,17 +103,6 @@ const Faq = () => {
     },
   ];
 
-  const tabs: TabsProps["items"] = [
-    {
-      key: "/web-management/faq/categories",
-      label: "Category List",
-    },
-    {
-      key: "/web-management/faq",
-      label: "FAQ List",
-    },
-  ];
-
   return (
     <div>
       <div
@@ -164,7 +132,7 @@ const Faq = () => {
       <Tabs
         tabBarStyle={{ margin: 0 }}
         defaultActiveKey={location.pathname}
-        items={tabs}
+        items={faqManagement}
         onChange={(active) => navigate(active)}
       />
       <div
@@ -199,11 +167,7 @@ const Faq = () => {
               <Select
                 defaultValue={5}
                 bordered={false}
-                options={[
-                  { value: 5, label: "5 / page" },
-                  { value: 10, label: "10 / page" },
-                  { value: 20, label: "20 / page" },
-                ]}
+                options={pageSize}
                 onChange={onChangeLimit}
               />
               <Dropdown
@@ -281,29 +245,20 @@ const Faq = () => {
           scroll={{ x: 800 }}
           pagination={false}
           rowKey={(record) => record.id}
-          footer={() => (
-            <Row align="middle" justify="space-between">
-              {data && (
-                <div className="pd__inventory-list__pagination-info">
-                  {data.data.length === 0
-                    ? "No items found"
-                    : `Showing ${page == 1 ? 1 : (page - 1) * data.page_limit + 1} to ${
-                        page == data.total_page
-                          ? (page - 1) * data.page_limit + data.data.length
-                          : page * data.page_limit
-                      } of ${data.total_data} entries`}
-                </div>
-              )}
-
+          footer={() =>
+            data && (
               <Pagination
-                pageSize={limit}
-                total={data?.total_data}
-                onChange={onChangePage}
-                current={page}
-                showSizeChanger={false}
+                limit={limit}
+                page={page}
+                pageData={data.data.length}
+                totalData={data.total_data}
+                totalPage={data.total_page}
+                paginationProps={{
+                  onChange: onChangePage,
+                }}
               />
-            </Row>
-          )}
+            )
+          }
         />
       </div>
 

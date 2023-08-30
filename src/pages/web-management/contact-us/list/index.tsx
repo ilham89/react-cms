@@ -1,8 +1,11 @@
-import { Input, Pagination, Row, Select, Space, Table, Tabs, TabsProps } from "antd";
+import { Input, Row, Select, Space, Table, Tabs } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 
 import { useContactUs } from "./contact-us.action";
+import Pagination from "@/components/Pagination";
+import { pageSize } from "@/models/page";
+import { contactManagement } from "@/models/tabs";
 import type { GetContactUsResponseType } from "@/services/contact-us/contact-us.types";
 
 const ContactUs = () => {
@@ -48,13 +51,6 @@ const ContactUs = () => {
     },
   ];
 
-  const items: TabsProps["items"] = [
-    {
-      key: "1",
-      label: "Contact Us",
-    },
-  ];
-
   return (
     <div>
       <Space size="middle" direction="vertical" style={{ width: "100%" }}>
@@ -66,7 +62,7 @@ const ContactUs = () => {
         >
           Contact Us
         </div>
-        <Tabs tabBarStyle={{ margin: 0 }} defaultActiveKey="1" items={items} />
+        <Tabs tabBarStyle={{ margin: 0 }} defaultActiveKey="1" items={contactManagement} />
       </Space>
       <div
         className="box-wrapper"
@@ -100,11 +96,7 @@ const ContactUs = () => {
               <Select
                 defaultValue={5}
                 bordered={false}
-                options={[
-                  { value: 5, label: "5 / page" },
-                  { value: 10, label: "10 / page" },
-                  { value: 20, label: "20 / page" },
-                ]}
+                options={pageSize}
                 onChange={onChangeLimit}
               />
             </Space>
@@ -118,29 +110,20 @@ const ContactUs = () => {
           scroll={{ x: 800 }}
           rowKey={(record) => record.id}
           pagination={false}
-          footer={() => (
-            <Row align="middle" justify="space-between">
-              {data && (
-                <div className="pd__inventory-list__pagination-info">
-                  {data.data.length === 0
-                    ? "No items found"
-                    : `Showing ${page == 1 ? 1 : (page - 1) * data.page_limit + 1} to ${
-                        page == data.total_page
-                          ? (page - 1) * data.page_limit + data.data.length
-                          : page * data.page_limit
-                      } of ${data.total_data} entries`}
-                </div>
-              )}
-
+          footer={() =>
+            data && (
               <Pagination
-                pageSize={limit}
-                total={data?.total_data}
-                onChange={onChangePage}
-                current={page}
-                showSizeChanger={false}
+                limit={limit}
+                page={page}
+                pageData={data.data.length}
+                totalData={data.total_data}
+                totalPage={data.total_page}
+                paginationProps={{
+                  onChange: onChangePage,
+                }}
               />
-            </Row>
-          )}
+            )
+          }
         />
       </div>
     </div>

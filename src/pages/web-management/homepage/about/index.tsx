@@ -1,32 +1,14 @@
-import { Button, Divider, Form, Input, Row, Space, Tabs, TabsProps } from "antd";
+import { Button, Divider, Form, Input, Row, Space, Tabs } from "antd";
 
 import { useAbout } from "./about.action";
 import RequiredMessage from "@/components/RequiredMessage";
-import { fullLayout } from "@/constans/form";
+import { fullLayout } from "@/models/form";
+import { homeManagement } from "@/models/tabs";
 
 const { TextArea } = Input;
 
 const About = () => {
   const { form, navigate, location, isLoading, onSubmit } = useAbout();
-
-  const items: TabsProps["items"] = [
-    {
-      key: "/web-management/homepage/hero-section",
-      label: "Hero Section",
-    },
-    {
-      key: "/web-management/homepage/partner",
-      label: "Partner",
-    },
-    {
-      key: "/web-management/homepage/about",
-      label: "About",
-    },
-    {
-      key: "/web-management/homepage/cta",
-      label: "CTA",
-    },
-  ];
 
   return (
     <div>
@@ -42,7 +24,7 @@ const About = () => {
         <Tabs
           tabBarStyle={{ margin: 0 }}
           defaultActiveKey={location.pathname}
-          items={items}
+          items={homeManagement}
           onChange={(active) => navigate(active)}
         />
       </Space>

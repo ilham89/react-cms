@@ -1,20 +1,11 @@
 import { CloseCircleFilled, PlusOutlined } from "@ant-design/icons";
-import {
-  Button,
-  Dropdown,
-  MenuProps,
-  Modal,
-  Pagination,
-  Row,
-  Space,
-  Table,
-  Tabs,
-  TabsProps,
-  Tag,
-} from "antd";
+import { Button, Dropdown, Modal, Space, Table, Tabs, Tag } from "antd";
 import { ColumnsType } from "antd/es/table";
 
 import { useListProductCategories } from "./list.action";
+import Pagination from "@/components/Pagination";
+import { status } from "@/models/status";
+import { productManagement } from "@/models/tabs";
 import {
   GetProductCategoryResponseType,
   ProductCategoryStatusEnum,
@@ -36,17 +27,6 @@ const ProductCategories = () => {
     onUpdateProductCategory,
     onChangeTable,
   } = useListProductCategories();
-
-  const items: MenuProps["items"] = [
-    {
-      key: "Active",
-      label: <div>Active</div>,
-    },
-    {
-      key: "Inactive",
-      label: <div>Inactive</div>,
-    },
-  ];
 
   const columns: ColumnsType<GetProductCategoryResponseType> = [
     {
@@ -92,7 +72,7 @@ const ProductCategories = () => {
         <Space>
           <Dropdown
             menu={{
-              items,
+              items: status,
               onClick: ({ key }) =>
                 onUpdateProductCategory(
                   id,
@@ -127,17 +107,6 @@ const ProductCategories = () => {
     },
   ];
 
-  const tabs: TabsProps["items"] = [
-    {
-      key: "/product-management/categories",
-      label: "Category List",
-    },
-    {
-      key: "/product-management/products",
-      label: "Product List",
-    },
-  ];
-
   return (
     <div>
       <div
@@ -167,7 +136,7 @@ const ProductCategories = () => {
       <Tabs
         tabBarStyle={{ margin: 0 }}
         defaultActiveKey={location.pathname}
-        items={tabs}
+        items={productManagement}
         onChange={(active) => navigate(active)}
       />
 
@@ -194,28 +163,20 @@ const ProductCategories = () => {
           scroll={{ x: 800 }}
           pagination={false}
           rowKey={(record) => record.id}
-          footer={() => (
-            <Row align="middle" justify="space-between">
-              {data && (
-                <div className="pd__inventory-list__pagination-info">
-                  {data.data.length === 0
-                    ? "No items found"
-                    : `Showing ${page == 1 ? 1 : (page - 1) * data.page_limit + 1} to ${
-                        page == data.total_page
-                          ? (page - 1) * data.page_limit + data.data.length
-                          : page * data.page_limit
-                      } of ${data.total_data} entries`}
-                </div>
-              )}
+          footer={() =>
+            data && (
               <Pagination
-                pageSize={10}
-                total={data?.total_data}
-                onChange={onChangePage}
-                current={page}
-                showSizeChanger={false}
+                pageData={data?.data.length}
+                limit={data.page_limit}
+                page={page}
+                totalData={data.total_data}
+                totalPage={data.total_page}
+                paginationProps={{
+                  onChange: onChangePage,
+                }}
               />
-            </Row>
-          )}
+            )
+          }
         />
       </div>
       <Modal

@@ -1,0 +1,141 @@
+* {
+  font-family: sans-serif;
+}
+
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+:root::-webkit-scrollbar {
+  display: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: unset !important;
+}
+
+.ant-layout {
+  min-height: calc(100vh - 64px);
+}
+
+.app-loading-wrapper.ant-spin-spinning {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  background-color: rgba(256, 256, 256, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.box-wrapper {
+  background-color: white;
+  border-radius: 12px;
+  // padding: 16px 24px;
+}
+
+.ant-table-wrapper {
+  & .ant-table-thead > tr {
+    // box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+    & > th,
+    & > td {
+      background-color: #d9d9d9 !important;
+    }
+  }
+
+  & .ant-table-tbody > tr {
+    // box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+    & > th,
+    & > td {
+      background-color: white !important;
+    }
+  }
+
+  & .ant-table-cell:before {
+    content: none !important;
+  }
+
+  & .ant-table-container table > thead > tr:first-child {
+    & > *:last-child,
+    & > *:first-child {
+      border-radius: unset;
+    }
+  }
+
+  & .ant-table-footer {
+    background: none;
+  }
+  & .ant-table.ant-table-bordered > .ant-table-footer {
+    border: none;
+  }
+}
+
+.btn-update {
+  background-color: #52b2bf;
+  box-shadow: 0 2px 0 rgba(5, 255, 238, 0.06);
+  &:hover {
+    background-color: #78c5cc !important;
+  }
+}
+
+.btn-action {
+  background-color: #252525;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.6);
+  &:hover {
+    background-color: #333333 !important;
+  }
+}
+
+.ant-tag {
+  padding: 2px 12px;
+}
+
+// pagination button next & prev
+.ant-pagination .ant-pagination-next .ant-pagination-item,
+.ant-pagination .ant-pagination-prev .ant-pagination-item {
+  &-link {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+  }
+}
+
+.required-form {
+  &.ant-form-item
+    .ant-form-item-label
+    > label.ant-form-item-required:not(.ant-form-item-required-mark-optional) {
+    &::before {
+      content: none;
+    }
+    &::after {
+      content: "*:";
+      margin: unset;
+    }
+  }
+}
+
+.ql-toolbar.ql-snow {
+  border-radius: 8px 8px 0px 0px;
+  background-color: #aeaeb2;
+  border: 1px solid #aeaeb2;
+}
+
+.ql-container.ql-snow {
+  height: 200px;
+  border-radius: 0px 0px 8px 8px;
+  border: 1px solid #aeaeb2;
+}

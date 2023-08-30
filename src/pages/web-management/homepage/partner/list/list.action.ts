@@ -15,7 +15,7 @@ import { queryClient } from "@/utils/queryClient";
 export const useListPartner = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedRow, setSelectedRow] = useState(-1);
+  const [selectedRow, setSelectedRow] = useState<number>(-1);
   const [dataSource, setDataSource] = useState<GetHeroPartnerResponseType[]>([]);
 
   const onOpenModal = (id: number) => setSelectedRow(id);

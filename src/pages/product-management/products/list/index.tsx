@@ -8,21 +8,21 @@ import {
   Input,
   MenuProps,
   Modal,
-  Pagination,
   Row,
   Select,
   Space,
   Table,
   Tabs,
-  TabsProps,
   Tag,
 } from "antd";
 import { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { FilterValue, SorterResult } from "antd/es/table/interface";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import Pagination from "@/components/Pagination";
 import { useDebounce } from "@/hooks/useDebounce";
 import useNotification from "@/hooks/useNotification";
+import { productManagement } from "@/models/tabs";
 import { productServices } from "@/services/product/product.api";
 import { useDeleteProductService } from "@/services/product/product.hooks";
 import { GetProductResponseType } from "@/services/product/product.types";
@@ -169,17 +169,6 @@ const Products = () => {
     },
   ];
 
-  const tabs: TabsProps["items"] = [
-    {
-      key: "/product-management/categories",
-      label: "Category List",
-    },
-    {
-      key: "/product-management/products",
-      label: "Product List",
-    },
-  ];
-
   return (
     <div>
       <div
@@ -209,7 +198,7 @@ const Products = () => {
       <Tabs
         tabBarStyle={{ margin: 0 }}
         defaultActiveKey={location.pathname}
-        items={tabs}
+        items={productManagement}
         onChange={(active) => navigate(active)}
       />
       <div
@@ -265,28 +254,20 @@ const Products = () => {
           scroll={{ x: 800 }}
           pagination={false}
           rowKey={(record) => record.id}
-          footer={() => (
-            <Row align="middle" justify="space-between">
-              {data && (
-                <div className="pd__inventory-list__pagination-info">
-                  {data.data.length === 0
-                    ? "No items found"
-                    : `Showing ${page == 1 ? 1 : (page - 1) * data.page_limit + 1} to ${
-                        page == data.total_page
-                          ? (page - 1) * data.page_limit + data.data.length
-                          : page * data.page_limit
-                      } of ${data.total_data} entries`}
-                </div>
-              )}
+          footer={() =>
+            data && (
               <Pagination
-                pageSize={limit}
-                total={data?.total_data}
-                onChange={onChangePage}
-                current={page}
-                showSizeChanger={false}
+                limit={limit}
+                page={page}
+                pageData={data.data.length}
+                totalData={data.total_data}
+                totalPage={data.total_page}
+                paginationProps={{
+                  onChange: onChangePage,
+                }}
               />
-            </Row>
-          )}
+            )
+          }
         />
       </div>
       <Modal

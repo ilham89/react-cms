@@ -5,10 +5,11 @@ import { DndContext } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Button, Modal, Space, Table, Tabs, TabsProps } from "antd";
+import { Button, Modal, Space, Table, Tabs } from "antd";
 import { ColumnsType } from "antd/es/table";
 
 import { useListPartner } from "./list.action";
+import { homeManagement } from "@/models/tabs";
 import { GetHeroPartnerResponseType } from "@/services/hero-partner/hero-partner.types";
 
 interface RowProps extends React.HTMLAttributes<HTMLTableRowElement> {
@@ -122,24 +123,6 @@ const Partner = () => {
       ),
     },
   ];
-  const tabs: TabsProps["items"] = [
-    {
-      key: "/web-management/homepage/hero-section",
-      label: "Hero Section",
-    },
-    {
-      key: "/web-management/homepage/partner",
-      label: "Partner",
-    },
-    {
-      key: "/web-management/homepage/about",
-      label: "About",
-    },
-    {
-      key: "/web-management/homepage/cta",
-      label: "CTA",
-    },
-  ];
 
   return (
     <div>
@@ -171,7 +154,7 @@ const Partner = () => {
         <Tabs
           tabBarStyle={{ margin: 0 }}
           defaultActiveKey={location.pathname}
-          items={tabs}
+          items={homeManagement}
           onChange={(active) => navigate(active)}
         />
       </Space>

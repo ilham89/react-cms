@@ -1,28 +1,14 @@
-import { Button, Divider, Form, Row, Space, Tabs, TabsProps } from "antd";
+import { Button, Divider, Form, Row, Space, Tabs } from "antd";
 import ReactQuill from "react-quill";
 
 import { usePrivacyPolicy } from "./privacy-policy.action";
 import RequiredMessage from "@/components/RequiredMessage";
-import { fullLayout } from "@/constans/form";
-import { formats, modules } from "@/constans/react-quill";
+import { fullLayout } from "@/models/form";
+import { formats, modules } from "@/models/react-quill";
+import { privacyManagement } from "@/models/tabs";
 
 const PrivacyPolicy = () => {
   const { form, location, navigate, isLoading, onSubmit } = usePrivacyPolicy();
-
-  const items: TabsProps["items"] = [
-    {
-      key: "/web-management/terms-policy/terms-condition",
-      label: "Terms and Condition",
-    },
-    {
-      key: "/web-management/terms-policy/privacy-policy",
-      label: "Privacy Policy",
-    },
-    {
-      key: "/web-management/terms-policy/return-policy",
-      label: "Return Policy",
-    },
-  ];
 
   return (
     <div>
@@ -38,7 +24,7 @@ const PrivacyPolicy = () => {
         <Tabs
           tabBarStyle={{ margin: 0 }}
           defaultActiveKey={location.pathname}
-          items={items}
+          items={privacyManagement}
           onChange={(active) => navigate(active)}
         />
       </Space>

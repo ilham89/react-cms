@@ -20,7 +20,7 @@ export const useCreateUpdateFaq = () => {
   const { mutate: updateFaq, isLoading: isLoadingUpdate } = usePutFaqService();
   const { addSuccess, addError } = useNotification();
 
-  const [featured, setFeatured] = useState(false);
+  const [featured, setFeatured] = useState<boolean>(false);
 
   const isLoadingSubmit = isLoadingCreate || isLoadingUpdate;
 

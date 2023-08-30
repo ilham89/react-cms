@@ -17,7 +17,7 @@ export const useReturnPolicy = () => {
   const navigate = useNavigate();
   const { addError, addSuccess } = useNotification();
 
-  const [indexPage, setIndexPage] = useState(-1);
+  const [indexPage, setIndexPage] = useState<number>(-1);
 
   const { data } = useGetWebManagementsService({
     onSuccess: ({ data }) => {

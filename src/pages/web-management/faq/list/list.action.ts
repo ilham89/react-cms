@@ -15,13 +15,13 @@ import { queryClient } from "@/utils/queryClient";
 export const useListFaq = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(5);
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(5);
   const [selectedCategory, setSelectedCategory] = useState<number>(-1);
-  const [searchValue, setSearchValue] = useState("");
-  const [orderBy, setOrderBy] = useState("");
-  const [filter, setFilter] = useState("");
-  const [openStatus, setOpenStatus] = useState(false);
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [orderBy, setOrderBy] = useState<string>("");
+  const [filter, setFilter] = useState<string>("");
+  const [openStatus, setOpenStatus] = useState<boolean>(false);
   const debounceSearchValue = useDebounce(searchValue);
 
   const { data, isLoading: isLoadingFaqs } = useQuery(

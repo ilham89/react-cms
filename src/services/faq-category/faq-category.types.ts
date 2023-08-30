@@ -22,7 +22,12 @@ export type PostFaqCategoryBodyType = {
   status: FaqCategoryStatusEnum;
 };
 
-export type GetFaqCategoryParamsType = {
+export type PutFaqCategoryParamsType = {
   data: PostFaqCategoryBodyType;
   id: string;
+};
+
+export type GetFaqCategoryParamsType = {
+  limit: number;
+  page: number;
 };

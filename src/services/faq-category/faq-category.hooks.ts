@@ -3,13 +3,13 @@ import { UseQueryOptions, useMutation, useQuery } from "@tanstack/react-query";
 import { faqCategoryServices } from "./faq-category.api";
 import {
   PostFaqCategoryBodyType,
-  GetFaqCategoryParamsType,
   GetFaqCategoryResponseType,
+  PutFaqCategoryParamsType,
 } from "./faq-category.types";
 import { DataResponseType } from "@/interfaces/response";
 
 export const useGetFaqCategoriesService = () =>
-  useQuery(["faq-categories"], () => faqCategoryServices.getFaqCategories());
+  useQuery(["faq-categories"], () => faqCategoryServices.getFaqCategories({ limit: 99, page: 1 }));
 
 export const usePostFaqCategoryService = () =>
   useMutation((data: PostFaqCategoryBodyType) => faqCategoryServices.postFaqCategory(data));
@@ -33,7 +33,7 @@ export const useGetFaqCategoryService = (
   });
 
 export const usePutFaqCategoryService = () =>
-  useMutation((params: GetFaqCategoryParamsType) =>
+  useMutation((params: PutFaqCategoryParamsType) =>
     faqCategoryServices.putFaqCategory(params.id, params.data),
   );
 

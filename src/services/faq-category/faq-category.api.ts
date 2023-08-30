@@ -1,15 +1,20 @@
 import { AxiosResponse } from "axios";
 
-import { PostFaqCategoryBodyType, GetFaqCategoryResponseType } from "./faq-category.types";
+import {
+  PostFaqCategoryBodyType,
+  GetFaqCategoryResponseType,
+  GetFaqCategoryParamsType,
+} from "./faq-category.types";
 import { axiosInstance } from "@/configs/axios";
 import { DataMetaResponseType, DataResponseType } from "@/interfaces/response";
 
 export const faqCategoryServices = {
-  getFaqCategories: async () => {
+  getFaqCategories: async (params: GetFaqCategoryParamsType) => {
     const response: AxiosResponse<DataMetaResponseType<GetFaqCategoryResponseType[]>> =
       await axiosInstance({
         url: "/faq-categories",
         method: "get",
+        params,
       });
     return response.data.data;
   },
