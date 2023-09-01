@@ -19,10 +19,10 @@ const ProductCategories = () => {
     isLoading,
     isLoadingDelete,
     page,
-    selectedCategory,
+    selectedItem,
     onChangePage,
-    onOpenModal,
-    onCloseModal,
+    onSelectItem,
+    onResetItem,
     onDeleteFaq,
     onUpdateProductCategory,
     onChangeTable,
@@ -99,7 +99,7 @@ const ProductCategories = () => {
           >
             Edit
           </Button>
-          <Button type="primary" danger onClick={() => onOpenModal(id)}>
+          <Button type="primary" danger onClick={() => onSelectItem(id)}>
             Delete
           </Button>
         </Space>
@@ -192,9 +192,9 @@ const ProductCategories = () => {
             <div>Do you want to delete these items?</div>
           </Space>
         }
-        open={selectedCategory > 0}
+        open={selectedItem > 0}
         onOk={onDeleteFaq}
-        onCancel={onCloseModal}
+        onCancel={onResetItem}
         okText="Delete"
         okButtonProps={{ loading: isLoadingDelete }}
       >
@@ -205,10 +205,7 @@ const ProductCategories = () => {
           }}
         >
           This category have{" "}
-          {
-            data?.data[data.data.findIndex((item) => item.id === selectedCategory)]?.Products
-              ?.length
-          }{" "}
+          {data?.data[data.data.findIndex((item) => item.id === selectedItem)]?.Products?.length}{" "}
           product, deleting category will remove the category in that product
         </p>
       </Modal>

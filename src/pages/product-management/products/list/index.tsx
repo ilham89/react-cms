@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import { CloseCircleFilled, PlusOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -22,6 +20,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Pagination from "@/components/Pagination";
 import useNotification from "@/hooks/useNotification";
 import { useSearchPagination } from "@/hooks/useSearchPagination";
+import { useSelectItem } from "@/hooks/useSelectItem";
 import { useSortTable } from "@/hooks/useSortTable";
 import { pageSize } from "@/models/page";
 import { productManagement } from "@/models/tabs";
@@ -53,12 +52,12 @@ const items: MenuProps["items"] = [
 const Products = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedProduct, setSelectedProduct] = useState(-1);
 
   const { page, limit, debounceSearchValue, onChangeLimit, onChangePage, onChangeSearchValue } =
     useSearchPagination();
   const { addError, addSuccess } = useNotification();
   const { orderBy, onChangeTable } = useSortTable();
+  const { selectedItem, onSelectItem, onResetItem } = useSelectItem();
 
   const { data, isLoading } = useQuery(
     ["products", page, limit, debounceSearchValue, orderBy],
@@ -72,16 +71,12 @@ const Products = () => {
       }),
   );
 
-  const onOpenModal = (id: number) => setSelectedProduct(id);
-  const onCloseModal = () => setSelectedProduct(-1);
-
   const { mutate: deleteProduct, isLoading: isLoadingDelete } = useDeleteProductService();
 
   const onDeleteFaq = () =>
-    deleteProduct(selectedProduct, {
+    deleteProduct(selectedItem, {
       onSuccess: () => {
         queryClient.invalidateQueries(["products"]);
-        setSelectedProduct(-1);
         addSuccess("Your items are successfully deleted");
       },
       onError: (error) => {
@@ -143,7 +138,7 @@ const Products = () => {
           >
             Edit
           </Button>
-          <Button type="primary" danger onClick={() => onOpenModal(id)}>
+          <Button type="primary" danger onClick={() => onSelectItem(id)}>
             Delete
           </Button>
         </Space>
@@ -261,9 +256,9 @@ const Products = () => {
             <div>Do you want to delete these items?</div>
           </Space>
         }
-        open={selectedProduct > 0}
+        open={selectedItem > 0}
         onOk={onDeleteFaq}
-        onCancel={onCloseModal}
+        onCancel={onResetItem}
         okText="Delete"
         okButtonProps={{ loading: isLoadingDelete }}
       >

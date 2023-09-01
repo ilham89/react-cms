@@ -17,10 +17,10 @@ const Faq = () => {
     isLoadingFaqs,
     page,
     limit,
-    selectedCategory,
+    selectedItem,
     navigate,
-    onOpenModal,
-    onCloseModal,
+    onSelectItem,
+    onResetItem,
     onChangeLimit,
     onChangePage,
     onChangeSearchValue,
@@ -95,7 +95,7 @@ const Faq = () => {
           >
             Edit
           </Button>
-          <Button type="primary" danger onClick={() => onOpenModal(id)}>
+          <Button type="primary" danger onClick={() => onSelectItem(id)}>
             Delete
           </Button>
         </Space>
@@ -275,9 +275,9 @@ const Faq = () => {
             <div>Do you want to delete these items?</div>
           </Space>
         }
-        open={selectedCategory > 0}
+        open={selectedItem > 0}
         onOk={onDeleteFaq}
-        onCancel={onCloseModal}
+        onCancel={onResetItem}
         okText="Delete"
         okButtonProps={{ loading: isLoadingDelete }}
       >

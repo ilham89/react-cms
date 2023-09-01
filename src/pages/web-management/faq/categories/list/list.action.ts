@@ -1,9 +1,8 @@
-import { useState } from "react";
-
 import { AxiosError } from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import useNotification from "@/hooks/useNotification";
+import { useSelectItem } from "@/hooks/useSelectItem";
 import {
   useDeleteFaqCategoryService,
   useGetFaqCategoriesService,
@@ -20,14 +19,13 @@ export const useListFaqCategories = () => {
   const { mutate: deleteFaqCategory, isLoading: isLoadingDelete } = useDeleteFaqCategoryService();
   const { mutate: updateFaqCategory } = usePutFaqCategoryService();
   const { addError, addSuccess } = useNotification();
-
-  const [selectedCategory, setSelectedCategory] = useState<number>(-1);
+  const { selectedItem, onSelectItem, onResetItem } = useSelectItem();
 
   const onDeleteFaqCategory = () =>
-    deleteFaqCategory(selectedCategory, {
+    deleteFaqCategory(selectedItem, {
       onSuccess: () => {
         queryClient.invalidateQueries(["faq-categories"]);
-        setSelectedCategory(-1);
+        onResetItem();
         addSuccess("Successfully deleted faq category");
       },
       onError: (error) => {
@@ -54,19 +52,16 @@ export const useListFaqCategories = () => {
       },
     );
 
-  const onOpenModal = (id: number) => setSelectedCategory(id);
-  const onCloseModal = () => setSelectedCategory(-1);
-
   return {
     navigate,
     location,
     data,
     isLoading,
-    selectedCategory,
+    selectedItem,
     onDeleteFaqCategory,
     isLoadingDelete,
     onUpdateFaqCategory,
-    onOpenModal,
-    onCloseModal,
+    onSelectItem,
+    onResetItem,
   };
 };

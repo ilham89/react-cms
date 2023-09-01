@@ -5,6 +5,7 @@ import { AxiosError } from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import useNotification from "@/hooks/useNotification";
+import { useSelectItem } from "@/hooks/useSelectItem";
 import {
   useDeleteHeroPartnerService,
   useGetHeroPartnersService,
@@ -17,13 +18,10 @@ import { queryClient } from "@/utils/queryClient";
 export const useListHeroSection = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedRow, setSelectedRow] = useState<number>(-1);
   const [dataSource, setDataSource] = useState<GetHeroPartnerResponseType[]>([]);
 
-  const onOpenModal = (id: number) => setSelectedRow(id);
-  const onCloseModal = () => setSelectedRow(-1);
-
   const { addError, addSuccess } = useNotification();
+  const { selectedItem, onResetItem, onSelectItem } = useSelectItem();
   const { isLoading } = useGetHeroPartnersService(
     { type: "Hero Sections" },
     {
@@ -35,10 +33,10 @@ export const useListHeroSection = () => {
   const { mutate: order } = usePutHeroPartnerOrderService();
 
   const onDeleteHeroPartner = () =>
-    mutate(selectedRow, {
+    mutate(selectedItem, {
       onSuccess: () => {
         queryClient.invalidateQueries(["hero-sections"]);
-        setSelectedRow(-1);
+        onResetItem();
         addSuccess("Your items are successfully deleted");
       },
       onError: (error) => {
@@ -74,13 +72,13 @@ export const useListHeroSection = () => {
   return {
     navigate,
     location,
-    onOpenModal,
-    onCloseModal,
+    onSelectItem,
+    onResetItem,
     dataSource,
     isLoading,
     isLoadingDelete,
     onDeleteHeroPartner,
-    selectedRow,
+    selectedItem,
     onDragEnd,
   };
 };

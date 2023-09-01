@@ -16,12 +16,12 @@ const FaqCategories = () => {
     location,
     data,
     isLoading,
-    selectedCategory,
+    selectedItem,
     onDeleteFaqCategory,
     isLoadingDelete,
     onUpdateFaqCategory,
-    onOpenModal,
-    onCloseModal,
+    onSelectItem,
+    onResetItem,
   } = useListFaqCategories();
 
   const columns: ColumnsType<GetFaqCategoryResponseType> = [
@@ -99,7 +99,7 @@ const FaqCategories = () => {
           >
             Edit
           </Button>
-          <Button type="primary" danger onClick={() => onOpenModal(id)}>
+          <Button type="primary" danger onClick={() => onSelectItem(id)}>
             Delete
           </Button>
         </Space>
@@ -178,9 +178,9 @@ const FaqCategories = () => {
             <div>Do you want to delete these items?</div>
           </Space>
         }
-        open={selectedCategory > 0}
+        open={selectedItem > 0}
         onOk={onDeleteFaqCategory}
-        onCancel={onCloseModal}
+        onCancel={onResetItem}
         okText="Delete"
         okButtonProps={{ loading: isLoadingDelete }}
       >
@@ -191,7 +191,7 @@ const FaqCategories = () => {
           }}
         >
           This category have{" "}
-          {data?.data[data.data.findIndex((item) => item.id === selectedCategory)]?.FAQs.length}{" "}
+          {data?.data[data.data.findIndex((item) => item.id === selectedItem)]?.FAQs.length}{" "}
           question, deleting category will remove the category in that question
         </p>
       </Modal>

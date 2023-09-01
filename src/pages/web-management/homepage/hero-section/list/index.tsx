@@ -14,13 +14,13 @@ const HeroSection = () => {
   const {
     navigate,
     location,
-    onOpenModal,
-    onCloseModal,
+    onSelectItem,
+    onResetItem,
     dataSource,
     isLoading,
     isLoadingDelete,
     onDeleteHeroPartner,
-    selectedRow,
+    selectedItem,
     onDragEnd,
   } = useListHeroSection();
 
@@ -70,7 +70,7 @@ const HeroSection = () => {
           >
             Edit
           </Button>
-          <Button type="primary" danger onClick={() => onOpenModal(id)}>
+          <Button type="primary" danger onClick={() => onSelectItem(id)}>
             Delete
           </Button>
         </Space>
@@ -164,9 +164,9 @@ const HeroSection = () => {
             <div>Do you want to delete these items?</div>
           </Space>
         }
-        open={selectedRow > 0}
+        open={selectedItem > 0}
         onOk={onDeleteHeroPartner}
-        onCancel={onCloseModal}
+        onCancel={onResetItem}
         okText="Delete"
         okButtonProps={{ loading: isLoadingDelete }}
       >

@@ -30,6 +30,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import RequiredMessage from "@/components/RequiredMessage";
 import useNotification from "@/hooks/useNotification";
+import { useSelectItem } from "@/hooks/useSelectItem";
 import { fullLayout } from "@/models/form";
 import { imageServices } from "@/services/image/image.api";
 import { productServices } from "@/services/product/product.api";
@@ -114,12 +115,12 @@ const CreateUpdate = () => {
   const [fileList, setFileList] = useState<File[]>(defaultFiles);
   const [brochure, setBrochure] = useState({} as File);
   const [categories, setCategories] = useState<SelectField[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState(-1);
   const [selectedLabel, setSelectedLabel] = useState<string[]>([]);
 
   const { addError, addSuccess } = useNotification();
   const { mutate: create } = usePostProductService();
   const { mutate: update } = usePutProductService();
+  const { selectedItem, onSelectItem } = useSelectItem();
 
   const onSubmit = (values: any) => {
     delete values.image;
@@ -325,7 +326,7 @@ const CreateUpdate = () => {
       }
 
       // local state
-      setSelectedCategory(data.category_id);
+      onSelectItem(data.category_id);
       setFileList(newFileList);
 
       if (data.brochure) {
@@ -339,7 +340,7 @@ const CreateUpdate = () => {
   });
 
   const categoryIndex = (data as GetProductCategoryResponseType[])?.findIndex(
-    (datum) => datum.id === selectedCategory,
+    (datum) => datum.id === selectedItem,
   );
   return (
     <div>
@@ -502,7 +503,7 @@ const CreateUpdate = () => {
                 loading={isLoading}
                 options={categories}
                 onSelect={(value) => {
-                  setSelectedCategory(value);
+                  onSelectItem(value);
                   form.setFieldsValue({
                     color: [],
                     size: [],
@@ -636,13 +637,13 @@ const CreateUpdate = () => {
                 showSearch
                 menuItemSelectedIcon={null}
                 placeholder="--Please select color--"
-                options={data?.[
-                  data.findIndex((datum) => datum.id === selectedCategory)
-                ]?.color?.map((color) => ({
-                  label: color,
-                  value: color,
-                }))}
-                disabled={selectedCategory === -1}
+                options={data?.[data.findIndex((datum) => datum.id === selectedItem)]?.color?.map(
+                  (color) => ({
+                    label: color,
+                    value: color,
+                  }),
+                )}
+                disabled={selectedItem === -1}
               />
             </Form.Item>
             <Divider />
@@ -662,13 +663,13 @@ const CreateUpdate = () => {
                 showSearch
                 menuItemSelectedIcon={null}
                 placeholder="--Please select size--"
-                options={data?.[
-                  data.findIndex((datum) => datum.id === selectedCategory)
-                ]?.size?.map((size) => ({
-                  label: size,
-                  value: size,
-                }))}
-                disabled={selectedCategory === -1}
+                options={data?.[data.findIndex((datum) => datum.id === selectedItem)]?.size?.map(
+                  (size) => ({
+                    label: size,
+                    value: size,
+                  }),
+                )}
+                disabled={selectedItem === -1}
               />
             </Form.Item>
             <Divider />
@@ -689,12 +690,12 @@ const CreateUpdate = () => {
                 menuItemSelectedIcon={null}
                 placeholder="--Please select material--"
                 options={data?.[
-                  data.findIndex((datum) => datum.id === selectedCategory)
+                  data.findIndex((datum) => datum.id === selectedItem)
                 ]?.material?.map((material) => ({
                   label: material,
                   value: material,
                 }))}
-                disabled={selectedCategory === -1}
+                disabled={selectedItem === -1}
               />
             </Form.Item>
             <Divider />
@@ -741,7 +742,7 @@ const CreateUpdate = () => {
             </Form.Item>
             <Divider />
 
-            {selectedCategory !== -1 && categoryIndex !== -1 && (
+            {selectedItem !== -1 && categoryIndex !== -1 && (
               <>
                 {Object.entries(
                   (data as GetProductCategoryResponseType[])[categoryIndex].additional_info,

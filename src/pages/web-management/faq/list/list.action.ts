@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import useNotification from "@/hooks/useNotification";
 import { useSearchPagination } from "@/hooks/useSearchPagination";
+import { useSelectItem } from "@/hooks/useSelectItem";
 import { useSortTable } from "@/hooks/useSortTable";
 import { faqServices } from "@/services/faq/faq.api";
 import { useDeleteFaqService, usePutFaqService } from "@/services/faq/faq.hooks";
@@ -16,13 +17,13 @@ export const useListFaq = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [selectedCategory, setSelectedCategory] = useState<number>(-1);
   const [filter, setFilter] = useState<string>("");
   const [openStatus, setOpenStatus] = useState<boolean>(false);
 
   const { page, limit, debounceSearchValue, onChangeLimit, onChangePage, onChangeSearchValue } =
     useSearchPagination();
   const { orderBy, onChangeTable } = useSortTable();
+  const { selectedItem, onSelectItem, onResetItem } = useSelectItem();
 
   const { data, isLoading: isLoadingFaqs } = useQuery(
     ["faqs", limit, page, debounceSearchValue, orderBy, openStatus],
@@ -40,14 +41,11 @@ export const useListFaq = () => {
   const { mutate: updateFaq } = usePutFaqService();
   const { addError, addSuccess } = useNotification();
 
-  const onOpenModal = (id: number) => setSelectedCategory(id);
-  const onCloseModal = () => setSelectedCategory(-1);
-
   const onDeleteFaq = () =>
-    deleteFaq(selectedCategory, {
+    deleteFaq(selectedItem, {
       onSuccess: () => {
         queryClient.invalidateQueries(["faqs"]);
-        setSelectedCategory(-1);
+        onResetItem();
         addSuccess("Your items are successfully deleted");
       },
       onError: (error) => {
@@ -81,10 +79,10 @@ export const useListFaq = () => {
     isLoadingFaqs,
     page,
     limit,
-    selectedCategory,
+    selectedItem,
     navigate,
-    onOpenModal,
-    onCloseModal,
+    onSelectItem,
+    onResetItem,
     onChangeLimit,
     onChangePage,
     onChangeSearchValue,

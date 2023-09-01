@@ -1,11 +1,10 @@
-import { useState } from "react";
-
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import useNotification from "@/hooks/useNotification";
 import { useSearchPagination } from "@/hooks/useSearchPagination";
+import { useSelectItem } from "@/hooks/useSelectItem";
 import { useSortTable } from "@/hooks/useSortTable";
 import { productCategoryServices } from "@/services/product-category/product-category.api";
 import {
@@ -19,7 +18,7 @@ export const useListProductCategories = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [selectedCategory, setSelectedCategory] = useState(-1);
+  const { selectedItem, onSelectItem, onResetItem } = useSelectItem();
 
   const { addError, addSuccess } = useNotification();
   const { orderBy, onChangeTable } = useSortTable();
@@ -37,15 +36,12 @@ export const useListProductCategories = () => {
   const { mutate: deleteCategory, isLoading: isLoadingDelete } = useDeleteProductCategoryService();
   const { mutate: updateCategory } = usePutProductCategoryService();
 
-  const onOpenModal = (id: number) => setSelectedCategory(id);
-  const onCloseModal = () => setSelectedCategory(-1);
-
   const onDeleteFaq = () =>
-    deleteCategory(selectedCategory, {
+    deleteCategory(selectedItem, {
       onSuccess: () => {
         queryClient.invalidateQueries(["product-categories"]);
-        setSelectedCategory(-1);
         addSuccess("Your items are successfully deleted");
+        onResetItem();
       },
       onError: (error) => {
         const newError = error as AxiosError<{ error: string }>;
@@ -82,10 +78,10 @@ export const useListProductCategories = () => {
     isLoading,
     isLoadingDelete,
     page,
-    selectedCategory,
+    selectedItem,
     onChangePage,
-    onOpenModal,
-    onCloseModal,
+    onSelectItem,
+    onResetItem,
     onDeleteFaq,
     onUpdateProductCategory,
     onChangeTable,
