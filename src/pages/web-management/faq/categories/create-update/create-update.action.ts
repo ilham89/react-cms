@@ -1,4 +1,5 @@
 import { Form } from "antd";
+import { AxiosError } from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { FormValues } from "./create-update.types";
@@ -51,7 +52,10 @@ export const useCreateUpdateFaqCategory = () => {
             addSuccess("Successfully updated faq category");
             navigate("/web-management/faq/categories");
           },
-          onError: () => addError(),
+          onError: (error) => {
+            const newError = error as AxiosError<{ error: string }>;
+            addError(newError.response?.data?.error);
+          },
         },
       );
     } else {
@@ -60,7 +64,10 @@ export const useCreateUpdateFaqCategory = () => {
           addSuccess("Successfully created faq category");
           navigate("/web-management/faq/categories");
         },
-        onError: () => addError(),
+        onError: (error) => {
+          const newError = error as AxiosError<{ error: string }>;
+          addError(newError.response?.data?.error);
+        },
       });
     }
   };

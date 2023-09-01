@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { AxiosError } from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import useNotification from "@/hooks/useNotification";
@@ -29,7 +30,10 @@ export const useListFaqCategories = () => {
         setSelectedCategory(-1);
         addSuccess("Successfully deleted faq category");
       },
-      onError: () => addError(),
+      onError: (error) => {
+        const newError = error as AxiosError<{ error: string }>;
+        addError(newError.response?.data?.error);
+      },
     });
 
   const onUpdateFaqCategory = (id: string, data: { status: FaqCategoryStatusEnum }, key: string) =>
@@ -43,7 +47,10 @@ export const useListFaqCategories = () => {
           addSuccess(`Successfully changed status to ${key}`);
           queryClient.invalidateQueries(["faq-categories"]);
         },
-        onError: () => addError(),
+        onError: (error) => {
+          const newError = error as AxiosError<{ error: string }>;
+          addError(newError.response?.data?.error);
+        },
       },
     );
 

@@ -8,6 +8,7 @@ import {
 } from "@ant-design/icons";
 import { Breadcrumb, Button, Col, Divider, Form, Input, Row, Space, Upload } from "antd";
 import { RcFile } from "antd/es/upload";
+import { AxiosError } from "axios";
 import Cookies from "js-cookie";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -363,7 +364,10 @@ const CreateUpdate = () => {
               addSuccess("You`re changes are saved successfully");
               navigate("/product-management/categories");
             },
-            onError: () => addError(),
+            onError: (error) => {
+              const newError = error as AxiosError<{ error: string }>;
+              addError(newError.response?.data?.error);
+            },
           },
         );
       } else {
@@ -372,11 +376,14 @@ const CreateUpdate = () => {
             addSuccess("You`re changes are saved successfully");
             navigate("/product-management/categories");
           },
-          onError: () => addError(),
+          onError: (error) => {
+            const newError = error as AxiosError<{ error: string }>;
+            addError(newError.response?.data?.error);
+          },
         });
       }
-    } catch (error) {
-      console.log(error, "ini errror");
+    } catch {
+      addError();
     }
   };
 

@@ -1,9 +1,11 @@
 import { useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import useNotification from "@/hooks/useNotification";
+import { useSearchPagination } from "@/hooks/useSearchPagination";
 import { useSortTable } from "@/hooks/useSortTable";
 import { productCategoryServices } from "@/services/product-category/product-category.api";
 import {
@@ -17,11 +19,11 @@ export const useListProductCategories = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [page, setPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState(-1);
 
   const { addError, addSuccess } = useNotification();
   const { orderBy, onChangeTable } = useSortTable();
+  const { page, onChangePage } = useSearchPagination();
 
   const { data, isLoading } = useQuery(["product-categories", page, orderBy], () =>
     productCategoryServices.getProductCategories({
@@ -35,7 +37,6 @@ export const useListProductCategories = () => {
   const { mutate: deleteCategory, isLoading: isLoadingDelete } = useDeleteProductCategoryService();
   const { mutate: updateCategory } = usePutProductCategoryService();
 
-  const onChangePage = (value: number) => setPage(value);
   const onOpenModal = (id: number) => setSelectedCategory(id);
   const onCloseModal = () => setSelectedCategory(-1);
 
@@ -46,7 +47,10 @@ export const useListProductCategories = () => {
         setSelectedCategory(-1);
         addSuccess("Your items are successfully deleted");
       },
-      onError: () => addError(),
+      onError: (error) => {
+        const newError = error as AxiosError<{ error: string }>;
+        addError(newError.response?.data?.error);
+      },
     });
 
   const onUpdateProductCategory = (
@@ -64,7 +68,10 @@ export const useListProductCategories = () => {
           addSuccess(`Successfully changed status to ${key}`);
           queryClient.invalidateQueries(["product-categories"]);
         },
-        onError: () => addError(),
+        onError: (error) => {
+          const newError = error as AxiosError<{ error: string }>;
+          addError(newError.response?.data?.error);
+        },
       },
     );
 

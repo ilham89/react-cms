@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { Form } from "antd";
+import { AxiosError } from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { FormValues } from "./create-update.types";
@@ -55,7 +56,10 @@ export const useCreateUpdateFaq = () => {
             addSuccess("You`re changes are saved successfully");
             navigate("/web-management/faq");
           },
-          onError: () => addError(),
+          onError: (error) => {
+            const newError = error as AxiosError<{ error: string }>;
+            addError(newError.response?.data?.error);
+          },
         },
       );
     } else {
@@ -64,7 +68,10 @@ export const useCreateUpdateFaq = () => {
           addSuccess("You`re changes are saved successfully");
           navigate("/web-management/faq");
         },
-        onError: () => addError(),
+        onError: (error) => {
+          const newError = error as AxiosError<{ error: string }>;
+          addError(newError.response?.data?.error);
+        },
       });
     }
   };

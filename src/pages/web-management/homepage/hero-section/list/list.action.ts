@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { DragEndEvent } from "@dnd-kit/core";
+import { AxiosError } from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import useNotification from "@/hooks/useNotification";
@@ -40,7 +41,10 @@ export const useListHeroSection = () => {
         setSelectedRow(-1);
         addSuccess("Your items are successfully deleted");
       },
-      onError: () => addError(),
+      onError: (error) => {
+        const newError = error as AxiosError<{ error: string }>;
+        addError(newError.response?.data?.error);
+      },
     });
 
   const onDragEnd = ({ active, over }: DragEndEvent) => {
@@ -58,7 +62,10 @@ export const useListHeroSection = () => {
         },
         {
           onSuccess: () => addSuccess("Your items are successfully updated"),
-          onError: () => addError(),
+          onError: (error) => {
+            const newError = error as AxiosError<{ error: string }>;
+            addError(newError.response?.data?.error);
+          },
         },
       );
     }

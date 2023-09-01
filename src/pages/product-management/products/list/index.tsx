@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { CloseCircleFilled, PlusOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
@@ -16,11 +16,12 @@ import {
   Tag,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
+import { AxiosError } from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import Pagination from "@/components/Pagination";
-import { useDebounce } from "@/hooks/useDebounce";
 import useNotification from "@/hooks/useNotification";
+import { useSearchPagination } from "@/hooks/useSearchPagination";
 import { useSortTable } from "@/hooks/useSortTable";
 import { pageSize } from "@/models/page";
 import { productManagement } from "@/models/tabs";
@@ -52,13 +53,10 @@ const items: MenuProps["items"] = [
 const Products = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(5);
-  const [searchValue, setSearchValue] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(-1);
 
-  const debounceSearchValue = useDebounce(searchValue);
-
+  const { page, limit, debounceSearchValue, onChangeLimit, onChangePage, onChangeSearchValue } =
+    useSearchPagination();
   const { addError, addSuccess } = useNotification();
   const { orderBy, onChangeTable } = useSortTable();
 
@@ -77,13 +75,6 @@ const Products = () => {
   const onOpenModal = (id: number) => setSelectedProduct(id);
   const onCloseModal = () => setSelectedProduct(-1);
 
-  const onChangePage = (value: number) => setPage(value);
-  const onChangeLimit = (value: number) => setLimit(value);
-  const onChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPage(1);
-    setSearchValue(e.target.value);
-  };
-
   const { mutate: deleteProduct, isLoading: isLoadingDelete } = useDeleteProductService();
 
   const onDeleteFaq = () =>
@@ -93,7 +84,10 @@ const Products = () => {
         setSelectedProduct(-1);
         addSuccess("Your items are successfully deleted");
       },
-      onError: () => addError(),
+      onError: (error) => {
+        const newError = error as AxiosError<{ error: string }>;
+        addError(newError.response?.data?.error);
+      },
     });
 
   const columns: ColumnsType<GetProductResponseType> = [
@@ -103,7 +97,6 @@ const Products = () => {
       key: "name",
       sorter: true,
     },
-
     {
       title: "Categories",
       dataIndex: "ProductCategory",

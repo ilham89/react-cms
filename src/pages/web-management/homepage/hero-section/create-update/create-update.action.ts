@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { Form } from "antd";
 import { RcFile } from "antd/es/upload";
+import { AxiosError } from "axios";
 import Cookies from "js-cookie";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -60,7 +61,10 @@ export const useCreateUpdateHeroSection = () => {
             addSuccess("You`re changes are saved successfully");
             navigate("/web-management/homepage/hero-section");
           },
-          onError: () => addError(),
+          onError: (error) => {
+            const newError = error as AxiosError<{ error: string }>;
+            addError(newError.response?.data?.error);
+          },
         },
       );
     } else {
@@ -69,7 +73,10 @@ export const useCreateUpdateHeroSection = () => {
           addSuccess("You`re changes are saved successfully");
           navigate("/web-management/homepage/hero-section");
         },
-        onError: () => addError(),
+        onError: (error) => {
+          const newError = error as AxiosError<{ error: string }>;
+          addError(newError.response?.data?.error);
+        },
       });
     }
   };

@@ -36,7 +36,7 @@ export const productCategoryServices = {
   },
   postProductCategory: async (data: PostProductCategoryBodyType) => {
     const response = await axiosInstance({
-      url: "/product-categories",
+      url: "/product-categoriessss",
       method: "post",
       data,
     });

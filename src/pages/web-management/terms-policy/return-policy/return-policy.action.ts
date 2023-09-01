@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { Form } from "antd";
+import { AxiosError } from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { IFormValues } from "./return-policy.types";
@@ -42,7 +43,10 @@ export const useReturnPolicy = () => {
       };
       create(createPayload, {
         onSuccess: () => addSuccess("You`re changes are saved successfully"),
-        onError: () => addError(),
+        onError: (error) => {
+          const newError = error as AxiosError<{ error: string }>;
+          addError(newError.response?.data?.error);
+        },
       });
     } else {
       const updatePayload = {
@@ -53,7 +57,10 @@ export const useReturnPolicy = () => {
       };
       update(updatePayload, {
         onSuccess: () => addSuccess("You`re changes are saved successfully"),
-        onError: () => addError(),
+        onError: (error) => {
+          const newError = error as AxiosError<{ error: string }>;
+          addError(newError.response?.data?.error);
+        },
       });
     }
   };
