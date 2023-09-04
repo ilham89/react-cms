@@ -231,14 +231,25 @@ const CreateUpdate = () => {
     const formData = new FormData();
     formData.append("file", file);
 
-    imageServices.postImage(formData).then(({ data }) => {
-      setBrochure({
-        file_name: data.file_name,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        preview: file.name,
+    imageServices
+      .postImage(formData)
+      .then(({ data }) => {
+        setBrochure({
+          file_name: data.file_name,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          preview: file.name,
+        });
+      })
+      .catch((error) => {
+        if (error.response?.status === 401) {
+          Cookies.remove("user_ct");
+          addError("Your session is expired!");
+          setTimeout(() => {
+            location.replace("/login");
+          }, 1000);
+        }
       });
-    });
   };
 
   const { data, isLoading } = useQuery(

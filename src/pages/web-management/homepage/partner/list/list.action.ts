@@ -46,6 +46,7 @@ export const useListPartner = () => {
     });
 
   const onDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over?.id) return;
     if (active.id !== over?.id) {
       const newDataSource = [...dataSource];
       const activeIndex = newDataSource.findIndex((i) => i.id === active.id);

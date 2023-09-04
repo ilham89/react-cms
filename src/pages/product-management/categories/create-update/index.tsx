@@ -7,16 +7,14 @@ import {
   RightOutlined,
 } from "@ant-design/icons";
 import { Breadcrumb, Button, Col, Divider, Form, Input, Row, Space, Upload } from "antd";
-import { RcFile } from "antd/es/upload";
 import { AxiosError } from "axios";
-import Cookies from "js-cookie";
 import { useNavigate, useParams } from "react-router-dom";
 
 import AddIcon from "@/assets/icons/add.svg";
 import RequiredMessage from "@/components/RequiredMessage";
 import useNotification from "@/hooks/useNotification";
+import { useUploadRequest } from "@/hooks/useUploadRequest";
 import { fullLayout } from "@/models/form";
-import { imageServices } from "@/services/image/image.api";
 import {
   useGetProductCategoryService,
   usePostProductCategoryService,
@@ -87,10 +85,11 @@ export type FormValues = {
 };
 
 const CreateUpdate = () => {
-  const [file, setFile] = useState({} as File);
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const params = useParams();
+
+  const { file, setFile, onCustomRequest } = useUploadRequest();
 
   const { id } = params;
 
@@ -302,30 +301,6 @@ const CreateUpdate = () => {
       newCustomField[index].isUpdate = !newCustomField[index].isUpdate;
     }
     setCustomFields(newCustomField);
-  };
-
-  const onCustomRequest = (file: string | Blob | RcFile) => {
-    const preview = URL.createObjectURL(file as Blob);
-    const formData = new FormData();
-    formData.append("file", file);
-
-    imageServices
-      .postImage(formData)
-      .then((res) =>
-        setFile({
-          file_name: res.data.file_name,
-          preview,
-        }),
-      )
-      .catch((error) => {
-        if (error.response?.status === 401) {
-          Cookies.remove("user_ct");
-          addError("Your session is expired!");
-          setTimeout(() => {
-            location.replace("/login");
-          }, 1000);
-        }
-      });
   };
 
   const getValueField = (data: CustomFieldValue[]) =>

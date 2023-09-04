@@ -1,27 +1,23 @@
-import { useState } from "react";
-
 import { Form } from "antd";
-import { RcFile } from "antd/es/upload";
 import { AxiosError } from "axios";
-import Cookies from "js-cookie";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { File, FormValues } from "./create-update.types";
+import { FormValues } from "./create-update.types";
 import useNotification from "@/hooks/useNotification";
+import { useUploadRequest } from "@/hooks/useUploadRequest";
 import {
   useGetHeroPartnerService,
   usePostHeroPartnerService,
   usePutHeroPartnerService,
 } from "@/services/hero-partner/hero-partner.hooks";
-import { imageServices } from "@/services/image/image.api";
 
 export const useCreateUpdateHeroSection = () => {
   const [form] = Form.useForm<FormValues>();
   const navigate = useNavigate();
   const params = useParams();
   const { id } = params;
-  const [file, setFile] = useState({} as File);
   const { addError, addSuccess } = useNotification();
+  const { file, setFile, onCustomRequest } = useUploadRequest();
 
   useGetHeroPartnerService(id as string, {
     enabled: !!id,
@@ -79,30 +75,6 @@ export const useCreateUpdateHeroSection = () => {
         },
       });
     }
-  };
-
-  const onCustomRequest = (file: string | Blob | RcFile) => {
-    const preview = URL.createObjectURL(file as Blob);
-    const formData = new FormData();
-    formData.append("file", file);
-
-    imageServices
-      .postImage(formData)
-      .then((res) =>
-        setFile({
-          file_name: res.data.file_name,
-          preview,
-        }),
-      )
-      .catch((error) => {
-        if (error.response?.status === 401) {
-          Cookies.remove("user_ct");
-          addError("Your session is expired!");
-          setTimeout(() => {
-            location.replace("/login");
-          }, 1000);
-        }
-      });
   };
 
   const isLoading = isLoadingCreate || isLoadingUpdate;
