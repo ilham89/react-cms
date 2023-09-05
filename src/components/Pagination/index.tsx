@@ -2,11 +2,12 @@ import { Row, Pagination as AntdPagination, PaginationProps as AntdPaginationPro
 
 type PaginationProps = {
   page: number;
-  paginationProps: AntdPaginationProps;
+  paginationProps?: AntdPaginationProps;
   totalData: number;
   totalPage: number;
   limit: number;
   pageData: number;
+  onChange: (page: number, pageSize: number) => void;
 };
 
 const Pagination = ({
@@ -15,6 +16,7 @@ const Pagination = ({
   limit,
   totalPage,
   pageData,
+  onChange,
   ...paginationProps
 }: PaginationProps) => {
   return (
@@ -31,6 +33,7 @@ const Pagination = ({
         total={totalData}
         current={page}
         showSizeChanger={false}
+        onChange={onChange}
         {...paginationProps}
       />
     </Row>

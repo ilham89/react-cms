@@ -82,6 +82,9 @@ export type FormValues = {
   name: string;
   short_description: string;
   image?: string;
+  size: string[];
+  material: string[];
+  color: string[];
 };
 
 const CreateUpdate = () => {
@@ -92,48 +95,6 @@ const CreateUpdate = () => {
   const { file, setFile, onCustomRequest } = useUploadRequest();
 
   const { id } = params;
-
-  const [dynamicFields, setDynamicFields] = useState([
-    {
-      name: "Size",
-      inputs: [
-        {
-          placeholder: "Input size",
-          value: "",
-        },
-        {
-          placeholder: "Input size",
-          value: "",
-        },
-      ],
-    },
-    {
-      name: "Color",
-      inputs: [
-        {
-          placeholder: "Input color",
-          value: "",
-        },
-        {
-          placeholder: "Input color",
-          value: "",
-        },
-      ],
-    },
-    {
-      name: "Material",
-      inputs: [
-        {
-          placeholder: "Input material",
-          value: "",
-        },
-        {
-          placeholder: "Input material",
-          value: "",
-        },
-      ],
-    },
-  ]);
 
   const [customFields, setCustomFields] = useState([
     ...JSON.parse(JSON.stringify(baseCustomField)),
@@ -152,50 +113,14 @@ const CreateUpdate = () => {
         image: data.image,
         name: data.name,
         short_description: data.short_description,
+        size: data.size,
+        material: data.material,
+        color: data.color,
       });
 
       setFile({
         preview: data.image_url,
         file_name: data.image,
-      });
-
-      const updatedFields = dynamicFields.map((field) => {
-        if (field.name === "Size") {
-          const newInputs = data.size.map((value) => ({
-            placeholder: "Input size",
-            value: value,
-          }));
-
-          return {
-            ...field,
-            inputs: newInputs,
-          };
-        }
-
-        if (field.name === "Color") {
-          const newInputs = data.color.map((value) => ({
-            placeholder: "Input color",
-            value: value,
-          }));
-
-          return {
-            ...field,
-            inputs: newInputs,
-          };
-        }
-
-        if (field.name === "Material") {
-          const newInputs = data.material.map((value) => ({
-            placeholder: "Input material",
-            value: value,
-          }));
-
-          return {
-            ...field,
-            inputs: newInputs,
-          };
-        }
-        return field;
       });
 
       const updatedDynamicFields = Object.keys(data.additional_info).map((key) => ({
@@ -206,8 +131,6 @@ const CreateUpdate = () => {
           value: value,
         })),
       }));
-
-      setDynamicFields(updatedFields);
 
       // jika value additional info dari detail = 3
       if (updatedDynamicFields.length === 3) return setCustomFields(updatedDynamicFields);
@@ -234,35 +157,6 @@ const CreateUpdate = () => {
       setCustomFields(mergedFields);
     },
   });
-
-  const onChangeDynamicField = (
-    index: number,
-    childIndex: number,
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const newDynamicField = [...dynamicFields];
-
-    newDynamicField[index].inputs[childIndex].value = event.target.value;
-
-    setDynamicFields(newDynamicField);
-  };
-
-  const addDynamicField = (index: number) => {
-    const newDynamicField = [...dynamicFields];
-    newDynamicField[index].inputs.push({
-      ...newDynamicField[index].inputs[0],
-      value: "",
-    });
-
-    setDynamicFields(newDynamicField);
-  };
-
-  const deleteDynamicField = (index: number, childIndex: number) => {
-    const newDynamicField = [...dynamicFields];
-
-    newDynamicField[index].inputs.splice(childIndex, 1);
-    setDynamicFields(newDynamicField);
-  };
 
   const onChangeCustomField = (
     index: number,
@@ -312,9 +206,6 @@ const CreateUpdate = () => {
     const payload = {
       ...values,
       image: file.file_name,
-      size: getValueField(dynamicFields[0].inputs),
-      color: getValueField(dynamicFields[1].inputs),
-      material: getValueField(dynamicFields[2].inputs),
       additional_info: {
         [customFields[0]?.name]: getValueField(customFields[0]?.inputs),
         [customFields[1]?.name]: getValueField(customFields[1]?.inputs),
@@ -410,7 +301,15 @@ const CreateUpdate = () => {
           </div>
         </Space>
         <div>
-          <Form onFinish={onSubmit} form={form}>
+          <Form
+            onFinish={onSubmit}
+            form={form}
+            initialValues={{
+              size: [""],
+              color: [""],
+              material: [""],
+            }}
+          >
             <Row>
               <Col span={6}>
                 <Space direction="vertical">
@@ -474,25 +373,43 @@ const CreateUpdate = () => {
             >
               <TextArea rows={4} placeholder="Short description" maxLength={300} showCount />
             </Form.Item>
-            {dynamicFields.map((field, index) => (
-              <React.Fragment key={index}>
-                <Row>
-                  <Col span={6}>{field.name}*:</Col>
-                  <Col span={16} offset={2}>
-                    <Space direction="vertical">
-                      {field.inputs.map((input, childIndex) => (
-                        <Space key={childIndex}>
-                          <Input
-                            placeholder={input.placeholder}
-                            value={input.value}
-                            onChange={(e) => onChangeDynamicField(index, childIndex, e)}
-                          />
-                          {field.inputs.length > 1 && (
-                            <DeleteOutlined onClick={() => deleteDynamicField(index, childIndex)} />
+            <Row>
+              <Col span={6}>
+                <div>Size*</div>
+              </Col>
+              <Col span={16} offset={2}>
+                <Form.List name="size">
+                  {(fields, { add, remove }) => (
+                    <div>
+                      {fields.map((field) => (
+                        <div
+                          key={field.key}
+                          style={{
+                            display: "flex",
+                            gap: 8,
+                            alignItems: "start",
+                          }}
+                        >
+                          <Form.Item
+                            {...field}
+                            style={{
+                              marginBottom: 8,
+                            }}
+                            rules={[{ required: true, message: <RequiredMessage /> }]}
+                          >
+                            <Input placeholder="Input size" />
+                          </Form.Item>
+                          {fields.length > 1 && (
+                            <DeleteOutlined
+                              style={{
+                                marginTop: 8,
+                              }}
+                              onClick={() => remove(field.name)}
+                            />
                           )}
-                        </Space>
+                        </div>
                       ))}
-                      {field.inputs.length < 5 && (
+                      {fields.length < 5 && (
                         <div
                           role="none"
                           style={{
@@ -502,19 +419,135 @@ const CreateUpdate = () => {
                             fontSize: 12,
                             cursor: "pointer",
                           }}
-                          onClick={() => addDynamicField(index)}
+                          onClick={() => add()}
                         >
                           <img src={AddIcon} alt="add" width={16} height={16} />
-                          <div>Add another {field.name.toLowerCase()}</div>
+                          <div>Add another </div>
                         </div>
                       )}
-                    </Space>
-                  </Col>
-                </Row>
-                <Divider />
-              </React.Fragment>
-            ))}
+                    </div>
+                  )}
+                </Form.List>
+              </Col>
+            </Row>
+            <Divider />
 
+            <Row>
+              <Col span={6}>
+                <div>Color*</div>
+              </Col>
+              <Col span={16} offset={2}>
+                <Form.List name="color">
+                  {(fields, { add, remove }) => (
+                    <div>
+                      {fields.map((field) => (
+                        <div
+                          key={field.key}
+                          style={{
+                            display: "flex",
+                            gap: 8,
+                            alignItems: "start",
+                          }}
+                        >
+                          <Form.Item
+                            {...field}
+                            style={{
+                              marginBottom: 8,
+                            }}
+                            rules={[{ required: true, message: <RequiredMessage /> }]}
+                          >
+                            <Input placeholder="Input color" />
+                          </Form.Item>
+                          {fields.length > 1 && (
+                            <DeleteOutlined
+                              style={{
+                                marginTop: 8,
+                              }}
+                              onClick={() => remove(field.name)}
+                            />
+                          )}
+                        </div>
+                      ))}
+                      {fields.length < 5 && (
+                        <div
+                          role="none"
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 8,
+                            fontSize: 12,
+                            cursor: "pointer",
+                          }}
+                          onClick={() => add()}
+                        >
+                          <img src={AddIcon} alt="add" width={16} height={16} />
+                          <div>Add another </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </Form.List>
+              </Col>
+            </Row>
+            <Divider />
+            <Row>
+              <Col span={6}>
+                <div>Material*</div>
+              </Col>
+              <Col span={16} offset={2}>
+                <Form.List name="material">
+                  {(fields, { add, remove }) => (
+                    <div>
+                      {fields.map((field) => (
+                        <div
+                          key={field.key}
+                          style={{
+                            display: "flex",
+                            gap: 8,
+                            alignItems: "start",
+                          }}
+                        >
+                          <Form.Item
+                            {...field}
+                            style={{
+                              marginBottom: 8,
+                            }}
+                            rules={[{ required: true, message: <RequiredMessage /> }]}
+                          >
+                            <Input placeholder="Input material" />
+                          </Form.Item>
+                          {fields.length > 1 && (
+                            <DeleteOutlined
+                              style={{
+                                marginTop: 8,
+                              }}
+                              onClick={() => remove(field.name)}
+                            />
+                          )}
+                        </div>
+                      ))}
+                      {fields.length < 5 && (
+                        <div
+                          role="none"
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 8,
+                            fontSize: 12,
+                            cursor: "pointer",
+                          }}
+                          onClick={() => add()}
+                        >
+                          <img src={AddIcon} alt="add" width={16} height={16} />
+                          <div>Add another </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </Form.List>
+              </Col>
+            </Row>
+            <Divider />
             {customFields.map((field, index) => (
               <React.Fragment key={index}>
                 <Row>
@@ -573,6 +606,7 @@ const CreateUpdate = () => {
                 <Divider />
               </React.Fragment>
             ))}
+
             <Row justify="end">
               <Space size="middle">
                 <Button size="large" onClick={() => navigate("/product-management/categories")}>

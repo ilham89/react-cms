@@ -171,9 +171,7 @@ const ProductCategories = () => {
                 page={page}
                 totalData={data.total_data}
                 totalPage={data.total_page}
-                paginationProps={{
-                  onChange: onChangePage,
-                }}
+                onChange={(page) => onChangePage(page)}
               />
             )
           }

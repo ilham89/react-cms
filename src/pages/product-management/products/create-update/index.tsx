@@ -28,6 +28,7 @@ import { AxiosError } from "axios";
 import Cookies from "js-cookie";
 import { useNavigate, useParams } from "react-router-dom";
 
+import AddIcon from "@/assets/icons/add.svg";
 import RequiredMessage from "@/components/RequiredMessage";
 import useNotification from "@/hooks/useNotification";
 import { useSelectItem } from "@/hooks/useSelectItem";
@@ -544,6 +545,98 @@ const CreateUpdate = () => {
               <TextArea rows={4} placeholder="Product description" maxLength={300} showCount />
             </Form.Item>
             <Divider />
+            <Row>
+              <Col span={6}>
+                <div>Product Price*</div>
+              </Col>
+              <Col span={16} offset={2}>
+                <Form.List
+                  name="size_attributes"
+                  initialValue={[
+                    {
+                      title: "",
+                      price: "",
+                      sku: "",
+                    },
+                  ]}
+                >
+                  {(fields, { add, remove }) => (
+                    <>
+                      {fields.map(({ key, name, ...restField }) => (
+                        <Space key={key} align="start">
+                          <Form.Item
+                            {...restField}
+                            name={[name, "title"]}
+                            rules={[{ required: true, message: "Please input  title" }]}
+                          >
+                            <Select
+                              style={{
+                                width: 205,
+                              }}
+                              mode="multiple"
+                              allowClear
+                              showSearch
+                              menuItemSelectedIcon={null}
+                              placeholder="--Please select size--"
+                              options={data?.[
+                                data.findIndex((datum) => datum.id === selectedItem)
+                              ]?.size?.map((size) => ({
+                                label: size,
+                                value: size,
+                              }))}
+                              disabled={selectedItem === -1}
+                            />{" "}
+                          </Form.Item>
+                          <Form.Item
+                            {...restField}
+                            name={[name, "price"]}
+                            rules={[{ required: true, message: "Please input price" }]}
+                          >
+                            <InputNumber
+                              addonBefore="Rp"
+                              placeholder="Input price"
+                              formatter={(value) =>
+                                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                              }
+                              parser={(value) => value!.replace(/\$\s?|(,*)/g, "")}
+                            />{" "}
+                          </Form.Item>
+                          <Form.Item
+                            {...restField}
+                            name={[name, "sku"]}
+                            rules={[{ required: true, message: "Please input sku" }]}
+                          >
+                            <Input placeholder="SKU" />
+                          </Form.Item>
+                          <DeleteOutlined
+                            style={{
+                              marginTop: 8,
+                              display: fields.length === 1 ? "none" : "block",
+                            }}
+                            onClick={() => remove(name)}
+                          />
+                        </Space>
+                      ))}
+                      <div
+                        role="none"
+                        style={{
+                          display: fields.length > 4 ? "none" : "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          fontSize: 12,
+                          cursor: "pointer",
+                        }}
+                        onClick={() => add()}
+                      >
+                        <img src={AddIcon} alt="add" width={16} height={16} />
+                        <div>Add another</div>
+                      </div>
+                    </>
+                  )}
+                </Form.List>
+              </Col>
+            </Row>
+            <Divider />
             <Form.Item
               {...fullLayout}
               label="Product Price"
@@ -710,6 +803,93 @@ const CreateUpdate = () => {
               />
             </Form.Item>
             <Divider />
+
+            <Row>
+              <Col span={6}>
+                <div>Product Material*</div>
+              </Col>
+              <Col span={16} offset={2}>
+                <Form.List
+                  name="material_attributes"
+                  initialValue={[
+                    {
+                      title: "",
+                      additional_price: "",
+                    },
+                  ]}
+                >
+                  {(fields, { add, remove }) => (
+                    <>
+                      {fields.map(({ key, name, ...restField }) => (
+                        <Space key={key} align="start">
+                          <Form.Item
+                            {...restField}
+                            name={[name, "title"]}
+                            rules={[{ required: true, message: "Please input  title" }]}
+                          >
+                            <Select
+                              style={{
+                                width: 205,
+                              }}
+                              mode="multiple"
+                              allowClear
+                              showSearch
+                              menuItemSelectedIcon={null}
+                              placeholder="--Please select material--"
+                              options={data?.[
+                                data.findIndex((datum) => datum.id === selectedItem)
+                              ]?.material?.map((material) => ({
+                                label: material,
+                                value: material,
+                              }))}
+                              disabled={selectedItem === -1}
+                            />
+                          </Form.Item>
+                          <Form.Item
+                            {...restField}
+                            name={[name, "additional_price"]}
+                            rules={[{ required: true, message: "Please input price" }]}
+                          >
+                            <InputNumber
+                              addonBefore="Rp"
+                              placeholder="Input Add Ons Price"
+                              formatter={(value) =>
+                                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                              }
+                              parser={(value) => value!.replace(/\$\s?|(,*)/g, "")}
+                            />{" "}
+                          </Form.Item>
+
+                          <DeleteOutlined
+                            style={{
+                              marginTop: 8,
+                              display: fields.length === 1 ? "none" : "block",
+                            }}
+                            onClick={() => remove(name)}
+                          />
+                        </Space>
+                      ))}
+                      <div
+                        role="none"
+                        style={{
+                          display: fields.length > 4 ? "none" : "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          fontSize: 12,
+                          cursor: "pointer",
+                        }}
+                        onClick={() => add()}
+                      >
+                        <img src={AddIcon} alt="add" width={16} height={16} />
+                        <div>Add another</div>
+                      </div>
+                    </>
+                  )}
+                </Form.List>
+              </Col>
+            </Row>
+            <Divider />
+
             <Form.Item {...fullLayout} label="Product Brochure" name="brochure">
               <Upload
                 customRequest={({ file }) => onUploadBrochure(file)}
@@ -753,7 +933,7 @@ const CreateUpdate = () => {
             </Form.Item>
             <Divider />
 
-            {selectedItem !== -1 && categoryIndex !== -1 && (
+            {selectedItem !== -1 && categoryIndex !== -1 && data && (
               <>
                 {Object.entries(
                   (data as GetProductCategoryResponseType[])[categoryIndex].additional_info,
