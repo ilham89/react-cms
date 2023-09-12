@@ -6,7 +6,7 @@ import {
   PutWebManagementBodyType,
 } from "./web-management.types";
 import { axiosInstance } from "@/configs/axios";
-import { DataResponseType } from "@/interfaces/response";
+import { DataResponseType } from "@/types/response";
 
 export const webManagementServices = {
   getWebManagements: async () => {

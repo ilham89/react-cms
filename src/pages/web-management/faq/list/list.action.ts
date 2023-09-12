@@ -10,7 +10,7 @@ import { useSelectItem } from "@/hooks/useSelectItem";
 import { useSortTable } from "@/hooks/useSortTable";
 import { faqServices } from "@/services/faq/faq.api";
 import { useDeleteFaqService, usePutFaqService } from "@/services/faq/faq.hooks";
-import { FaqStatusEnum } from "@/services/faq/faq.types";
+import { StatusType } from "@/types/status";
 import { queryClient } from "@/utils/queryClient";
 
 export const useListFaq = () => {
@@ -54,7 +54,7 @@ export const useListFaq = () => {
       },
     });
 
-  const onUpdateFaq = (id: string, data: { status: FaqStatusEnum }, key: string) =>
+  const onUpdateFaq = (id: string, data: { status: StatusType }, key: string) =>
     updateFaq(
       {
         id,

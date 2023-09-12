@@ -8,7 +8,7 @@ import {
   PutHeroPartnerOrderBodyType,
   PutHeroPartnerParamsType,
 } from "./hero-partner.types";
-import { DataResponseType } from "@/interfaces/response";
+import { DataResponseType } from "@/types/response";
 
 export const useGetHeroPartnersService = (
   params: GetHeroPartnerParamsType,

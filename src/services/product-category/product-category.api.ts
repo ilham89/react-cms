@@ -7,7 +7,7 @@ import {
   PutProductCategoryBodyType,
 } from "./product-category.types";
 import { axiosInstance } from "@/configs/axios";
-import { DataMetaResponseType, DataResponseType } from "@/interfaces/response";
+import { DataMetaResponseType, DataResponseType } from "@/types/response";
 
 export const productCategoryServices = {
   getProductCategories: async (params: GetProductCategoryParamsType) => {
@@ -36,7 +36,7 @@ export const productCategoryServices = {
   },
   postProductCategory: async (data: PostProductCategoryBodyType) => {
     const response = await axiosInstance({
-      url: "/product-categoriessss",
+      url: "/product-categories",
       method: "post",
       data,
     });

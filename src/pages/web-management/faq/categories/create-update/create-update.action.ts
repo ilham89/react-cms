@@ -9,7 +9,7 @@ import {
   usePostFaqCategoryService,
   usePutFaqCategoryService,
 } from "@/services/faq-category/faq-category.hooks";
-import { FaqCategoryStatusEnum } from "@/services/faq-category/faq-category.types";
+import { StatusEnum } from "@/types/status";
 
 export const useCreateUpdateFaqCategory = () => {
   const [form] = Form.useForm<FormValues>();
@@ -39,9 +39,7 @@ export const useCreateUpdateFaqCategory = () => {
     const data = {
       ...values,
       status:
-        id && detail?.data.status === FaqCategoryStatusEnum.Inactive
-          ? FaqCategoryStatusEnum.Inactive
-          : FaqCategoryStatusEnum.Active,
+        id && detail?.data.status === StatusEnum.Inactive ? StatusEnum.Inactive : StatusEnum.Active,
     };
 
     if (id) {

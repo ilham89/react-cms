@@ -7,7 +7,8 @@ import Pagination from "@/components/Pagination";
 import { pageSize } from "@/models/page";
 import { status } from "@/models/status";
 import { faqManagement } from "@/models/tabs";
-import { FaqStatusEnum, GetFaqResponseType } from "@/services/faq/faq.types";
+import { GetFaqResponseType } from "@/services/faq/faq.types";
+import { StatusEnum } from "@/types/status";
 
 const Faq = () => {
   const {
@@ -57,7 +58,7 @@ const Faq = () => {
       dataIndex: "status",
       key: "status",
       render: (value) => (
-        <Tag bordered={false} color={value === FaqStatusEnum.Active ? "success" : "error"}>
+        <Tag bordered={false} color={value === StatusEnum.Active ? "success" : "error"}>
           {value}
         </Tag>
       ),
@@ -75,8 +76,7 @@ const Faq = () => {
                 onUpdateFaq(
                   id,
                   {
-                    status:
-                      key === FaqStatusEnum.Active ? FaqStatusEnum.Active : FaqStatusEnum.Inactive,
+                    status: key === StatusEnum.Active ? StatusEnum.Active : StatusEnum.Inactive,
                   },
                   key,
                 ),
@@ -105,36 +105,38 @@ const Faq = () => {
 
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+      <Space size="middle" direction="vertical" style={{ width: "100%" }}>
         <div
           style={{
-            fontSize: 30,
-            fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          FAQ
+          <div
+            style={{
+              fontSize: 30,
+              fontWeight: 600,
+            }}
+          >
+            FAQ
+          </div>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            size="large"
+            onClick={() => navigate("/web-management/faq/add")}
+          >
+            Add Question
+          </Button>
         </div>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          size="large"
-          onClick={() => navigate("/web-management/faq/add")}
-        >
-          Add Question
-        </Button>
-      </div>
-      <Tabs
-        tabBarStyle={{ margin: 0 }}
-        defaultActiveKey={location.pathname}
-        items={faqManagement}
-        onChange={(active) => navigate(active)}
-      />
+        <Tabs
+          tabBarStyle={{ margin: 0 }}
+          defaultActiveKey={location.pathname}
+          items={faqManagement}
+          onChange={(active) => navigate(active)}
+        />
+      </Space>
       <div
         className="box-wrapper"
         style={{

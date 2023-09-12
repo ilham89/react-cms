@@ -1,7 +1,4 @@
-export enum ProductCategoryStatusEnum {
-  Active = "Active",
-  Inactive = "Inactive",
-}
+import { ColumnOrderByType, StatusType } from "@/types/status";
 
 export type GetProductCategoryResponseType = {
   id: number;
@@ -9,13 +6,10 @@ export type GetProductCategoryResponseType = {
   image_url: string;
   name: string;
   short_description: string;
-  size: string[];
-  color: string[];
-  material: string[];
   additional_info: {
     [key: string]: string[];
   };
-  status: ProductCategoryStatusEnum;
+  status: StatusType;
   createdAt: string;
   updatedAt: string;
   Products: { id: number }[];
@@ -24,7 +18,7 @@ export type GetProductCategoryResponseType = {
 export type GetProductCategoryParamsType = {
   page: number;
   limit: number;
-  order_by?: string;
+  order_by?: ColumnOrderByType;
   order_field?: string;
 };
 
@@ -32,13 +26,10 @@ export type PostProductCategoryBodyType = {
   image: string;
   name: string;
   short_description: string;
-  size: string[];
-  color: string[];
-  material: string[];
   additional_info?: {
     [key: string]: string[];
   };
-  status: ProductCategoryStatusEnum;
+  status: StatusType;
 };
 
 export type PutProductCategoryBodyType = PostProductCategoryBodyType;

@@ -1,3 +1,5 @@
+import { ColumnOrderByType } from "@/types/status";
+
 export type GetContactUsResponseType = {
   id: number;
   full_name: string;
@@ -13,5 +15,5 @@ export type GetContactUsParamsType = {
   page: number;
   q?: string;
   order_field?: string;
-  order_by?: string;
+  order_by?: ColumnOrderByType;
 };

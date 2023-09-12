@@ -7,8 +7,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FormValues } from "./create-update.types";
 import useNotification from "@/hooks/useNotification";
 import { useGetFaqService, usePostFaqService, usePutFaqService } from "@/services/faq/faq.hooks";
-import { FaqStatusEnum, FeaturedFaqEnum } from "@/services/faq/faq.types";
 import { useGetFaqCategoriesService } from "@/services/faq-category/faq-category.hooks";
+import { AcceptEnum, StatusEnum } from "@/types/status";
 
 export const useCreateUpdateFaq = () => {
   const [form] = Form.useForm<FormValues>();
@@ -33,7 +33,7 @@ export const useCreateUpdateFaq = () => {
         faq_category_id: data.faq_category_id,
         answer: data.answer,
       });
-      setFeatured(data.featured === FeaturedFaqEnum.Yes);
+      setFeatured(data.featured === AcceptEnum.Yes);
     },
   });
 
@@ -42,11 +42,9 @@ export const useCreateUpdateFaq = () => {
   const onFinish = (values: FormValues) => {
     const data = {
       ...values,
-      featured: featured ? FeaturedFaqEnum.Yes : FeaturedFaqEnum.No,
+      featured: featured ? AcceptEnum.Yes : AcceptEnum.No,
       status:
-        id && detail?.data.status === FaqStatusEnum.Inactive
-          ? FaqStatusEnum.Inactive
-          : FaqStatusEnum.Active,
+        id && detail?.data.status === StatusEnum.Inactive ? StatusEnum.Inactive : StatusEnum.Active,
     };
     if (id) {
       updateFaq(

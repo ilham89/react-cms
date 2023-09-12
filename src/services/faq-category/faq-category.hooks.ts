@@ -6,7 +6,7 @@ import {
   GetFaqCategoryResponseType,
   PutFaqCategoryParamsType,
 } from "./faq-category.types";
-import { DataResponseType } from "@/interfaces/response";
+import { DataResponseType } from "@/types/response";
 
 export const useGetFaqCategoriesService = () =>
   useQuery(["faq-categories"], () => faqCategoryServices.getFaqCategories({ limit: 99, page: 1 }));

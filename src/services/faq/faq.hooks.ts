@@ -2,7 +2,7 @@ import { UseQueryOptions, useMutation, useQuery } from "@tanstack/react-query";
 
 import { faqServices } from "./faq.api";
 import { GetFaqResponseType, PostFaqBodyType, PostFaqParamsType } from "./faq.types";
-import { DataResponseType } from "@/interfaces/response";
+import { DataResponseType } from "@/types/response";
 
 export const useGetFaqService = (
   id: string,

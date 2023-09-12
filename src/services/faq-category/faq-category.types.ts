@@ -1,13 +1,10 @@
-export enum FaqCategoryStatusEnum {
-  Active = "Active",
-  Inactive = "Inactive",
-}
+import { StatusType } from "@/types/status";
 
 export type GetFaqCategoryResponseType = {
   id: number;
   name: string;
   short_description: string;
-  status: FaqCategoryStatusEnum;
+  status: StatusType;
   admin_id: number;
   createdAt: string;
   updatedAt: string;
@@ -19,7 +16,7 @@ export type GetFaqCategoryResponseType = {
 export type PostFaqCategoryBodyType = {
   name?: string;
   short_description?: string;
-  status: FaqCategoryStatusEnum;
+  status: StatusType;
 };
 
 export type PutFaqCategoryParamsType = {

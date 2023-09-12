@@ -1,3 +1,5 @@
+import { ColumnOrderByType, StatusType } from "@/types/status";
+
 export type ProductCategoryType = {
   id: number;
   name: string;
@@ -49,9 +51,9 @@ export type GetProductParamsType = {
   limit: number;
   page: number;
   q: string;
-  order_by?: string;
+  order_by?: ColumnOrderByType;
   order_field?: string;
-  status?: string;
+  status?: StatusType;
 };
 
 export type GetProductLabelResponseType = {

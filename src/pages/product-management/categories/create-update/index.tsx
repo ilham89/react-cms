@@ -20,7 +20,7 @@ import {
   usePostProductCategoryService,
   usePutProductCategoryService,
 } from "@/services/product-category/product-category.hooks";
-import { ProductCategoryStatusEnum } from "@/services/product-category/product-category.types";
+import { StatusEnum } from "@/types/status";
 
 const { TextArea } = Input;
 
@@ -82,9 +82,6 @@ export type FormValues = {
   name: string;
   short_description: string;
   image?: string;
-  size: string[];
-  material: string[];
-  color: string[];
 };
 
 const CreateUpdate = () => {
@@ -113,9 +110,6 @@ const CreateUpdate = () => {
         image: data.image,
         name: data.name,
         short_description: data.short_description,
-        size: data.size,
-        material: data.material,
-        color: data.color,
       });
 
       setFile({
@@ -212,9 +206,7 @@ const CreateUpdate = () => {
         [customFields[2]?.name]: getValueField(customFields[2]?.inputs),
       },
       status:
-        id && data?.data.status === ProductCategoryStatusEnum.Inactive
-          ? ProductCategoryStatusEnum.Inactive
-          : ProductCategoryStatusEnum.Active,
+        id && data?.data.status === StatusEnum.Inactive ? StatusEnum.Inactive : StatusEnum.Active,
     };
 
     // eslint-disable-next-line
@@ -373,180 +365,6 @@ const CreateUpdate = () => {
             >
               <TextArea rows={4} placeholder="Short description" maxLength={300} showCount />
             </Form.Item>
-            <Row>
-              <Col span={6}>
-                <div>Size*</div>
-              </Col>
-              <Col span={16} offset={2}>
-                <Form.List name="size">
-                  {(fields, { add, remove }) => (
-                    <div>
-                      {fields.map((field) => (
-                        <div
-                          key={field.key}
-                          style={{
-                            display: "flex",
-                            gap: 8,
-                            alignItems: "start",
-                          }}
-                        >
-                          <Form.Item
-                            {...field}
-                            style={{
-                              marginBottom: 8,
-                            }}
-                            rules={[{ required: true, message: <RequiredMessage /> }]}
-                          >
-                            <Input placeholder="Input size" />
-                          </Form.Item>
-                          {fields.length > 1 && (
-                            <DeleteOutlined
-                              style={{
-                                marginTop: 8,
-                              }}
-                              onClick={() => remove(field.name)}
-                            />
-                          )}
-                        </div>
-                      ))}
-                      {fields.length < 5 && (
-                        <div
-                          role="none"
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 8,
-                            fontSize: 12,
-                            cursor: "pointer",
-                          }}
-                          onClick={() => add()}
-                        >
-                          <img src={AddIcon} alt="add" width={16} height={16} />
-                          <div>Add another </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </Form.List>
-              </Col>
-            </Row>
-            <Divider />
-
-            <Row>
-              <Col span={6}>
-                <div>Color*</div>
-              </Col>
-              <Col span={16} offset={2}>
-                <Form.List name="color">
-                  {(fields, { add, remove }) => (
-                    <div>
-                      {fields.map((field) => (
-                        <div
-                          key={field.key}
-                          style={{
-                            display: "flex",
-                            gap: 8,
-                            alignItems: "start",
-                          }}
-                        >
-                          <Form.Item
-                            {...field}
-                            style={{
-                              marginBottom: 8,
-                            }}
-                            rules={[{ required: true, message: <RequiredMessage /> }]}
-                          >
-                            <Input placeholder="Input color" />
-                          </Form.Item>
-                          {fields.length > 1 && (
-                            <DeleteOutlined
-                              style={{
-                                marginTop: 8,
-                              }}
-                              onClick={() => remove(field.name)}
-                            />
-                          )}
-                        </div>
-                      ))}
-                      {fields.length < 5 && (
-                        <div
-                          role="none"
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 8,
-                            fontSize: 12,
-                            cursor: "pointer",
-                          }}
-                          onClick={() => add()}
-                        >
-                          <img src={AddIcon} alt="add" width={16} height={16} />
-                          <div>Add another </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </Form.List>
-              </Col>
-            </Row>
-            <Divider />
-            <Row>
-              <Col span={6}>
-                <div>Material*</div>
-              </Col>
-              <Col span={16} offset={2}>
-                <Form.List name="material">
-                  {(fields, { add, remove }) => (
-                    <div>
-                      {fields.map((field) => (
-                        <div
-                          key={field.key}
-                          style={{
-                            display: "flex",
-                            gap: 8,
-                            alignItems: "start",
-                          }}
-                        >
-                          <Form.Item
-                            {...field}
-                            style={{
-                              marginBottom: 8,
-                            }}
-                            rules={[{ required: true, message: <RequiredMessage /> }]}
-                          >
-                            <Input placeholder="Input material" />
-                          </Form.Item>
-                          {fields.length > 1 && (
-                            <DeleteOutlined
-                              style={{
-                                marginTop: 8,
-                              }}
-                              onClick={() => remove(field.name)}
-                            />
-                          )}
-                        </div>
-                      ))}
-                      {fields.length < 5 && (
-                        <div
-                          role="none"
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 8,
-                            fontSize: 12,
-                            cursor: "pointer",
-                          }}
-                          onClick={() => add()}
-                        >
-                          <img src={AddIcon} alt="add" width={16} height={16} />
-                          <div>Add another </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </Form.List>
-              </Col>
-            </Row>
             <Divider />
             {customFields.map((field, index) => (
               <React.Fragment key={index}>

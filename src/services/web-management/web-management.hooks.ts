@@ -6,7 +6,7 @@ import {
   PostWebManagementBodyType,
   PutWebManagementParamsType,
 } from "./web-management.types";
-import { DataResponseType } from "@/interfaces/response";
+import { DataResponseType } from "@/types/response";
 
 export const usePostWebManagementService = () =>
   useMutation((data: PostWebManagementBodyType) => webManagementServices.postWebManagement(data));

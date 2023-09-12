@@ -148,36 +148,38 @@ const Products = () => {
 
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+      <Space size="middle" direction="vertical" style={{ width: "100%" }}>
         <div
           style={{
-            fontSize: 30,
-            fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          Product
+          <div
+            style={{
+              fontSize: 30,
+              fontWeight: 600,
+            }}
+          >
+            Product
+          </div>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            size="large"
+            onClick={() => navigate("/product-management/products/add")}
+          >
+            Add Product
+          </Button>
         </div>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          size="large"
-          onClick={() => navigate("/product-management/products/add")}
-        >
-          Add Product
-        </Button>
-      </div>
-      <Tabs
-        tabBarStyle={{ margin: 0 }}
-        defaultActiveKey={location.pathname}
-        items={productManagement}
-        onChange={(active) => navigate(active)}
-      />
+        <Tabs
+          tabBarStyle={{ margin: 0 }}
+          defaultActiveKey={location.pathname}
+          items={productManagement}
+          onChange={(active) => navigate(active)}
+        />
+      </Space>
       <div
         className="box-wrapper"
         style={{

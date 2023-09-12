@@ -11,7 +11,7 @@ import {
   useDeleteProductCategoryService,
   usePutProductCategoryService,
 } from "@/services/product-category/product-category.hooks";
-import { ProductCategoryStatusEnum } from "@/services/product-category/product-category.types";
+import { StatusType } from "@/types/status";
 import { queryClient } from "@/utils/queryClient";
 
 export const useListProductCategories = () => {
@@ -49,11 +49,7 @@ export const useListProductCategories = () => {
       },
     });
 
-  const onUpdateProductCategory = (
-    id: number,
-    data: { status: ProductCategoryStatusEnum },
-    key: string,
-  ) =>
+  const onUpdateProductCategory = (id: number, data: { status: StatusType }, key: string) =>
     updateCategory(
       {
         id,

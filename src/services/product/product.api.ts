@@ -9,7 +9,7 @@ import {
   PutProductBodyType,
 } from "./product.types";
 import { axiosInstance } from "@/configs/axios";
-import { DataMetaResponseType, DataResponseType } from "@/interfaces/response";
+import { DataMetaResponseType, DataResponseType } from "@/types/response";
 
 export const productServices = {
   getProducts: async (params: GetProductParamsType) => {

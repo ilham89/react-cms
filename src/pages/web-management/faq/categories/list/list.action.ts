@@ -8,7 +8,7 @@ import {
   useGetFaqCategoriesService,
   usePutFaqCategoryService,
 } from "@/services/faq-category/faq-category.hooks";
-import { FaqCategoryStatusEnum } from "@/services/faq-category/faq-category.types";
+import { StatusType } from "@/types/status";
 import { queryClient } from "@/utils/queryClient";
 
 export const useListFaqCategories = () => {
@@ -34,7 +34,7 @@ export const useListFaqCategories = () => {
       },
     });
 
-  const onUpdateFaqCategory = (id: string, data: { status: FaqCategoryStatusEnum }, key: string) =>
+  const onUpdateFaqCategory = (id: string, data: { status: StatusType }, key: string) =>
     updateFaqCategory(
       {
         id,

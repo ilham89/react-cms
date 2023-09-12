@@ -8,7 +8,7 @@ import {
   PutHeroPartnerOrderBodyType,
 } from "./hero-partner.types";
 import { axiosInstance } from "@/configs/axios";
-import { DataResponseType } from "@/interfaces/response";
+import { DataResponseType } from "@/types/response";
 
 export const heroPartnerServices = {
   getHeroPartners: async (params: GetHeroPartnerParamsType) => {

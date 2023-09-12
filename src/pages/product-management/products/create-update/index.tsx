@@ -131,12 +131,11 @@ const CreateUpdate = () => {
       "category_id",
       "information",
       "description",
-      "price",
       "order_minimum",
       "label",
       "color",
-      "size",
-      "material",
+      "size_attributes",
+      "material_attributes",
       "brochure",
       "main_image",
       "images",
@@ -547,16 +546,24 @@ const CreateUpdate = () => {
             <Divider />
             <Row>
               <Col span={6}>
-                <div>Product Price*</div>
+                <div>Variant*</div>
               </Col>
-              <Col span={16} offset={2}>
+              <Col
+                span={16}
+                offset={2}
+                style={{
+                  overflow: "scroll",
+                }}
+              >
                 <Form.List
-                  name="size_attributes"
+                  name="variants"
                   initialValue={[
                     {
-                      title: "",
-                      price: "",
+                      size: "",
+                      material: undefined,
+                      color: undefined,
                       sku: "",
+                      price: "",
                     },
                   ]}
                 >
@@ -566,26 +573,68 @@ const CreateUpdate = () => {
                         <Space key={key} align="start">
                           <Form.Item
                             {...restField}
-                            name={[name, "title"]}
-                            rules={[{ required: true, message: "Please input  title" }]}
+                            name={[name, "size"]}
+                            rules={[{ required: true, message: "Please input  size" }]}
+                          >
+                            <Input
+                              placeholder="Input size"
+                              style={{
+                                minWidth: 150,
+                              }}
+                            />
+                          </Form.Item>
+                          <Form.Item
+                            {...restField}
+                            name={[name, "material"]}
+                            rules={[{ required: true, message: "Please input  material" }]}
                           >
                             <Select
                               style={{
-                                width: 205,
+                                minWidth: 150,
                               }}
-                              mode="multiple"
-                              allowClear
                               showSearch
-                              menuItemSelectedIcon={null}
-                              placeholder="--Please select size--"
-                              options={data?.[
-                                data.findIndex((datum) => datum.id === selectedItem)
-                              ]?.size?.map((size) => ({
-                                label: size,
-                                value: size,
-                              }))}
-                              disabled={selectedItem === -1}
-                            />{" "}
+                              allowClear
+                              placeholder="--Please select material--"
+                              loading={isLoading}
+                              options={[
+                                {
+                                  label: "Kaca",
+                                  value: "kaca",
+                                },
+                              ]}
+                            />
+                          </Form.Item>
+                          <Form.Item
+                            {...restField}
+                            name={[name, "color"]}
+                            rules={[{ required: true, message: "Please input  color" }]}
+                          >
+                            <Select
+                              style={{
+                                minWidth: 150,
+                              }}
+                              showSearch
+                              placeholder="--Please select color--"
+                              loading={isLoading}
+                              options={[
+                                {
+                                  label: "Merah",
+                                  value: "merah",
+                                },
+                              ]}
+                            />
+                          </Form.Item>
+                          <Form.Item
+                            {...restField}
+                            name={[name, "sku"]}
+                            rules={[{ required: true, message: "Please input sku" }]}
+                          >
+                            <Input
+                              placeholder="SKU"
+                              style={{
+                                minWidth: 150,
+                              }}
+                            />
                           </Form.Item>
                           <Form.Item
                             {...restField}
@@ -599,14 +648,10 @@ const CreateUpdate = () => {
                                 `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                               }
                               parser={(value) => value!.replace(/\$\s?|(,*)/g, "")}
-                            />{" "}
-                          </Form.Item>
-                          <Form.Item
-                            {...restField}
-                            name={[name, "sku"]}
-                            rules={[{ required: true, message: "Please input sku" }]}
-                          >
-                            <Input placeholder="SKU" />
+                              style={{
+                                minWidth: 150,
+                              }}
+                            />
                           </Form.Item>
                           <DeleteOutlined
                             style={{
@@ -636,21 +681,6 @@ const CreateUpdate = () => {
                 </Form.List>
               </Col>
             </Row>
-            <Divider />
-            <Form.Item
-              {...fullLayout}
-              label="Product Price"
-              name="price"
-              className="required-form"
-              rules={[{ required: true, message: <RequiredMessage /> }]}
-            >
-              <InputNumber
-                addonAfter="each"
-                placeholder="Input price"
-                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                parser={(value) => value!.replace(/\$\s?|(,*)/g, "")}
-              />
-            </Form.Item>
             <Divider />
             <Form.Item
               {...fullLayout}
@@ -724,170 +754,6 @@ const CreateUpdate = () => {
                   ))}
               </Select>
             </Form.Item>
-            <Divider />
-            <Form.Item
-              {...fullLayout}
-              label="Product Color"
-              name="color"
-              className="required-form"
-              rules={[{ required: true, message: <RequiredMessage /> }]}
-            >
-              <Select
-                style={{
-                  width: 205,
-                }}
-                mode="multiple"
-                allowClear
-                showSearch
-                menuItemSelectedIcon={null}
-                placeholder="--Please select color--"
-                options={data?.[data.findIndex((datum) => datum.id === selectedItem)]?.color?.map(
-                  (color) => ({
-                    label: color,
-                    value: color,
-                  }),
-                )}
-                disabled={selectedItem === -1}
-              />
-            </Form.Item>
-            <Divider />
-            <Form.Item
-              {...fullLayout}
-              label="Product Size"
-              name="size"
-              className="required-form"
-              rules={[{ required: true, message: <RequiredMessage /> }]}
-            >
-              <Select
-                style={{
-                  width: 205,
-                }}
-                mode="multiple"
-                allowClear
-                showSearch
-                menuItemSelectedIcon={null}
-                placeholder="--Please select size--"
-                options={data?.[data.findIndex((datum) => datum.id === selectedItem)]?.size?.map(
-                  (size) => ({
-                    label: size,
-                    value: size,
-                  }),
-                )}
-                disabled={selectedItem === -1}
-              />
-            </Form.Item>
-            <Divider />
-            <Form.Item
-              {...fullLayout}
-              label="Product Material"
-              name="material"
-              className="required-form"
-              rules={[{ required: true, message: <RequiredMessage /> }]}
-            >
-              <Select
-                style={{
-                  width: 205,
-                }}
-                mode="multiple"
-                allowClear
-                showSearch
-                menuItemSelectedIcon={null}
-                placeholder="--Please select material--"
-                options={data?.[
-                  data.findIndex((datum) => datum.id === selectedItem)
-                ]?.material?.map((material) => ({
-                  label: material,
-                  value: material,
-                }))}
-                disabled={selectedItem === -1}
-              />
-            </Form.Item>
-            <Divider />
-
-            <Row>
-              <Col span={6}>
-                <div>Product Material*</div>
-              </Col>
-              <Col span={16} offset={2}>
-                <Form.List
-                  name="material_attributes"
-                  initialValue={[
-                    {
-                      title: "",
-                      additional_price: "",
-                    },
-                  ]}
-                >
-                  {(fields, { add, remove }) => (
-                    <>
-                      {fields.map(({ key, name, ...restField }) => (
-                        <Space key={key} align="start">
-                          <Form.Item
-                            {...restField}
-                            name={[name, "title"]}
-                            rules={[{ required: true, message: "Please input  title" }]}
-                          >
-                            <Select
-                              style={{
-                                width: 205,
-                              }}
-                              mode="multiple"
-                              allowClear
-                              showSearch
-                              menuItemSelectedIcon={null}
-                              placeholder="--Please select material--"
-                              options={data?.[
-                                data.findIndex((datum) => datum.id === selectedItem)
-                              ]?.material?.map((material) => ({
-                                label: material,
-                                value: material,
-                              }))}
-                              disabled={selectedItem === -1}
-                            />
-                          </Form.Item>
-                          <Form.Item
-                            {...restField}
-                            name={[name, "additional_price"]}
-                            rules={[{ required: true, message: "Please input price" }]}
-                          >
-                            <InputNumber
-                              addonBefore="Rp"
-                              placeholder="Input Add Ons Price"
-                              formatter={(value) =>
-                                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                              }
-                              parser={(value) => value!.replace(/\$\s?|(,*)/g, "")}
-                            />{" "}
-                          </Form.Item>
-
-                          <DeleteOutlined
-                            style={{
-                              marginTop: 8,
-                              display: fields.length === 1 ? "none" : "block",
-                            }}
-                            onClick={() => remove(name)}
-                          />
-                        </Space>
-                      ))}
-                      <div
-                        role="none"
-                        style={{
-                          display: fields.length > 4 ? "none" : "flex",
-                          alignItems: "center",
-                          gap: 8,
-                          fontSize: 12,
-                          cursor: "pointer",
-                        }}
-                        onClick={() => add()}
-                      >
-                        <img src={AddIcon} alt="add" width={16} height={16} />
-                        <div>Add another</div>
-                      </div>
-                    </>
-                  )}
-                </Form.List>
-              </Col>
-            </Row>
             <Divider />
 
             <Form.Item {...fullLayout} label="Product Brochure" name="brochure">

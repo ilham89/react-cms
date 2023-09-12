@@ -1,21 +1,14 @@
-export enum FaqStatusEnum {
-  Active = "Active",
-  Inactive = "Inactive",
-}
+import { AcceptType, StatusType } from "@/types/status";
 
-export enum FeaturedFaqEnum {
-  Yes = "Yes",
-  No = "No",
-}
 export type GetFaqResponseType = {
   id: number;
   question: string;
   answer: string;
-  featured: FeaturedFaqEnum;
+  featured: AcceptType;
   faq_category_id: number;
   createdAt: string;
   updatedAt: string;
-  status: FaqStatusEnum;
+  status: StatusType;
   FAQCategory: {
     id: number;
     name: string;
@@ -34,9 +27,9 @@ export type GetFaqParamsType = {
 export type PostFaqBodyType = {
   question?: string;
   answer?: string;
-  featured?: FeaturedFaqEnum;
+  featured?: AcceptType;
   faq_category_id?: number;
-  status: FaqStatusEnum;
+  status: StatusType;
 };
 
 export type PostFaqParamsType = {

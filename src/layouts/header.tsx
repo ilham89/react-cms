@@ -26,7 +26,11 @@ const HeaderComponent: React.FC<HeaderProps> = ({ collapsed, toggle }) => {
   const token = antTheme.useToken();
   const navigate = useNavigate();
 
-  const [logged, setUserItem] = useUser((state) => [state.logged, state.setUserItem]);
+  const [logged, setUserItem, username] = useUser((state) => [
+    state.logged,
+    state.setUserItem,
+    state.username,
+  ]);
 
   const toLogin = () => {
     navigate("/login");
@@ -87,7 +91,7 @@ const HeaderComponent: React.FC<HeaderProps> = ({ collapsed, toggle }) => {
                     marginRight: 12,
                   }}
                 >
-                  Super Admin
+                  {username}
                 </div>
                 <img src={ChevronIcon} alt="icon" />
               </span>

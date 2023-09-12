@@ -25,7 +25,7 @@ const ContactUs = () => {
       title: "Date",
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (value) => <>{dayjs(value).format("DD/MM/YYYY")}</>,
+      render: (value) => dayjs(value).format("DD/MM/YYYY"),
       sorter: true,
     },
     {

@@ -5,10 +5,8 @@ import { ColumnsType } from "antd/es/table";
 import { useListFaqCategories } from "./list.action";
 import { status } from "@/models/status";
 import { faqManagement } from "@/models/tabs";
-import {
-  GetFaqCategoryResponseType,
-  FaqCategoryStatusEnum,
-} from "@/services/faq-category/faq-category.types";
+import { GetFaqCategoryResponseType } from "@/services/faq-category/faq-category.types";
+import { StatusEnum } from "@/types/status";
 
 const FaqCategories = () => {
   const {
@@ -59,7 +57,7 @@ const FaqCategories = () => {
       dataIndex: "status",
       key: "status",
       render: (value) => (
-        <Tag bordered={false} color={value === FaqCategoryStatusEnum.Active ? "success" : "error"}>
+        <Tag bordered={false} color={value === StatusEnum.Active ? "success" : "error"}>
           {value}
         </Tag>
       ),
@@ -77,10 +75,7 @@ const FaqCategories = () => {
                 onUpdateFaqCategory(
                   id,
                   {
-                    status:
-                      key === FaqCategoryStatusEnum.Active
-                        ? FaqCategoryStatusEnum.Active
-                        : FaqCategoryStatusEnum.Inactive,
+                    status: key === StatusEnum.Active ? StatusEnum.Active : StatusEnum.Inactive,
                   },
                   key,
                 ),
@@ -109,36 +104,38 @@ const FaqCategories = () => {
 
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+      <Space size="middle" direction="vertical" style={{ width: "100%" }}>
         <div
           style={{
-            fontSize: 30,
-            fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          FAQ
+          <div
+            style={{
+              fontSize: 30,
+              fontWeight: 600,
+            }}
+          >
+            FAQ
+          </div>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            size="large"
+            onClick={() => navigate("/web-management/faq/categories/add")}
+          >
+            Add Categories
+          </Button>
         </div>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          size="large"
-          onClick={() => navigate("/web-management/faq/categories/add")}
-        >
-          Add Categories
-        </Button>
-      </div>
-      <Tabs
-        tabBarStyle={{ margin: 0 }}
-        defaultActiveKey={location.pathname}
-        items={faqManagement}
-        onChange={(active) => navigate(active)}
-      />
+        <Tabs
+          tabBarStyle={{ margin: 0 }}
+          defaultActiveKey={location.pathname}
+          items={faqManagement}
+          onChange={(active) => navigate(active)}
+        />
+      </Space>
 
       <div
         className="box-wrapper"

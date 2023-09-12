@@ -6,7 +6,7 @@ import {
   PostProductCategoryBodyType,
   PutProductCategoryParamsType,
 } from "./product-category.types";
-import { DataResponseType } from "@/interfaces/response";
+import { DataResponseType } from "@/types/response";
 
 export const useDeleteProductCategoryService = () =>
   useMutation((id: number) => productCategoryServices.deleteProductCategory(id));

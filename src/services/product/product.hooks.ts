@@ -7,7 +7,7 @@ import {
   PostProductLabelBodyType,
   PutProductParamsType,
 } from "./product.types";
-import { DataResponseType } from "@/interfaces/response";
+import { DataResponseType } from "@/types/response";
 
 export const usePostProductService = () =>
   useMutation((data: PostProductBodyType) => productServices.postProduct(data));

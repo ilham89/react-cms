@@ -6,10 +6,8 @@ import { useListProductCategories } from "./list.action";
 import Pagination from "@/components/Pagination";
 import { status } from "@/models/status";
 import { productManagement } from "@/models/tabs";
-import {
-  GetProductCategoryResponseType,
-  ProductCategoryStatusEnum,
-} from "@/services/product-category/product-category.types";
+import { GetProductCategoryResponseType } from "@/services/product-category/product-category.types";
+import { StatusEnum } from "@/types/status";
 
 const ProductCategories = () => {
   const {
@@ -55,10 +53,7 @@ const ProductCategories = () => {
       key: "status",
       align: "center",
       render: (value) => (
-        <Tag
-          bordered={false}
-          color={value === ProductCategoryStatusEnum.Active ? "success" : "error"}
-        >
+        <Tag bordered={false} color={value === StatusEnum.Active ? "success" : "error"}>
           {value}
         </Tag>
       ),
@@ -77,10 +72,7 @@ const ProductCategories = () => {
                 onUpdateProductCategory(
                   id,
                   {
-                    status:
-                      key === ProductCategoryStatusEnum.Active
-                        ? ProductCategoryStatusEnum.Active
-                        : ProductCategoryStatusEnum.Inactive,
+                    status: key === StatusEnum.Active ? StatusEnum.Active : StatusEnum.Inactive,
                   },
                   key,
                 ),
@@ -109,36 +101,38 @@ const ProductCategories = () => {
 
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+      <Space size="middle" direction="vertical" style={{ width: "100%" }}>
         <div
           style={{
-            fontSize: 30,
-            fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          Product
+          <div
+            style={{
+              fontSize: 30,
+              fontWeight: 600,
+            }}
+          >
+            Product
+          </div>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            size="large"
+            onClick={() => navigate("/product-management/categories/add")}
+          >
+            Add Categories
+          </Button>
         </div>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          size="large"
-          onClick={() => navigate("/product-management/categories/add")}
-        >
-          Add Categories
-        </Button>
-      </div>
-      <Tabs
-        tabBarStyle={{ margin: 0 }}
-        defaultActiveKey={location.pathname}
-        items={productManagement}
-        onChange={(active) => navigate(active)}
-      />
+        <Tabs
+          tabBarStyle={{ margin: 0 }}
+          defaultActiveKey={location.pathname}
+          items={productManagement}
+          onChange={(active) => navigate(active)}
+        />
+      </Space>
 
       <div
         className="box-wrapper"
