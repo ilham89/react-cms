@@ -117,6 +117,9 @@ const CreateUpdate = () => {
         file_name: data.image,
       });
 
+      // jika value additional info dari detail kosong
+      if (Object.keys(data.additional_info).length === 0) return;
+
       const updatedDynamicFields = Object.keys(data.additional_info).map((key) => ({
         name: key,
         isUpdate: false,

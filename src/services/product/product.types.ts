@@ -1,3 +1,6 @@
+import { GetColorResponseType } from "../color/color.types";
+import { GetMaterialResponseType } from "../material/material.types";
+import { GetSizeResponseType } from "../size/size.types";
 import { ColumnOrderByType, StatusType } from "@/types/status";
 
 export type ProductCategoryType = {
@@ -14,12 +17,8 @@ export type GetProductResponseType = {
   name: string;
   information: string;
   description: string;
-  price: number;
   order_minimum: number;
   label: string[];
-  color: string;
-  size: string;
-  material: string;
   brochure: string;
   brochure_url: string;
   additional_info: any[];
@@ -27,6 +26,7 @@ export type GetProductResponseType = {
   createdAt: string;
   updatedAt: string;
   ProductCategory: ProductCategoryType;
+  Variants: VariantResponseType[];
 };
 
 export type PostProductBodyType = {
@@ -36,13 +36,10 @@ export type PostProductBodyType = {
   category_id: number;
   information: string;
   description: string;
-  price: number;
   order_minimum: number;
   label: string[];
-  color: string;
-  size: string;
-  material: string;
   brochure: string;
+  variants: VariantBodyType[];
 };
 
 export type PutProductBodyType = PostProductBodyType;
@@ -71,4 +68,28 @@ export type PostProductLabelBodyType = {
 export type PutProductParamsType = {
   id: number;
   data: PutProductBodyType;
+};
+
+export type VariantBodyType = {
+  size: string;
+  material_id: number;
+  color_id: number;
+  sku: string;
+  price: number;
+  id?: number;
+};
+
+type VariantResponseType = {
+  id: number;
+  price: number;
+  sku: string;
+  product_id: number;
+  material_id: number;
+  color_id: number;
+  size_id: number;
+  createdAt: string;
+  updatedAt: string;
+  Size: GetSizeResponseType;
+  Material: GetMaterialResponseType;
+  Color: GetColorResponseType;
 };

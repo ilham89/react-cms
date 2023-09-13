@@ -33,7 +33,17 @@ import RequiredMessage from "@/components/RequiredMessage";
 import useNotification from "@/hooks/useNotification";
 import { useSelectItem } from "@/hooks/useSelectItem";
 import { fullLayout } from "@/models/form";
+import {
+  useDeleteColorService,
+  useGetColorService,
+  usePostColorService,
+} from "@/services/color/color.hooks";
 import { imageServices } from "@/services/image/image.api";
+import {
+  useDeleteMaterialService,
+  useGetMaterialService,
+  usePostMaterialService,
+} from "@/services/material/material.hooks";
 import { productServices } from "@/services/product/product.api";
 import {
   useGetProductService,
@@ -41,6 +51,7 @@ import {
   usePostProductService,
   usePutProductService,
 } from "@/services/product/product.hooks";
+import { VariantBodyType } from "@/services/product/product.types";
 import { productCategoryServices } from "@/services/product-category/product-category.api";
 import { GetProductCategoryResponseType } from "@/services/product-category/product-category.types";
 import { queryClient } from "@/utils/queryClient";
@@ -117,6 +128,9 @@ const CreateUpdate = () => {
   const [brochure, setBrochure] = useState({} as File);
   const [categories, setCategories] = useState<SelectField[]>([]);
   const [selectedLabel, setSelectedLabel] = useState<string[]>([]);
+  const inputRef = useRef<InputRef>(null);
+  const inputRefMaterial = useRef<InputRef>(null);
+  const inputRefColor = useRef<InputRef>(null);
 
   const { addError, addSuccess } = useNotification();
   const { mutate: create } = usePostProductService();
@@ -133,9 +147,7 @@ const CreateUpdate = () => {
       "description",
       "order_minimum",
       "label",
-      "color",
-      "size_attributes",
-      "material_attributes",
+      "variants",
       "brochure",
       "main_image",
       "images",
@@ -143,6 +155,10 @@ const CreateUpdate = () => {
 
     const payload = {
       ...values,
+      variants: values.variants.map((variant: VariantBodyType) => ({
+        ...variant,
+        id: variant?.id ?? 0,
+      })),
       brochure: brochure.file_name,
       main_image: fileList[0].file_name,
       images: fileList.map((list) => list.file_name).filter((list) => list !== ""),
@@ -272,6 +288,7 @@ const CreateUpdate = () => {
     },
   );
 
+  // label action
   const { data: productLabels, isLoading: isLoadingProductLabel } = useQuery(
     ["product-labels"],
     () => productServices.getLabelProduct(),
@@ -284,8 +301,6 @@ const CreateUpdate = () => {
     productServices.deleteLabelProduct(id),
   );
 
-  const inputRef = useRef<InputRef>(null);
-
   const { mutate: createLabel } = usePostProductLabelsService();
 
   const addItem = () => {
@@ -295,7 +310,55 @@ const CreateUpdate = () => {
         onSuccess: () => {
           queryClient.invalidateQueries(["product-labels"]);
         },
-        onError: (error: any) => addError(error?.response?.data.error[0]),
+        onError: (error) => {
+          const newError = error as AxiosError<{ error: string[] }>;
+          addError(newError?.response?.data.error[0]);
+        },
+      },
+    );
+  };
+
+  // material action
+  const { data: materials, isLoading: isLoadingGetMaterials } = useGetMaterialService();
+  const { mutate: deleteMaterial, isLoading: isLoadingDeleteMaterial } = useDeleteMaterialService();
+  const { mutate: createMaterial, isLoading: isLoadingCreateMaterial } = usePostMaterialService();
+
+  const loadingActionMaterial =
+    isLoadingGetMaterials || isLoadingDeleteMaterial || isLoadingCreateMaterial;
+
+  const addItemMaterial = () => {
+    createMaterial(
+      { title: inputRefMaterial.current?.input?.value || "" },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries(["materials"]);
+        },
+        onError: (error) => {
+          const newError = error as AxiosError<{ error: string[] }>;
+          addError(newError?.response?.data.error[0]);
+        },
+      },
+    );
+  };
+
+  // color action
+  const { data: colors, isLoading: isLoadingGetColors } = useGetColorService();
+  const { mutate: deleteColor, isLoading: isLoadingDeleteColor } = useDeleteColorService();
+  const { mutate: createColor, isLoading: isLoadingCreateColor } = usePostColorService();
+
+  const loadingActionColor = isLoadingCreateColor || isLoadingDeleteColor || isLoadingGetColors;
+
+  const addItemColor = () => {
+    createColor(
+      { name: inputRefColor.current?.input?.value || "" },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries(["colors"]);
+        },
+        onError: (error) => {
+          const newError = error as AxiosError<{ error: string[] }>;
+          addError(newError?.response?.data.error[0]);
+        },
       },
     );
   };
@@ -316,12 +379,16 @@ const CreateUpdate = () => {
         category_id: data.category_id,
         information: data.information,
         description: data.description,
-        price: data.price,
         order_minimum: data.order_minimum,
         label: data.label,
-        color: data.color,
-        material: data.material,
-        size: data.size,
+        variants: data.Variants.map((variant) => ({
+          size: variant.Size.title,
+          material_id: variant.Material.id,
+          color_id: variant.Color.id,
+          sku: variant.sku,
+          price: variant.price,
+          id: variant.id,
+        })),
         image: data.main_image,
         brochure: data.brochure,
         ...additional_info,
@@ -353,6 +420,7 @@ const CreateUpdate = () => {
   const categoryIndex = (data as GetProductCategoryResponseType[])?.findIndex(
     (datum) => datum.id === selectedItem,
   );
+
   return (
     <div>
       <Space
@@ -515,11 +583,6 @@ const CreateUpdate = () => {
                 options={categories}
                 onSelect={(value) => {
                   onSelectItem(value);
-                  form.setFieldsValue({
-                    color: [],
-                    size: [],
-                    material: [],
-                  });
                 }}
               />
             </Form.Item>
@@ -560,10 +623,11 @@ const CreateUpdate = () => {
                   initialValue={[
                     {
                       size: "",
-                      material: undefined,
-                      color: undefined,
+                      material_id: undefined,
+                      color_id: undefined,
                       sku: "",
                       price: "",
+                      id: 0,
                     },
                   ]}
                 >
@@ -585,8 +649,8 @@ const CreateUpdate = () => {
                           </Form.Item>
                           <Form.Item
                             {...restField}
-                            name={[name, "material"]}
-                            rules={[{ required: true, message: "Please input  material" }]}
+                            name={[name, "material_id"]}
+                            rules={[{ required: true, message: "Please input material" }]}
                           >
                             <Select
                               style={{
@@ -595,34 +659,116 @@ const CreateUpdate = () => {
                               showSearch
                               allowClear
                               placeholder="--Please select material--"
-                              loading={isLoading}
-                              options={[
-                                {
-                                  label: "Kaca",
-                                  value: "kaca",
-                                },
-                              ]}
-                            />
+                              loading={loadingActionMaterial}
+                              optionLabelProp="label"
+                              dropdownRender={(menu) => (
+                                <>
+                                  {menu}
+                                  <Divider style={{ margin: "8px 0" }} />
+                                  <Space style={{ padding: "0 8px 4px" }}>
+                                    <Input
+                                      placeholder="Please enter material"
+                                      ref={inputRefMaterial}
+                                    />
+                                    <Button
+                                      type="text"
+                                      icon={<PlusOutlined />}
+                                      onClick={addItemMaterial}
+                                      disabled={loadingActionMaterial}
+                                      loading={loadingActionMaterial}
+                                    >
+                                      Add item
+                                    </Button>
+                                  </Space>
+                                </>
+                              )}
+                            >
+                              {materials?.map((material) => (
+                                <Select.Option
+                                  key={material.title}
+                                  value={material.id}
+                                  label={material.title}
+                                >
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <div>{material.title}</div>
+                                    <CloseOutlined
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        deleteMaterial(material.id, {
+                                          onSuccess: () =>
+                                            queryClient.invalidateQueries(["materials"]),
+                                          onError: () => addError(),
+                                        });
+                                      }}
+                                    />
+                                  </div>
+                                </Select.Option>
+                              ))}
+                            </Select>
                           </Form.Item>
                           <Form.Item
                             {...restField}
-                            name={[name, "color"]}
+                            name={[name, "color_id"]}
                             rules={[{ required: true, message: "Please input  color" }]}
                           >
                             <Select
                               style={{
-                                minWidth: 150,
+                                width: 205,
                               }}
                               showSearch
+                              allowClear
                               placeholder="--Please select color--"
-                              loading={isLoading}
-                              options={[
-                                {
-                                  label: "Merah",
-                                  value: "merah",
-                                },
-                              ]}
-                            />
+                              loading={loadingActionColor}
+                              optionLabelProp="label"
+                              dropdownRender={(menu) => (
+                                <>
+                                  {menu}
+                                  <Divider style={{ margin: "8px 0" }} />
+                                  <Space style={{ padding: "0 8px 4px" }}>
+                                    <Input placeholder="Please enter color" ref={inputRefColor} />
+                                    <Button
+                                      type="text"
+                                      icon={<PlusOutlined />}
+                                      onClick={addItemColor}
+                                      disabled={loadingActionColor}
+                                      loading={loadingActionColor}
+                                    >
+                                      Add item
+                                    </Button>
+                                  </Space>
+                                </>
+                              )}
+                            >
+                              {colors?.map((color) => (
+                                <Select.Option key={color.name} value={color.id} label={color.name}>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <div>{color.name}</div>
+                                    <CloseOutlined
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        deleteColor(color.id, {
+                                          onSuccess: () =>
+                                            queryClient.invalidateQueries(["colors"]),
+                                          onError: () => addError(),
+                                        });
+                                      }}
+                                    />
+                                  </div>
+                                </Select.Option>
+                              ))}
+                            </Select>
                           </Form.Item>
                           <Form.Item
                             {...restField}

@@ -100,9 +100,9 @@ const Products = () => {
     },
     {
       title: "Price",
-      dataIndex: "price",
-      key: "price",
-      render: (value) => <>{thousandFormat(value)}</>,
+      dataIndex: "Variants",
+      key: "Variants",
+      render: (value) => <>{value.length > 0 ? thousandFormat(value[0]?.price) : "-"}</>,
     },
     {
       title: "Label",
