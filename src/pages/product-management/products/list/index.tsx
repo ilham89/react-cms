@@ -100,10 +100,20 @@ const Products = () => {
       render: (value) => <>{value.name}</>,
     },
     {
-      title: "Price",
+      title: "Start From",
       dataIndex: "Variants",
       key: "Variants",
-      render: (value) => <>{value.length > 0 ? thousandFormat(value[0]?.price) : "-"}</>,
+      render: (value) => (
+        <>
+          {value.length > 0
+            ? `Rp ${thousandFormat(
+                value.reduce((prev: { price: number }, curr: { price: number }) =>
+                  prev.price < curr.price ? prev : curr,
+                ).price,
+              )}`
+            : "-"}
+        </>
+      ),
     },
     {
       title: "Label",
