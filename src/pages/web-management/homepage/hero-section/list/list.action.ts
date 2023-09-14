@@ -35,7 +35,7 @@ export const useListHeroSection = () => {
   const onDeleteHeroPartner = () =>
     mutate(selectedItem, {
       onSuccess: () => {
-        queryClient.invalidateQueries(["hero-sections"]);
+        queryClient.invalidateQueries(["hero-partners"]);
         onResetItem();
         addSuccess("Your items are successfully deleted");
       },

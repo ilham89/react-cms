@@ -78,6 +78,7 @@ const Products = () => {
       onSuccess: () => {
         queryClient.invalidateQueries(["products"]);
         addSuccess("Your items are successfully deleted");
+        onResetItem();
       },
       onError: (error) => {
         const newError = error as AxiosError<{ error: string }>;
