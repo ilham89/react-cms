@@ -153,6 +153,7 @@ const CreateUpdate = () => {
 
       setCustomFields(mergedFields);
     },
+    refetchOnWindowFocus: false,
   });
 
   const onChangeCustomField = (
@@ -340,6 +341,7 @@ const CreateUpdate = () => {
                         style={{
                           aspectRatio: 1,
                           objectFit: "cover",
+                          width: 170,
                         }}
                       />
                     ) : (

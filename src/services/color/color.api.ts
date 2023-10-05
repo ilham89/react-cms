@@ -1,14 +1,15 @@
 import { AxiosResponse } from "axios";
 
-import { GetColorResponseType, PostColorBodyType } from "./color.types";
+import { GetColorParamsType, GetColorResponseType, PostColorBodyType } from "./color.types";
 import { axiosInstance } from "@/configs/axios";
 import { DataResponseType } from "@/types/response";
 
 export const colorServices = {
-  getColors: async () => {
+  getColors: async (params: GetColorParamsType) => {
     const response: AxiosResponse<DataResponseType<GetColorResponseType[]>> = await axiosInstance({
       url: "/colors",
       method: "get",
+      params,
     });
     return response.data;
   },

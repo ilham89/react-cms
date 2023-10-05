@@ -132,6 +132,9 @@ const CreateUpdate = () => {
   const inputRefMaterial = useRef<InputRef>(null);
   const inputRefColor = useRef<InputRef>(null);
 
+  const [currentMaterial, setCurrentMaterial] = useState<string[]>([]);
+  const [currentColor, setCurrentColor] = useState<string[]>([]);
+
   const { addError, addSuccess } = useNotification();
   const { mutate: create } = usePostProductService();
   const { mutate: update } = usePutProductService();
@@ -209,6 +212,7 @@ const CreateUpdate = () => {
         onSuccess: () => {
           addSuccess("You`re changes are saved successfully");
           navigate("/product-management/products");
+          setFileList(defaultFiles);
         },
         onError: (error) => {
           const newError = error as AxiosError<{ error: string }>;
@@ -319,7 +323,7 @@ const CreateUpdate = () => {
   };
 
   // material action
-  const { data: materials, isLoading: isLoadingGetMaterials } = useGetMaterialService();
+  const { data: materials, isLoading: isLoadingGetMaterials } = useGetMaterialService(id as string);
   const { mutate: deleteMaterial, isLoading: isLoadingDeleteMaterial } = useDeleteMaterialService();
   const { mutate: createMaterial, isLoading: isLoadingCreateMaterial } = usePostMaterialService();
 
@@ -327,40 +331,82 @@ const CreateUpdate = () => {
     isLoadingGetMaterials || isLoadingDeleteMaterial || isLoadingCreateMaterial;
 
   const addItemMaterial = () => {
-    createMaterial(
-      { title: inputRefMaterial.current?.input?.value || "" },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries(["materials"]);
+    if (id) {
+      createMaterial(
+        { title: inputRefMaterial.current?.input?.value || "" },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries(["materials"]);
+          },
+          onError: (error) => {
+            const newError = error as AxiosError<{ error: string[] }>;
+            addError(newError?.response?.data.error[0]);
+          },
         },
-        onError: (error) => {
-          const newError = error as AxiosError<{ error: string[] }>;
-          addError(newError?.response?.data.error[0]);
-        },
-      },
-    );
+      );
+    } else {
+      const newMaterial = [...currentMaterial];
+      if (newMaterial.includes(inputRefMaterial.current?.input?.value || ""))
+        return addError("Can`t input same value!");
+      newMaterial.push(inputRefMaterial.current?.input?.value || "");
+      setCurrentMaterial(newMaterial);
+    }
+  };
+
+  const deleteItemMaterial = (material: string | number) => {
+    if (id) {
+      deleteMaterial(material as number, {
+        onSuccess: () => queryClient.invalidateQueries(["materials"]),
+        onError: () => addError(),
+      });
+    } else {
+      const newMaterial = [...currentMaterial];
+      const filteredMaterial = newMaterial.filter((item) => item !== material);
+      setCurrentMaterial(filteredMaterial);
+    }
   };
 
   // color action
-  const { data: colors, isLoading: isLoadingGetColors } = useGetColorService();
+  const { data: colors, isLoading: isLoadingGetColors } = useGetColorService(id as string);
   const { mutate: deleteColor, isLoading: isLoadingDeleteColor } = useDeleteColorService();
   const { mutate: createColor, isLoading: isLoadingCreateColor } = usePostColorService();
 
   const loadingActionColor = isLoadingCreateColor || isLoadingDeleteColor || isLoadingGetColors;
 
   const addItemColor = () => {
-    createColor(
-      { name: inputRefColor.current?.input?.value || "" },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries(["colors"]);
+    if (id) {
+      createColor(
+        { name: inputRefColor.current?.input?.value || "" },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries(["colors"]);
+          },
+          onError: (error) => {
+            const newError = error as AxiosError<{ error: string[] }>;
+            addError(newError?.response?.data.error[0]);
+          },
         },
-        onError: (error) => {
-          const newError = error as AxiosError<{ error: string[] }>;
-          addError(newError?.response?.data.error[0]);
-        },
-      },
-    );
+      );
+    } else {
+      const newColor = [...currentColor];
+      if (newColor.includes(inputRefColor.current?.input?.value || ""))
+        return addError("Can`t input same value!");
+      newColor.push(inputRefColor.current?.input?.value || "");
+      setCurrentColor(newColor);
+    }
+  };
+
+  const deleteItemColor = (color: number | string) => {
+    if (id) {
+      deleteColor(color as number, {
+        onSuccess: () => queryClient.invalidateQueries(["colors"]),
+        onError: () => addError(),
+      });
+    } else {
+      const newColor = [...currentColor];
+      const filteredColor = newColor.filter((item) => item !== color);
+      setCurrentColor(filteredColor);
+    }
   };
 
   useGetProductService(id as string, {
@@ -383,8 +429,8 @@ const CreateUpdate = () => {
         label: data.label,
         variants: data.Variants.map((variant) => ({
           size: variant.Size.title,
-          material_id: variant.Material.id,
-          color_id: variant.Color.id,
+          material: variant.Material.title,
+          color: variant.Color.name,
           sku: variant.sku,
           price: variant.price,
           id: variant.id,
@@ -519,6 +565,7 @@ const CreateUpdate = () => {
                                 aspectRatio: 1,
                                 objectFit: "cover",
                                 borderRadius: 12,
+                                width: 140,
                               }}
                             />
                             <div
@@ -623,8 +670,8 @@ const CreateUpdate = () => {
                   initialValue={[
                     {
                       size: "",
-                      material_id: undefined,
-                      color_id: undefined,
+                      material: undefined,
+                      color: undefined,
                       sku: "",
                       price: "",
                       id: 0,
@@ -649,12 +696,12 @@ const CreateUpdate = () => {
                           </Form.Item>
                           <Form.Item
                             {...restField}
-                            name={[name, "material_id"]}
+                            name={[name, "material"]}
                             rules={[{ required: true, message: "Please input material" }]}
                           >
                             <Select
                               style={{
-                                minWidth: 150,
+                                minWidth: 200,
                               }}
                               showSearch
                               allowClear
@@ -683,43 +730,63 @@ const CreateUpdate = () => {
                                 </>
                               )}
                             >
-                              {materials?.map((material) => (
-                                <Select.Option
-                                  key={material.title}
-                                  value={material.id}
-                                  label={material.title}
-                                >
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <div>{material.title}</div>
-                                    <CloseOutlined
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        deleteMaterial(material.id, {
-                                          onSuccess: () =>
-                                            queryClient.invalidateQueries(["materials"]),
-                                          onError: () => addError(),
-                                        });
+                              {id ? (
+                                <>
+                                  {materials?.map((material) => (
+                                    <Select.Option
+                                      key={material.title}
+                                      value={material.id}
+                                      label={material.title}
+                                    >
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "space-between",
+                                          alignItems: "center",
+                                        }}
+                                      >
+                                        <div>{material.title}</div>
+                                        <CloseOutlined
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            deleteItemMaterial(material.id);
+                                          }}
+                                        />
+                                      </div>
+                                    </Select.Option>
+                                  ))}
+                                </>
+                              ) : (
+                                currentMaterial.map((material) => (
+                                  <Select.Option key={material} value={material} label={material}>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
                                       }}
-                                    />
-                                  </div>
-                                </Select.Option>
-                              ))}
+                                    >
+                                      <div>{material}</div>
+                                      <CloseOutlined
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          deleteItemMaterial(material);
+                                        }}
+                                      />
+                                    </div>
+                                  </Select.Option>
+                                ))
+                              )}
                             </Select>
                           </Form.Item>
                           <Form.Item
                             {...restField}
-                            name={[name, "color_id"]}
+                            name={[name, "color"]}
                             rules={[{ required: true, message: "Please input  color" }]}
                           >
                             <Select
                               style={{
-                                width: 205,
+                                width: 200,
                               }}
                               showSearch
                               allowClear
@@ -745,29 +812,55 @@ const CreateUpdate = () => {
                                 </>
                               )}
                             >
-                              {colors?.map((color) => (
-                                <Select.Option key={color.name} value={color.id} label={color.name}>
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <div>{color.name}</div>
-                                    <CloseOutlined
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        deleteColor(color.id, {
-                                          onSuccess: () =>
-                                            queryClient.invalidateQueries(["colors"]),
-                                          onError: () => addError(),
-                                        });
-                                      }}
-                                    />
-                                  </div>
-                                </Select.Option>
-                              ))}
+                              {id ? (
+                                <>
+                                  {colors?.map((color) => (
+                                    <Select.Option
+                                      key={color.name}
+                                      value={color.id}
+                                      label={color.name}
+                                    >
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "space-between",
+                                          alignItems: "center",
+                                        }}
+                                      >
+                                        <div>{color.name}</div>
+                                        <CloseOutlined
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            deleteItemColor(color.id);
+                                          }}
+                                        />
+                                      </div>
+                                    </Select.Option>
+                                  ))}
+                                </>
+                              ) : (
+                                <>
+                                  {currentColor?.map((color) => (
+                                    <Select.Option key={color} value={color} label={color}>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "space-between",
+                                          alignItems: "center",
+                                        }}
+                                      >
+                                        <div>{color}</div>
+                                        <CloseOutlined
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            deleteItemColor(color);
+                                          }}
+                                        />
+                                      </div>
+                                    </Select.Option>
+                                  ))}
+                                </>
+                              )}
                             </Select>
                           </Form.Item>
                           <Form.Item

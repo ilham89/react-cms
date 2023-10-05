@@ -1,15 +1,20 @@
 import { AxiosResponse } from "axios";
 
-import { GetMaterialResponseType, PostMaterialBodyType } from "./material.types";
+import {
+  GetMaterialParamsType,
+  GetMaterialResponseType,
+  PostMaterialBodyType,
+} from "./material.types";
 import { axiosInstance } from "@/configs/axios";
 import { DataResponseType } from "@/types/response";
 
 export const materialServices = {
-  getMaterials: async () => {
+  getMaterials: async (params: GetMaterialParamsType) => {
     const response: AxiosResponse<DataResponseType<GetMaterialResponseType[]>> =
       await axiosInstance({
-        url: "/materials",
+        url: "/materials?productsId=24",
         method: "get",
+        params,
       });
     return response.data;
   },

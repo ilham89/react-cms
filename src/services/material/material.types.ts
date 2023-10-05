@@ -8,3 +8,7 @@ export type GetMaterialResponseType = {
 export type PostMaterialBodyType = {
   title: string;
 };
+
+export type GetMaterialParamsType = {
+  product_id: string;
+};
