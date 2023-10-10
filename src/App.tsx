@@ -2,23 +2,13 @@ import * as React from "react";
 
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { ConfigProvider, Spin } from "antd";
-import Cookies from "js-cookie";
+import { ConfigProvider, App as AppAntd } from "antd";
 import { BrowserRouter } from "react-router-dom";
 
 import RenderRouter from "./router";
-import useUser from "./stores/user";
 import { queryClient } from "./utils/queryClient";
 
 const App = () => {
-  const [setUserItem] = useUser((state) => [state.setUserItem]);
-
-  React.useEffect(() => {
-    setUserItem({
-      logged: !!Cookies.get("user_ct"),
-    });
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <ConfigProvider
@@ -40,13 +30,17 @@ const App = () => {
           },
         }}
       >
-        <BrowserRouter>
-          <React.Suspense
-            fallback={<Spin spinning className="app-loading-wrapper" tip="Loading..." />}
-          >
-            <RenderRouter />
-          </React.Suspense>
-        </BrowserRouter>
+        <AppAntd
+          notification={{
+            placement: "topRight",
+          }}
+        >
+          <BrowserRouter>
+            <React.Suspense fallback={null}>
+              <RenderRouter />
+            </React.Suspense>
+          </BrowserRouter>
+        </AppAntd>
       </ConfigProvider>
       <ReactQueryDevtools />
     </QueryClientProvider>

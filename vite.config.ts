@@ -9,7 +9,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/dev": {
-        target: "https://api-dev.solpac.id",
+        target: "https://reqres.in/api",
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/dev/, ""),

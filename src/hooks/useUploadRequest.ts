@@ -3,8 +3,9 @@ import * as React from "react";
 import { RcFile } from "antd/es/upload";
 import Cookies from "js-cookie";
 
-import useNotification from "./useNotification";
+import { notification } from "./useApp";
 import { imageServices } from "@/services/image/image.api";
+import { errorMessage } from "@/utils/message";
 
 type File = {
   file_name: string;
@@ -14,7 +15,6 @@ type File = {
 export const useUploadRequest = () => {
   const [file, setFile] = React.useState({} as File);
 
-  const { addError } = useNotification();
   const onCustomRequest = (file: string | Blob | RcFile) => {
     const preview = URL.createObjectURL(file as Blob);
     const formData = new FormData();
@@ -31,7 +31,8 @@ export const useUploadRequest = () => {
       .catch((error) => {
         if (error.response?.status === 401) {
           Cookies.remove("user_ct");
-          addError("Your session is expired!");
+          notification.error({ message: errorMessage("Your session is expired!") });
+
           setTimeout(() => {
             location.replace("/login");
           }, 1000);

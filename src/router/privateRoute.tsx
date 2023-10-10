@@ -12,12 +12,6 @@ const PrivateRoute: React.FC<RouteProps> = ({ element }) => {
   const location = useLocation();
   const [logged] = useUser((state) => [state.logged]);
 
-  React.useEffect(() => {
-    if (!logged) {
-      navigate("/login");
-    }
-  }, []);
-
   return logged ? (
     (element as React.ReactElement)
   ) : (

@@ -4,16 +4,18 @@ export type BaseResponseType = {
   // code: number;
 };
 
+export type MetaResponseType = {
+  page: number;
+  per_page: number;
+  total: number;
+  total_pages: number;
+};
+
 export type DataResponseType<T> = BaseResponseType & {
   data: T;
 };
 
-export type DataMetaResponseType<T> = BaseResponseType & {
-  data: {
+export type DataMetaResponseType<T> = BaseResponseType &
+  MetaResponseType & {
     data: T;
-    total_data: number;
-    total_page: number;
-    current_page: number;
-    page_limit: number;
   };
-};

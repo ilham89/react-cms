@@ -5,18 +5,6 @@
     align-items: center;
     min-height: 100vh;
 
-    &-background {
-      height: 80vh;
-      width: 80vw;
-      background-position: center;
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-image: url("../../assets/image/bg-login.png");
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
     &-wrapper {
       background-color: white;
       padding: 16px;

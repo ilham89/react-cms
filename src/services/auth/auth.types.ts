@@ -5,5 +5,5 @@ export type PostLoginBodyType = {
 
 export type PostLoginResponseType = {
   message: string;
-  access_token: string;
+  token: string;
 };

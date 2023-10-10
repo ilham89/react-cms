@@ -1,7 +1,6 @@
 import { Button, Form, Input, Space, Typography } from "antd";
 
 import { useLogin } from "./login.action";
-import SolpacLogo from "@/assets/logo/solpac.png";
 
 import "./index.scss";
 
@@ -21,12 +20,13 @@ const Login = () => {
                 textAlign: "center",
               }}
             >
-              <img src={SolpacLogo} alt="logo" width={85} height={35} />
-              <Text
-                style={{
-                  color: "#909090",
-                }}
-              >
+              <img
+                src="https://res.cloudinary.com/ds73yosji/image/upload/v1696909397/ant-design-icon-512x512-ncocfg8e_cfjydh.png"
+                alt="logo"
+                width={35}
+                height={35}
+              />
+              <Text color="#909090">
                 Enter your email address and password to access admin panel.
               </Text>
             </Space>

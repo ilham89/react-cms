@@ -1,10 +1,12 @@
 import * as React from "react";
 
 import { Drawer, Layout, theme } from "antd";
+import { ErrorBoundary } from "react-error-boundary";
 import { Outlet, useLocation } from "react-router-dom";
 
 import HeaderComponent from "./header";
 import MenuComponent from "./menu";
+import ErrorFallback from "@/components/ErrorFallback";
 import useUser from "@/stores/user";
 import { getGlobalState } from "@/utils/getGlobal";
 import { getPathExceptLast } from "@/utils/string";
@@ -95,11 +97,13 @@ const Dashboard: React.FC = () => {
           </Drawer>
         )}
 
-        <Content className="layout-page-content">
-          <React.Suspense fallback={null}>
-            <Outlet />
-          </React.Suspense>
-        </Content>
+        <ErrorBoundary FallbackComponent={ErrorFallback}>
+          <Content className="layout-page-content">
+            <React.Suspense fallback={null}>
+              <Outlet />
+            </React.Suspense>
+          </Content>
+        </ErrorBoundary>
       </Layout>
     </Layout>
   );

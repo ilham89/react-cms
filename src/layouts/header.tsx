@@ -6,13 +6,11 @@ import {
   MenuUnfoldOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Dropdown, Layout, theme as antTheme } from "antd";
+import { Dropdown, Layout, Typography, theme as antTheme } from "antd";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
 import ChevronIcon from "@/assets/icons/chevron-down.svg";
-import LogoOnly from "@/assets/logo/logo-only.png";
-import SolpacLogo from "@/assets/logo/solpac.png";
 import useUser from "@/stores/user";
 
 interface HeaderProps {
@@ -21,6 +19,7 @@ interface HeaderProps {
 }
 
 const { Header } = Layout;
+const { Title } = Typography;
 
 const HeaderComponent: React.FC<HeaderProps> = ({ collapsed, toggle }) => {
   const token = antTheme.useToken();
@@ -33,9 +32,9 @@ const HeaderComponent: React.FC<HeaderProps> = ({ collapsed, toggle }) => {
   ]);
 
   const toLogin = () => {
-    navigate("/login");
-    setUserItem({ logged: false });
     Cookies.remove("user_ct");
+    setUserItem({ logged: false });
+    navigate("/login");
   };
 
   return (
@@ -44,7 +43,13 @@ const HeaderComponent: React.FC<HeaderProps> = ({ collapsed, toggle }) => {
       style={{ backgroundColor: token.token.colorBgContainer }}
     >
       <div className="logo" style={{ width: collapsed ? 80 : 250 }}>
-        <img src={collapsed ? LogoOnly : SolpacLogo} alt="logo" width={100} height={40} />
+        <img
+          src="https://res.cloudinary.com/ds73yosji/image/upload/v1696909397/ant-design-icon-512x512-ncocfg8e_cfjydh.png"
+          alt="logo"
+          width={60}
+          height={40}
+        />
+        {!collapsed && <Title level={4}>Antd CMS</Title>}
       </div>
       <div className="layout-page-header-main">
         <div onClick={toggle} role="none">
@@ -80,7 +85,7 @@ const HeaderComponent: React.FC<HeaderProps> = ({ collapsed, toggle }) => {
             >
               <span className="user-action">
                 <img
-                  src="https://res.cloudinary.com/ds73yosji/image/upload/v1692803403/solpac/Frame_1_lzqojw.png"
+                  src="https://res.cloudinary.com/ds73yosji/image/upload/v1696909397/ant-design-icon-512x512-ncocfg8e_cfjydh.png"
                   className="user-avator"
                   alt="avator"
                 />
