@@ -6,7 +6,7 @@ import { PostLoginBodyType } from "./auth.types";
 
 export const usePostLoginService = () =>
   useMutation((data: PostLoginBodyType) => authServices.postLogin(data), {
-    onSuccess: ({ access_token }) => {
-      Cookies.set("user_ct", access_token);
+    onSuccess: ({ token }) => {
+      Cookies.set("user_ct", token);
     },
   });
