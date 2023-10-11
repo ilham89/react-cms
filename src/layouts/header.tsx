@@ -48,6 +48,9 @@ const HeaderComponent: React.FC<HeaderProps> = ({ collapsed, toggle }) => {
           alt="logo"
           width={60}
           height={40}
+          style={{
+            objectFit: "contain",
+          }}
         />
         {!collapsed && <Title level={4}>Antd CMS</Title>}
       </div>

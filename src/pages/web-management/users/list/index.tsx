@@ -27,7 +27,6 @@ const ProductCategories = () => {
       title: "Name",
       dataIndex: "avatar",
       key: "avatar",
-      sorter: true,
       render: (_value, record) => `${record.first_name} ${record.last_name}`,
     },
     {
